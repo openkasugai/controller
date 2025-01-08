@@ -1,0 +1,6 @@
+[submodule "docs/Miscs/apfw/website/themes/hugo-book"]
+	path = docs/Miscs/apfw/website/themes/hugo-book
+	url = https://github.com/alex-shpak/hugo-book
+[submodule "src/submodules/fpga-software"]
+	path = src/submodules/fpga-software
+	url = https://github.com/openkasugai/hardware-drivers.git
