@@ -1,0 +1,427 @@
+{
+  "functionKernels":[{
+    "partitionName": "0",
+    "functionChannelIDList": [0,1,2,3,4,5,6,7],
+    "functionChannelIDs":[{
+      "functionChannelID": 0,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12300
+          },
+          "DMA":{
+            "port": 12300,
+            "lldmaConnectorID": 0,
+            "dmaChannelID": 0
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12300
+          },
+          "DMA":{
+            "port": 12300,
+            "lldmaConnectorID": 0,
+            "dmaChannelID": 0
+          }
+        }
+      }
+    },{
+      "functionChannelID": 1,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12301
+          },
+          "DMA":{
+            "port": 12301,
+            "lldmaConnectorID": 1,
+            "dmaChannelID": 1
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12301
+          },
+          "DMA":{
+            "port": 12301,
+            "lldmaConnectorID": 1,
+            "dmaChannelID": 1
+          }
+        }
+      }
+    },{
+      "functionChannelID": 2,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12302
+          },
+          "DMA":{
+            "port": 12302,
+            "lldmaConnectorID": 2,
+            "dmaChannelID": 2
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12302
+          },
+          "DMA":{
+            "port": 12302,
+            "lldmaConnectorID": 2,
+            "dmaChannelID": 2
+          }
+        }
+      }
+    },{
+      "functionChannelID": 3,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12303
+          },
+          "DMA":{
+            "port": 12303,
+            "lldmaConnectorID": 3,
+            "dmaChannelID": 3
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12303
+          },
+          "DMA":{
+            "port": 12303,
+            "lldmaConnectorID": 3,
+            "dmaChannelID": 3
+          }
+        }
+      }
+    },{
+      "functionChannelID": 4,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12304
+          },
+          "DMA":{
+            "port": 12304,
+            "lldmaConnectorID": 4,
+            "dmaChannelID": 4
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12304
+          },
+          "DMA":{
+            "port": 12304,
+            "lldmaConnectorID": 4,
+            "dmaChannelID": 4
+          }
+        }
+      }
+    },{
+      "functionChannelID": 5,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12305
+          },
+          "DMA":{
+            "port": 12305,
+            "lldmaConnectorID": 5,
+            "dmaChannelID": 5
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12305
+          },
+          "DMA":{
+            "port": 12305,
+            "lldmaConnectorID": 5,
+            "dmaChannelID": 5
+          }
+        }
+      }
+    },{
+      "functionChannelID": 6,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12306
+          },
+          "DMA":{
+            "port": 12306,
+            "lldmaConnectorID": 6,
+            "dmaChannelID": 6
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12306
+          },
+          "DMA":{
+            "port": 12306,
+            "lldmaConnectorID": 6,
+            "dmaChannelID": 6
+          }
+        }
+      }
+    },{
+      "functionChannelID": 7,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12307
+          },
+          "DMA":{
+            "port": 12307,
+            "lldmaConnectorID": 7,
+            "dmaChannelID": 7
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12307
+          },
+          "DMA":{
+            "port": 12307,
+            "lldmaConnectorID": 7,
+            "dmaChannelID": 7
+          }
+        }
+      }
+    }]
+  },{
+    "partitionName": "1",
+    "functionChannelIDList": [0,1,2,3,4,5,6,7],
+    "functionChannelIDs":[{
+      "functionChannelID": 0,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12308
+          },
+          "DMA":{
+            "port": 12308,
+            "lldmaConnectorID": 8,
+            "dmaChannelID": 8
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12308
+          },
+          "DMA":{
+            "port": 12308,
+            "lldmaConnectorID": 8,
+            "dmaChannelID": 8
+          }
+        }
+      }
+    },{
+      "functionChannelID": 1,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12309
+          },
+          "DMA":{
+            "port": 12309,
+            "lldmaConnectorID": 9,
+            "dmaChannelID": 9
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12309
+          },
+          "DMA":{
+            "port": 12309,
+            "lldmaConnectorID": 9,
+            "dmaChannelID": 9
+          }
+        }
+      }
+    },{
+      "functionChannelID": 2,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12310
+          },
+          "DMA":{
+            "port": 12310,
+            "lldmaConnectorID": 10,
+            "dmaChannelID": 10
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12310
+          },
+          "DMA":{
+            "port": 12310,
+            "lldmaConnectorID": 10,
+            "dmaChannelID": 10
+          }
+        }
+      }
+    },{
+      "functionChannelID": 3,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12311
+          },
+          "DMA":{
+            "port": 12311,
+            "lldmaConnectorID": 11,
+            "dmaChannelID": 11
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12311
+          },
+          "DMA":{
+            "port": 12311,
+            "lldmaConnectorID": 11,
+            "dmaChannelID": 11
+          }
+        }
+      }
+    },{
+      "functionChannelID": 4,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12312
+          },
+          "DMA":{
+            "port": 12312,
+            "lldmaConnectorID": 12,
+            "dmaChannelID": 12
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12312
+          },
+          "DMA":{
+            "port": 12312,
+            "lldmaConnectorID": 12,
+            "dmaChannelID": 12
+          }
+        }
+      }
+    },{
+      "functionChannelID": 5,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12313
+          },
+          "DMA":{
+            "port": 12313,
+            "lldmaConnectorID": 13,
+            "dmaChannelID": 13
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12313
+          },
+          "DMA":{
+            "port": 12313,
+            "lldmaConnectorID": 13,
+            "dmaChannelID": 13
+          }
+        }
+      }
+    },{
+      "functionChannelID": 6,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12314
+          },
+          "DMA":{
+            "port": 12314,
+            "lldmaConnectorID": 14,
+            "dmaChannelID": 14
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12314
+          },
+          "DMA":{
+            "port": 12314,
+            "lldmaConnectorID": 14,
+            "dmaChannelID": 14
+          }
+        }
+      }
+    },{
+      "functionChannelID": 7,
+      "rx":{
+        "protocol":{
+          "TCP":{
+            "port": 12315
+          },
+          "DMA":{
+            "port": 12315,
+            "lldmaConnectorID": 15,
+            "dmaChannelID": 15
+          }
+        }
+      },
+      "tx":{
+        "protocol":{
+          "TCP":{
+            "port": 12315
+          },
+          "DMA":{
+            "port": 12315,
+            "lldmaConnectorID": 15,
+            "dmaChannelID": 15
+          }
+        }
+      }
+    }
+  ]}]
+}

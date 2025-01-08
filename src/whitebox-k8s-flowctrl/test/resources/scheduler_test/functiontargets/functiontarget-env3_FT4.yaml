@@ -1,0 +1,35 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  name: swb-sm7.alveo-1.lane0
+  namespace: default
+spec:
+  computeResourceRef:
+    name: compute-swb-sm7
+    namespace: default
+status:
+  available: true
+  maxCapacity: 40
+  currentCapacity: 0
+  deviceIndex: 1
+  deviceType: alveo
+  functions:
+  - available: true
+    maxCapacity: 20
+    currentCapacity: 0
+    functionIndex: 0
+    functionName: decode
+    maxDataFlows: 6
+    currentDataFlows: 0
+  - available: true
+    maxCapacity: 20
+    currentCapacity: 0
+    functionIndex: 1
+    functionName: decode
+    maxDataFlows: 6
+    currentDataFlows: 0
+  nodeName: swb-sm7
+  regionName: lane0
+  regionType: alveo
+  maxFunctions: 2
+  currentFunctions: 2

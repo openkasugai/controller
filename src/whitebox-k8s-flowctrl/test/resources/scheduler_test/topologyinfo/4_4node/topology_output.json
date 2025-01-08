@@ -1,0 +1,1384 @@
+{
+  "entities": [
+    {
+      "id": "global.ether-network-0",
+      "type": "network",
+      "networkInfo": {
+        "networkType": "ether",
+        "networkIndex": 0,
+        "networkSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 1000,
+        "maxOutgoingCapacity": 1000
+      },
+      "available": true
+    },
+    {
+      "id": "node0",
+      "type": "node",
+      "nodeInfo": {
+        "nodeName": "node0"
+      },
+      "available": true
+    },
+    {
+      "id": "node0.host100gether-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node0",
+        "interfaceType": "host100gether",
+        "interfaceIndex": 0,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node3.pcie-network-0",
+      "type": "network",
+      "networkInfo": {
+        "networkType": "pcie",
+        "networkIndex": 0,
+        "nodeName": "node3",
+        "networkSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 1000,
+        "maxOutgoingCapacity": 1000
+      },
+      "available": true
+    },
+    {
+      "id": "node3.pcie-network-1",
+      "type": "network",
+      "networkInfo": {
+        "networkType": "pcie",
+        "networkIndex": 1,
+        "nodeName": "node3",
+        "networkSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 1000,
+        "maxOutgoingCapacity": 1000
+      },
+      "available": true
+    },
+    {
+      "id": "node3.cpu-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node3",
+        "deviceType": "cpu",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node3.cpu-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node3",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "cpu",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node3.cpu-0.pcie-1",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node3",
+        "interfaceType": "pcie",
+        "interfaceIndex": 1,
+        "deviceType": "cpu",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node3.memory-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node3",
+        "deviceType": "memory",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node3.memory-0.mem-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node3",
+        "interfaceType": "mem",
+        "interfaceIndex": 0,
+        "deviceType": "memory",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node3.alveou250-0.lane0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node3",
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "regionName": "lane0"
+      },
+      "available": true
+    },
+    {
+      "id": "node3.alveou250-0.lane1",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node3",
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "regionName": "lane1"
+      },
+      "available": true
+    },
+    {
+      "id": "node3.alveou250-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node3",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node3.alveou250-0.dev25gether-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node3",
+        "interfaceType": "dev25gether",
+        "interfaceIndex": 0,
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node3.alveou250-0.dev25gether-1",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node3",
+        "interfaceType": "dev25gether",
+        "interfaceIndex": 1,
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.pcie-network-0",
+      "type": "network",
+      "networkInfo": {
+        "networkType": "pcie",
+        "networkIndex": 0,
+        "nodeName": "node4",
+        "networkSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 1000,
+        "maxOutgoingCapacity": 1000
+      },
+      "available": true
+    },
+    {
+      "id": "node4.pcie-network-1",
+      "type": "network",
+      "networkInfo": {
+        "networkType": "pcie",
+        "networkIndex": 1,
+        "nodeName": "node4",
+        "networkSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 1000,
+        "maxOutgoingCapacity": 1000
+      },
+      "available": true
+    },
+    {
+      "id": "node4.cpu-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node4",
+        "deviceType": "cpu",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node4.cpu-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "cpu",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.cpu-0.pcie-1",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "pcie",
+        "interfaceIndex": 1,
+        "deviceType": "cpu",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.memory-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node4",
+        "deviceType": "memory",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node4.memory-0.mem-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "mem",
+        "interfaceIndex": 0,
+        "deviceType": "memory",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.alveou250-0.lane0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node4",
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "regionName": "lane0"
+      },
+      "available": true
+    },
+    {
+      "id": "node4.alveou250-0.lane1",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node4",
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "regionName": "lane1"
+      },
+      "available": true
+    },
+    {
+      "id": "node4.alveou250-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.alveou250-0.dev25gether-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "dev25gether",
+        "interfaceIndex": 0,
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.alveou250-0.dev25gether-1",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "dev25gether",
+        "interfaceIndex": 1,
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.nic-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node4",
+        "deviceType": "nic",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node4.nic-0.host100gether-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "host100gether",
+        "interfaceIndex": 0,
+        "deviceType": "nic",
+        "deviceIndex": 0,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.nic-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "nic",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.a100-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node4",
+        "deviceType": "a100",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node4.a100-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "a100",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.alveou250-1.lane0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node4",
+        "deviceType": "alveou250",
+        "deviceIndex": 1,
+        "regionName": "lane0"
+      },
+      "available": true
+    },
+    {
+      "id": "node4.alveou250-1.lane1",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node4",
+        "deviceType": "alveou250",
+        "deviceIndex": 1,
+        "regionName": "lane1"
+      },
+      "available": true
+    },
+    {
+      "id": "node4.alveou250-1.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "alveou250",
+        "deviceIndex": 1,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.alveou250-1.dev25gether-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "dev25gether",
+        "interfaceIndex": 0,
+        "deviceType": "alveou250",
+        "deviceIndex": 1,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node4.alveou250-1.dev25gether-1",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node4",
+        "interfaceType": "dev25gether",
+        "interfaceIndex": 1,
+        "deviceType": "alveou250",
+        "deviceIndex": 1,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node5.pcie-network-0",
+      "type": "network",
+      "networkInfo": {
+        "networkType": "pcie",
+        "networkIndex": 0,
+        "nodeName": "node5",
+        "networkSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 1000,
+        "maxOutgoingCapacity": 1000
+      },
+      "available": true
+    },
+    {
+      "id": "node5.pcie-network-1",
+      "type": "network",
+      "networkInfo": {
+        "networkType": "pcie",
+        "networkIndex": 1,
+        "nodeName": "node5",
+        "networkSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 1000,
+        "maxOutgoingCapacity": 1000
+      },
+      "available": true
+    },
+    {
+      "id": "node5.cpu-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node5",
+        "deviceType": "cpu",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node5.cpu-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node5",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "cpu",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node5.cpu-0.pcie-1",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node5",
+        "interfaceType": "pcie",
+        "interfaceIndex": 1,
+        "deviceType": "cpu",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node5.memory-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node5",
+        "deviceType": "memory",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node5.memory-0.mem-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node5",
+        "interfaceType": "mem",
+        "interfaceIndex": 0,
+        "deviceType": "memory",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node5.alveou250-0.lane0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node5",
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "regionName": "lane0"
+      },
+      "available": true
+    },
+    {
+      "id": "node5.alveou250-0.lane1",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node5",
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "regionName": "lane1"
+      },
+      "available": true
+    },
+    {
+      "id": "node5.alveou250-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node5",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node5.alveou250-0.dev25gether-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node5",
+        "interfaceType": "dev25gether",
+        "interfaceIndex": 0,
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node5.alveou250-0.dev25gether-1",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node5",
+        "interfaceType": "dev25gether",
+        "interfaceIndex": 1,
+        "deviceType": "alveou250",
+        "deviceIndex": 0,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node5.nic-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node5",
+        "deviceType": "nic",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node5.nic-0.host100gether-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node5",
+        "interfaceType": "host100gether",
+        "interfaceIndex": 0,
+        "deviceType": "nic",
+        "deviceIndex": 0,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node5.nic-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node5",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "nic",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node5.a100-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node5",
+        "deviceType": "a100",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node5.a100-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node5",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "a100",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node6.pcie-network-0",
+      "type": "network",
+      "networkInfo": {
+        "networkType": "pcie",
+        "networkIndex": 0,
+        "nodeName": "node6",
+        "networkSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 1000,
+        "maxOutgoingCapacity": 1000
+      },
+      "available": true
+    },
+    {
+      "id": "node6.pcie-network-1",
+      "type": "network",
+      "networkInfo": {
+        "networkType": "pcie",
+        "networkIndex": 1,
+        "nodeName": "node6",
+        "networkSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 1000,
+        "maxOutgoingCapacity": 1000
+      },
+      "available": true
+    },
+    {
+      "id": "node6.cpu-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node6",
+        "deviceType": "cpu",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node6.cpu-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node6",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "cpu",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node6.cpu-0.pcie-1",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node6",
+        "interfaceType": "pcie",
+        "interfaceIndex": 1,
+        "deviceType": "cpu",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node6.memory-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node6",
+        "deviceType": "memory",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node6.memory-0.mem-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node6",
+        "interfaceType": "mem",
+        "interfaceIndex": 0,
+        "deviceType": "memory",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node6.nic-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node6",
+        "deviceType": "nic",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node6.nic-0.host100gether-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node6",
+        "interfaceType": "host100gether",
+        "interfaceIndex": 0,
+        "deviceType": "nic",
+        "deviceIndex": 0,
+        "interfaceSideType": "outside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node6.nic-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node6",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "nic",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    },
+    {
+      "id": "node6.a100-0",
+      "type": "device",
+      "deviceInfo": {
+        "nodeName": "node6",
+        "deviceType": "a100",
+        "deviceIndex": 0
+      },
+      "available": true
+    },
+    {
+      "id": "node6.a100-0.pcie-0",
+      "type": "interface",
+      "interfaceInfo": {
+        "nodeName": "node6",
+        "interfaceType": "pcie",
+        "interfaceIndex": 0,
+        "deviceType": "a100",
+        "deviceIndex": 0,
+        "interfaceSideType": "inside"
+      },
+      "capacityInfo": {
+        "maxIncomingCapacity": 100,
+        "maxOutgoingCapacity": 100
+      },
+      "available": true
+    }
+  ],
+  "relations": [
+    {
+      "type": "direct",
+      "from": "node0",
+      "to": "node0.host100gether-0",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node0.host100gether-0",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node3.alveou250-0.dev25gether-0",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node3.alveou250-0.dev25gether-1",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node3.cpu-0",
+      "to": "node3.cpu-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node3.alveou250-0.lane0",
+      "to": "node3.alveou250-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node3.alveou250-0.lane0",
+      "to": "node3.alveou250-0.dev25gether-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node3.alveou250-0.lane1",
+      "to": "node3.alveou250-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node3.alveou250-0.lane1",
+      "to": "node3.alveou250-0.dev25gether-1",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node3.cpu-0.pcie-0",
+      "to": "node3.pcie-network-0",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node3.alveou250-0.pcie-0",
+      "to": "node3.pcie-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node3.cpu-0",
+      "to": "node3.cpu-0.pcie-1",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node3.cpu-0.pcie-1",
+      "to": "node3.pcie-network-1",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node3.cpu-0",
+      "to": "node3.memory-0.mem-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node3.memory-0",
+      "to": "node3.memory-0.mem-0",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node4.alveou250-0.dev25gether-0",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node4.alveou250-0.dev25gether-1",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node4.alveou250-1.dev25gether-0",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node4.alveou250-1.dev25gether-1",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node4.nic-0.host100gether-0",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.cpu-0",
+      "to": "node4.cpu-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node4.cpu-0.pcie-0",
+      "to": "node4.pcie-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.cpu-0",
+      "to": "node4.cpu-0.pcie-1",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node4.cpu-0.pcie-1",
+      "to": "node4.pcie-network-1",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.cpu-0",
+      "to": "node4.memory-0.mem-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.memory-0",
+      "to": "node4.memory-0.mem-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.alveou250-0.lane0",
+      "to": "node4.alveou250-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.alveou250-0.lane0",
+      "to": "node4.alveou250-0.dev25gether-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.alveou250-0.lane1",
+      "to": "node4.alveou250-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.alveou250-0.lane1",
+      "to": "node4.alveou250-0.dev25gether-1",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node4.alveou250-0.pcie-0",
+      "to": "node4.pcie-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.alveou250-1.lane0",
+      "to": "node4.alveou250-1.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.alveou250-1.lane0",
+      "to": "node4.alveou250-1.dev25gether-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.alveou250-1.lane1",
+      "to": "node4.alveou250-1.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.alveou250-1.lane1",
+      "to": "node4.alveou250-1.dev25gether-1",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node4.alveou250-1.pcie-0",
+      "to": "node4.pcie-network-1",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.nic-0",
+      "to": "node4.nic-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.nic-0",
+      "to": "node4.nic-0.host100gether-0",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node4.nic-0.pcie-0",
+      "to": "node4.pcie-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node4.a100-0",
+      "to": "node4.a100-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node4.a100-0.pcie-0",
+      "to": "node4.pcie-network-1",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node5.alveou250-0.dev25gether-0",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node5.alveou250-0.dev25gether-1",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node5.nic-0.host100gether-0",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.cpu-0",
+      "to": "node5.cpu-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node5.cpu-0.pcie-0",
+      "to": "node5.pcie-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.cpu-0",
+      "to": "node5.cpu-0.pcie-1",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node5.cpu-0.pcie-1",
+      "to": "node5.pcie-network-1",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.cpu-0",
+      "to": "node5.memory-0.mem-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.memory-0",
+      "to": "node5.memory-0.mem-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.alveou250-0.lane0",
+      "to": "node5.alveou250-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.alveou250-0.lane0",
+      "to": "node5.alveou250-0.dev25gether-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.alveou250-0.lane1",
+      "to": "node5.alveou250-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.alveou250-0.lane1",
+      "to": "node5.alveou250-0.dev25gether-1",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node5.alveou250-0.pcie-0",
+      "to": "node5.pcie-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.nic-0",
+      "to": "node5.nic-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.nic-0",
+      "to": "node5.nic-0.host100gether-0",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node5.nic-0.pcie-0",
+      "to": "node5.pcie-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node5.a100-0",
+      "to": "node5.a100-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node5.a100-0.pcie-0",
+      "to": "node5.pcie-network-1",
+      "available": true
+    },
+    {
+      "type": "ether",
+      "from": "node6.nic-0.host100gether-0",
+      "to": "global.ether-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node6.cpu-0",
+      "to": "node6.cpu-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node6.cpu-0.pcie-0",
+      "to": "node6.pcie-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node6.cpu-0",
+      "to": "node6.cpu-0.pcie-1",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node6.cpu-0.pcie-1",
+      "to": "node6.pcie-network-1",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node6.cpu-0",
+      "to": "node6.memory-0.mem-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node6.memory-0",
+      "to": "node6.memory-0.mem-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node6.nic-0",
+      "to": "node6.nic-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node6.nic-0",
+      "to": "node6.nic-0.host100gether-0",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node6.nic-0.pcie-0",
+      "to": "node6.pcie-network-0",
+      "available": true
+    },
+    {
+      "type": "direct",
+      "from": "node6.a100-0",
+      "to": "node6.a100-0.pcie-0",
+      "available": true
+    },
+    {
+      "type": "pcie",
+      "from": "node6.a100-0.pcie-0",
+      "to": "node6.pcie-network-1",
+      "available": true
+    }
+  ]
+}

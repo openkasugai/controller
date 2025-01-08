@@ -1,0 +1,87 @@
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: calcapp-sriov-chain
+  namespace: cpufunc-calcapp
+spec:
+  functionTypeNamespace: "cpufunc-calcapp"
+  connectionTypeNamespace: "cpufunc-calcapp"
+  functions:
+    send:
+      functionName: "calcapp-sriov-send"
+      version: "1.0.0"
+    plus:
+      functionName: "calcapp-sriov-plus"
+      version: "1.0.0"
+    minus:
+      functionName: "calcapp-sriov-minus"
+      version: "1.0.0"
+    multiply:
+      functionName: "calcapp-sriov-multiply"
+      version: "1.0.0"
+    divide:
+      functionName: "calcapp-sriov-divide"
+      version: "1.0.0"
+    average:
+      functionName: "calcapp-sriov-average-results"
+      version: "1.0.0"
+    rcv:
+      functionName: "calcapp-sriov-rcv"
+      version: "1.0.0"
+  connections:
+  - from:
+      functionKey: "wb-start-of-chain"
+      port: 0
+    to:
+      functionKey: "send"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "send"
+      port: 0
+    to:
+      functionKey: "plus"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "plus"
+      port: 0
+    to:
+      functionKey: "minus"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "minus"
+      port: 0
+    to:
+      functionKey: "multiply"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "multiply"
+      port: 0
+    to:
+      functionKey: "divide"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "divide"
+      port: 0
+    to:
+      functionKey: "average"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "average"
+      port: 0
+    to:
+      functionKey: "rcv"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "rcv"
+      port: 0
+    to:
+      functionKey: "wb-end-of-chain"
+      port: 0
+    connectionTypeName: "auto"

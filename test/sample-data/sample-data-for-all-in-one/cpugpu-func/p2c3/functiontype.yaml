@@ -1,0 +1,36 @@
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-cpu-p2c3-pip
+  namespace: cpufunc-sample
+spec:
+  functionName: cpu-p2c3-pip
+  functionInfoCMRef:
+    name: funcinfo-cpu-p2c3-pip
+    namespace: cpufunc-sample
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-gpu-p2c3-dsa
+  namespace: cpufunc-sample
+spec:
+  functionName: gpu-p2c3-dsa
+  functionInfoCMRef:
+    name: funcinfo-gpu-p2c3-dsa
+    namespace: cpufunc-sample
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-cpu-p2c3-rcv
+  namespace: cpufunc-sample
+spec:
+  functionName: cpu-p2c3-rcv
+  functionInfoCMRef:
+    name: funcinfo-cpu-p2c3-rcv
+    namespace: cpufunc-sample
+  version: 1.0.0

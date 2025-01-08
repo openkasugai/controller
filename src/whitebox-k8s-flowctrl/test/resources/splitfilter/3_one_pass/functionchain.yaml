@@ -1,0 +1,47 @@
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: decode-filter-resize-high-infer-chain
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "decode"
+      version: "1.0.0"
+    filter-resize-high-infer-main:
+      functionName: "filter-resize-high-infer"
+      version: "1.0.0"
+    high-infer-main:
+      functionName: "high-infer"
+      version: "1.0.0"
+  connections:
+    - from:
+        functionKey: "wb-start-of-chain"
+        port: 0
+      to:
+        functionKey: "decode-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "decode-main"
+        port: 0
+      to:
+        functionKey: "filter-resize-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "filter-resize-main"
+        port: 0
+      to:
+        functionKey: "high-infer-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "high-infer-main"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain"
+        port: 0
+      connectionTypeName: "auto"

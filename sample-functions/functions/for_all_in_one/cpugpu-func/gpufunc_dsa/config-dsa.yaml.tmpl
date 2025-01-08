@@ -1,0 +1,4 @@
+command:
+- /bin/bash
+- -c
+- cd /opt/DeepStream-Yolo && gst-launch-1.0 -ev udpsrc buffer-size=21299100 port=5678 ! application/x-rtp, media=video, encoding-name=H264, clock-rate=90000, payload=96 ! rtph264depay ! h264parse ! avdec_h264 ! nvvideoconvert ! 'video/x-raw(memory:NVMM), format=(string)RGBA' ! m.sink_0 nvstreammux name=m nvbuf-memory-type=0 batch-size=1 width=${WIDTH} height=${HEIGHT} ! queue ! nvinfer config-file-path=./config_infer_primary_yoloV4_p6_th020_040.txt batch-size=1 model-engine-file=./model_b1_gpu0_fp16.engine ! queue ! nvdsosd process-mode=1 ! nvvideoconvert ! 'video/x-raw, format=(string)I420' ! videoconvert ! queue ! perf ! openh264enc ! rtph264pay ! udpsink host={{index .ips 0}} port={{(index .ports 0).port}} buffer-size=2048 sync=false

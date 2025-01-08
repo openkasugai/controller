@@ -1,0 +1,1 @@
+../../../DeviceInfo/api/v1/deviceinfo_types.go

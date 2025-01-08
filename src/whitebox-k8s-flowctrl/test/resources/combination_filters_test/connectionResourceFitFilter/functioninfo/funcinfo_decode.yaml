@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: funcinfo-decode
+  namespace: default
+data:
+  deployableItems: '[
+    {
+      "name": "item1",
+      "regionType": "alveo",
+      "inputInterfaceType": "dev25gether",
+      "outputInterfaceType": "dev25gether",
+      "configName": "fpgafunc-config-decode",
+      "specName": "spec1"
+    }
+  ]'
+  spec: '[
+    {
+      "name": "spec1",
+      "minCore": 1,
+      "maxCore": 1,
+      "maxDataFlowsBase": 6,
+      "maxCapacityBase": 20,
+      "maxInputNum": 1,
+      "maxOutputNum":1
+    }
+  ]'

@@ -1,0 +1,12 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "df-copy-branch01"
+  namespace: "test01"
+spec:
+  functionChainRef:
+    name: "decode-filter-resize-2types-infer-chain"
+    namespace: "chain-imgproc"
+  requirements:
+    all:
+      capacity: 15

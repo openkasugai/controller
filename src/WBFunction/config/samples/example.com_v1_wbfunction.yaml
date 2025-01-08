@@ -1,0 +1,12 @@
+apiVersion: example.com/v1
+kind: WBFunction
+metadata:
+  labels:
+    app.kubernetes.io/name: wbfunction
+    app.kubernetes.io/instance: wbfunction-sample
+    app.kubernetes.io/part-of: wbfunction
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: wbfunction
+  name: wbfunction-sample
+spec:
+  # TODO(user): Add fields here

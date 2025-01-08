@@ -1,0 +1,86 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "test"
+  namespace: "default"
+spec:
+  functionChainRef:
+    name: "decode-filter-resize-low-infer-chain"
+    namespace: "chain-imgproc"
+  requirements:
+    all:
+      capacity: 5
+  userRequirement: "user-requirement7"
+status:
+  status: "Scheduling in progress"
+  functionChain:
+    spec:
+      functionTypeNamespace: "default"
+      connectionTypeNamespace: "default"
+      functions: 
+        decode-main:
+          functionName: "decode"
+          version: "1.0.0"
+        filter-resize-main:
+          functionName: "filter-resize-low-infer"
+          version: "1.0.0"
+        low-infer-main:
+          functionName: "low-infer"
+          version: "1.0.0"
+      connections:
+      - from:
+          functionKey: "wb-start-of-chain"
+          port: 0
+        to:
+          functionKey: "decode-main"
+          port: 0
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "decode-main"
+          port: 0
+        to:
+          functionKey: "filter-resize-main"
+          port: 0
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "filter-resize-main"
+          port: 0
+        to:
+          functionKey: "low-infer-main"
+          port: 0
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "low-infer-main"
+          port: 0
+        to:
+          functionKey: "wb-end-of-chain"
+          port: 0
+        connectionTypeName: "auto"
+  functionType:
+  - spec:
+      functionName: "decode"
+      functionInfoCMRef:
+        name: "funcinfo-decode"
+        namespace: "default"
+      version: "1.0.0"
+    status:
+      status: "Ready"
+      regionTypeCandidates: ["alveo"]
+  - spec:
+      functionName: "filter-resize-low-infer"
+      functionInfoCMRef:
+        name: "funcinfo-filter-resize-low-infer"
+        namespace: "default"
+      version: "1.0.0"
+    status:
+      status: "Ready"
+      regionTypeCandidates: ["alveo"]
+  - spec:
+      functionName: "low-infer"
+      functionInfoCMRef:
+        name: "funcinfo-low-infer"
+        namespace: "default"
+      version: "1.0.0"
+    status:
+      status: "Ready"
+      regionTypeCandidates: ["t4"]

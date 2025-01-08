@@ -1,0 +1,376 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - computeresources
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - connectiontargets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - connectiontargets/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - connectiontargets/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - connectiontypes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - connectiontypes/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - connectiontypes/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - dataflows
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - dataflows/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - dataflows/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - functionchains
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - functionchains/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - functionchains/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - functiontargets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - functiontargets/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - functiontargets/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - functiontypes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - functiontypes/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - functiontypes/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - schedulingdata
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - schedulingdata/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - schedulingdata/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - topologyinfos
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - topologyinfos/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - topologyinfos/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - wbconnections
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - wbconnections/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - wbconnections/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - wbfunctions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - wbfunctions/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - wbfunctions/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - ntt-hpc.example.com
+  resources:
+  - dataflows
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ntt-hpc.example.com
+  resources:
+  - dataflows/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ntt-hpc.example.com
+  resources:
+  - dataflows/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - ntt-hpc.example.com
+  resources:
+  - schedulingdata
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+- apiGroups:
+  - ntt-hpc.example.com
+  resources:
+  - schedulingdata/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ntt-hpc.example.com
+  resources:
+  - schedulingdata/status
+  verbs:
+  - get
+  - update
+  - watch

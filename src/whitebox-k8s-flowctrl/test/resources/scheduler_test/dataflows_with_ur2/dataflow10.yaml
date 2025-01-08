@@ -1,0 +1,67 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "test"
+  namespace: "default"
+spec:
+  functionChainRef:
+    name: "decode-filter-resize-chain"
+    namespace: "chain-imgproc"
+  requirements:
+    all:
+      capacity: 15
+  userRequirement: "user-requirement2"
+status:
+  status: "Scheduling in progress"
+  functionChain:
+    spec:
+      functionTypeNamespace: "default"
+      connectionTypeNamespace: "default"
+      functions: 
+        decode-main:
+          functionName: "decode"
+          version:      "1.0.0"
+        filter-resize-main:
+          functionName: "filter-resize"
+          version:      "1.0.0"
+      connections:
+      - from:
+          functionKey: "wb-start-of-chain"
+          port: 80
+        to:
+          functionKey:   "decode-main"
+          port: 80
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "decode-main"
+          port: 80
+        to:
+          functionKey:   "filter-resize-main"
+          port: 80
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "filter-resize-main"
+          port: 80
+        to:
+          functionKey:   "wb-end-of-chain"
+          port: 80
+        connectionTypeName: "auto"
+  functionType:
+  - spec:
+      name:                  "decode"
+      functionInfoCMRef:
+        name:      "funcinfo-decode"
+        namespace: "default"
+      version:               "1.0.0"
+    status:
+      status:               "Ready"
+      regionTypeCandidates: ["alveo"]
+  - spec:
+      name:                  "filter-resize"
+      functionInfoCMRef:
+        name:      "funcinfo-filter-resize-cpu"
+        namespace: "default"
+      version:               "1.0.0"
+    status:
+      status:               "Ready"
+      regionTypeCandidates: ["cpu"]

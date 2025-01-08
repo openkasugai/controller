@@ -1,0 +1,11 @@
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-test4
+  namespace: wbfunc-imgproc
+spec:
+  functionName: cpu-decode
+  functionInfoCMRef:
+    name: funcinfo-test4
+    namespace: wbfunc-imgproc
+  version: 1.0.0

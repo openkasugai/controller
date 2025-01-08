@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: crc-pcieconnection-daemon
+spec:
+  selector:
+    matchLabels:
+      app: crc-pcieconnection-daemon
+  template:
+    metadata:
+      labels:
+        app: crc-pcieconnection-daemon
+    spec:
+      containers:
+      - name: pcieconnection-container0
+        image: localhost/pcieconnection:1.0.0
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        args:
+        - "--kubeconfig=/kube/config"
+        env:
+        - name: K8S_NODENAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - mountPath: /kube/config
+          name: crc-pcieconnection-daemon
+        - mountPath: /var/run/dpdk
+          name: var-run-dpdk
+        - name: hugepage-1gi
+          mountPath: /dev/hugepages
+        resources:
+          limits:
+            hugepages-1Gi: 16Gi
+          requests:
+            hugepages-1Gi: 16Gi
+            memory: 1Gi
+      volumes:
+      - name: crc-pcieconnection-daemon
+        hostPath:
+          path: /etc/k8s_worker/config
+          type: File
+      - name: var-run-dpdk
+        hostPath:
+          path: /var/run/dpdk
+          type: DirectoryOrCreate
+      - name: hugepage-1gi
+        hostPath:
+          path: /dev/hugepages
+          type: DirectoryOrCreate

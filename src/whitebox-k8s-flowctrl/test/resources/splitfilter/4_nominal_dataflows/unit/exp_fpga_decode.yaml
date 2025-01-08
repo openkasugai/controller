@@ -1,0 +1,120 @@
+apiVersion: example.com/v1
+kind: SchedulingData
+metadata:
+  name: sample-flow
+  namespace: default
+spec:
+  filterPipeline:
+  - GenerateCombinations
+  - TargetResourceFit
+  - TargetResourceFitScore
+status:
+  status: Finish
+  currentFilterIndex: 3
+  targetCombinations:
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 1
+        deviceType: alveou250
+        functionIndex: 2
+        nodeName: node1
+        regionName: lane0
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      high-infer-main:
+        deviceIndex: 1
+        deviceType: a100
+        functionIndex: null
+        nodeName: node1
+        regionName: gpu
+    score: 30090091300638400
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 1
+        deviceType: alveou250
+        functionIndex: 2
+        nodeName: node1
+        regionName: lane0
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      high-infer-main:
+        deviceIndex: 0
+        deviceType: a100
+        functionIndex: null
+        nodeName: node1
+        regionName: gpu
+    score: 30090076300638400
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 1
+        deviceType: alveou250
+        functionIndex: 2
+        nodeName: node1
+        regionName: lane0
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      high-infer-main:
+        deviceIndex: 2
+        deviceType: a100
+        functionIndex: null
+        nodeName: node1
+        regionName: gpu
+    score: 30090076300638400
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 1
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane0
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      high-infer-main:
+        deviceIndex: 1
+        deviceType: a100
+        functionIndex: null
+        nodeName: node1
+        regionName: gpu
+    score: 30060091300638400
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 1
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      high-infer-main:
+        deviceIndex: 1
+        deviceType: a100
+        functionIndex: null
+        nodeName: node1
+        regionName: gpu
+    score: 30060091300638400
+  typeCombinations: null

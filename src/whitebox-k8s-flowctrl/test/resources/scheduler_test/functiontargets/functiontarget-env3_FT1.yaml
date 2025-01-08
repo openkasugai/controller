@@ -1,0 +1,20 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  name: swb-sm7.a100-1.a100
+  namespace: default
+spec:
+  computeResourceRef:
+    name: compute-swb-sm7
+    namespace: default
+status:
+  available: true
+  maxCapacity: 120
+  currentCapacity: 0
+  deviceIndex: 1
+  deviceType: a100
+  nodeName: swb-sm7
+  regionName: a100
+  regionType: a100
+  maxFunctions: 110
+  currentFunctions: 0

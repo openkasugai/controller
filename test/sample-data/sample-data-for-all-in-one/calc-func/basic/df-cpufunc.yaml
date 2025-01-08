@@ -1,0 +1,13 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: df-calcapp
+  namespace: cpufunc-calcapp
+spec:
+  functionChainRef:
+    name: calcapp-chain
+    namespace: cpufunc-calcapp
+  requirements:
+    all:
+      capacity: 1
+

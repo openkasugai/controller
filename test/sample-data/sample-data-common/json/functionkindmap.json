@@ -1,0 +1,13 @@
+[{
+  "deviceType": "alveou250",
+  "functionCRKind":"FPGAFunction"
+},{
+  "deviceType": "t4",
+  "functionCRKind":"GPUFunction"
+},{
+  "deviceType": "a100",
+  "functionCRKind":"GPUFunction"
+},{
+  "deviceType": "cpu",
+  "functionCRKind":"CPUFunction"
+}]

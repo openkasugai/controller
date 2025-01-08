@@ -1,0 +1,20 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  name: swb-sm7.t4-0.t4
+  namespace: default
+spec:
+  computeResourceRef:
+    name: compute-swb-sm7
+    namespace: default
+status:
+  available: true
+  maxCapacity: 40
+  currentCapacity: 0
+  deviceIndex: 0
+  deviceType: t4
+  nodeName: swb-sm7
+  regionName: t4
+  regionType: t4
+  maxFunctions: 110
+  currentFunctions: 0

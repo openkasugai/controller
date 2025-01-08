@@ -1,0 +1,103 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "test"
+  namespace: "default"
+spec:
+  functionChainRef:
+    name: "decode-filter-resize-high-infer-chain"
+    namespace: "chain-imgproc"
+  functionTargetSelectors:
+    - functionKey: decode-main
+      deviceIndex: 1
+      deviceType: alveou250
+      functionIndex: 999
+      nodeName: node1
+      regionName: lane1
+    - functionKey: filter-resize-main
+      deviceIndex: 0
+      deviceType: alveou250
+      functionIndex: 1
+      nodeName: node1
+      regionName: lane0
+    - functionKey: high-infer-main
+      deviceIndex: 2
+      deviceType: a100
+      nodeName: node1
+      regionName: gpu-1234
+  requirements:
+    all:
+      capacity: 15
+status:
+  status: "Scheduling in progress"
+  functionChain:
+    spec:
+      functionTypeNamespace: "default"
+      connectionTypeNamespace: "default"
+      functions: 
+        decode-main:
+          functionName: "decode"
+          version:      "1.0.0"
+        filter-resize-main:
+          functionName: "filter-resize"
+          version:      "1.0.0"
+        high-infer-main:
+          functionName: "high-infer"
+          version:      "1.0.0"
+      connections:
+      - from:
+          functionKey: "wb-start-of-chain"
+          port: 80
+        to:
+          functionKey:   "decode-main"
+          port: 80
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "decode-main"
+          port: 80
+        to:
+          functionKey:   "filter-resize-main"
+          port: 80
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "filter-resize-main"
+          port: 80
+        to:
+          functionKey:   "high-infer-main"
+          port: 80
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "high-infer-main"
+          port: 80
+        to:
+          functionKey:   "wb-end-of-chain"
+          port: 80
+        connectionTypeName: "auto"
+  functionType:
+  - spec:
+      name:                  "decode"
+      functionInfoCMRef:
+        name:      "funcinfo-decode"
+        namespace: "default"
+      version:               "1.0.0"
+    status:
+      status:               "Ready"
+      regionTypeCandidates: ["alveo"]
+  - spec:
+      name:                  "filter-resize"
+      functionInfoCMRef:
+        name:      "funcinfo-filter-resize"
+        namespace: "default"
+      version:               "1.0.0"
+    status:
+      status:               "Ready"
+      regionTypeCandidates: ["alveo"]
+  - spec:
+      name:                  "high-infer"
+      functionInfoCMRef:
+        name:      "funcinfo-high-infer"
+        namespace: "default"
+      version:               "1.0.0"
+    status:
+      status:               "Ready"
+      regionTypeCandidates: ["a100"]

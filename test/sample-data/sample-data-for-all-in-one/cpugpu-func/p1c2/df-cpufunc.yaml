@@ -1,0 +1,13 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: df-cpu-p1c2
+  namespace: cpufunc-sample
+spec:
+  functionChainRef:
+    name: cpu-p1c2-chain
+    namespace: cpufunc-sample
+  requirements:
+    all:
+      capacity: 1
+

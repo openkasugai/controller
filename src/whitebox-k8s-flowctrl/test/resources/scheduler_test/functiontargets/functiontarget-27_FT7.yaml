@@ -1,0 +1,17 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  name: node2.cpu-0.cpu
+  namespace: default
+spec:
+status:
+  available: true
+  maxCapacity: 100
+  currentCapacity: 0
+  deviceIndex: 0
+  deviceType: cpu
+  nodeName: node2
+  regionName: cpu
+  regionType: cpu
+  maxFunctions: 100
+  currentFunctions: 0

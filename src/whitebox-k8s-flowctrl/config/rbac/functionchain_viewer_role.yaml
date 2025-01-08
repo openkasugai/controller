@@ -1,0 +1,27 @@
+# permissions for end users to view functionchains.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: functionchain-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: whitebox-k8s-flowctrl
+    app.kubernetes.io/part-of: whitebox-k8s-flowctrl
+    app.kubernetes.io/managed-by: kustomize
+  name: functionchain-viewer-role
+rules:
+- apiGroups:
+  - example.com
+  resources:
+  - functionchains
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - functionchains/status
+  verbs:
+  - get

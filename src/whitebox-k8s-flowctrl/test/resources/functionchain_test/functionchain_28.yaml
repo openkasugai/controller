@@ -1,0 +1,54 @@
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: test-28
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    join-main:
+      functionName: "join"
+      version: "1.0.0"
+    filter-resize-main:
+      functionName: "cpu-filter-resize"
+      version: "1.0.0"
+    infer-1:
+      functionName: "person-infer"
+      version: "1.0.0"
+  connections:
+    - from:
+        functionKey: "wb-start-of-chain-1"
+        port: 0
+      to:
+        functionKey: "join-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "wb-start-of-chain-2"
+        port: 0
+      to:
+        functionKey: "join-main"
+        port: 1
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "join-main"
+        port: 0
+      to:
+        functionKey: "filter-resize-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "filter-resize-main"
+        port: 0
+      to:
+        functionKey: "infer-1"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "infer-1"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain"
+        port: 0
+      connectionTypeName: "auto"

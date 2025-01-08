@@ -1,0 +1,239 @@
+{
+  "json_version": 0,
+  "configs": [
+    {
+      "parent-bitstream-id": "ffffffff",
+      "child-bitstream-ids": [
+        {
+          "child-bitstream-id": "fffffff0",
+          "regions": [
+            {
+              "name": "dummy0"
+            },
+            {
+              "name": "dummy1"
+            }
+          ]//"regions"
+        },
+        {
+          "child-bitstream-id": "fffffff1",
+          "regions": [
+            {
+              "name": "dummy0"
+            },
+            {
+              "name": "dummy1"
+            }
+          ]//"regions"
+        },
+        {
+          "child-bitstream-id": "fffffff2",
+          "regions": [
+            {
+              "name": "dummy0"
+            },
+            {
+              "name": "dummy1"
+            }
+          ]//"regions"
+        }
+      ]//"child-bitstream-ids"
+    },
+    {
+      "parent-bitstream-id": "0100001c",
+      "child-bitstream-ids": [
+        {
+          "child-bitstream-id": "0100001c",
+          "regions": [
+            {
+              "name": "lane0",
+              "modules": {
+                "lldma": {
+                  "id": 0,
+                  "cids": "0-7"
+                },
+                "chain": {
+                  "id": 0,
+                  "identifier": "0000f0c0",
+                  "version": "24091352",
+                  "type": "chain-control"
+                },
+                "directtrans": {
+                  "id": 0,
+                  "identifier": "0000f3c0",
+                  "version": "24091304",
+                  "type": "direct-transfer"
+                },
+                "conversion": {
+                  "id": 0,
+                  "module": [
+                    {
+                      "identifier": "0000f1c2",
+                      "version": "24091305",
+                      "type": "conversion-filter-resize"
+                    }
+                  ]
+                },
+                "functions": {
+                  "id": 0,
+                  "module": [
+                    {
+                      "identifier": "0000f2c2",
+                      "version": "24091321",
+                      "type": "filter-resize",
+                      "function-channel-ids": "0-7"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "lane1",
+              "modules": {
+                "lldma": {
+                  "id": 1,
+                  "cids": "8-15"
+                },
+                "chain": {
+                  "id": 1,
+                  "identifier": "0000f0c0",
+                  "version": "24091352",
+                  "type": "chain-control"
+                },
+                "directtrans": {
+                  "id": 1,
+                  "identifier": "0000f3c0",
+                  "version": "24091304",
+                  "type": "direct-transfer"
+                },
+                "conversion": {
+                  "id": 1,
+                  "module": [
+                    {
+                      "identifier": "0000f1c2",
+                      "version": "24091305",
+                      "type": "conversion-filter-resize"
+                    }
+                  ]
+                },
+                "functions": {
+                  "id": 1,
+                  "module": [
+                    {
+                      "identifier": "0000f2c2",
+                      "version": "24091321",
+                      "type": "filter-resize",
+                      "function-channel-ids": "0-7"
+                    }
+                  ]
+                }
+              }
+            }
+          ]//"regions"
+        }
+      ]//"child-bitstream-ids"
+    },
+    {
+      "parent-bitstream-id": "00000000",
+      "child-bitstream-ids": [
+        {
+          "child-bitstream-id": "00012114",
+          "regions": [
+            {
+              "name": "lane0",
+              "modules": {
+                "ptu": {
+                  "id": 0,
+                  "cids": "random"
+                },
+                "lldma": {
+                  "id": 0,
+                  "cids": "0-7"
+                },
+                "chain": {
+                  "id": 0,
+                  "identifier": "0000f0c0",
+                  "version": "24052427",
+                  "type": "chain-control"
+                },
+                "directtrans": {
+                  "id": 0,
+                  "identifier": "0000f3c0",
+                  "version": "24052406",
+                  "type": "direct-transfer"
+                },
+                "conversion": {
+                  "id": 0,
+                  "module": [
+                    {
+                      "identifier": "0000f1c2",
+                      "version": "24052407",
+                      "type": "conversion-filter-resize"
+                    }
+                  ]
+                },
+                "functions": {
+                  "id": 0,
+                  "module": [
+                    {
+                      "identifier": "0000f2c2",
+                      "version": "24052427",
+                      "type": "filter-resize",
+                      "function-channel-ids": "0-7"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "lane1",
+              "modules": {
+                "ptu": {
+                  "id": 1,
+                  "cids": "random"
+                },
+                "lldma": {
+                  "id": 1,
+                  "cids": "8-15"
+                },
+                "chain": {
+                  "id": 1,
+                  "identifier": "0000f0c0",
+                  "version": "24052427",
+                  "type": "chain-control"
+                },
+                "directtrans": {
+                  "id": 1,
+                  "identifier": "0000f3c0",
+                  "version": "24052406",
+                  "type": "direct-transfer"
+                },
+                "conversion": {
+                  "id": 1,
+                  "module": [
+                    {
+                      "identifier": "0000f1c2",
+                      "version": "24052407",
+                      "type": "conversion-filter-resize"
+                    }
+                  ]
+                },
+                "functions": {
+                  "id": 1,
+                  "module": [
+                    {
+                      "identifier": "0000f2c2",
+                      "version": "24052427",
+                      "type": "filter-resize",
+                      "function-channel-ids": "0-7"
+                    }
+                  ]
+                }
+              }
+            }
+          ]//"regions"
+        }
+      ]//"child-bitstream-ids"
+    }
+  ]//"configs"
+}

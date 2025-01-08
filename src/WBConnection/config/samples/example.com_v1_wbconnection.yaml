@@ -1,0 +1,12 @@
+apiVersion: example.com/v1
+kind: WBConnection
+metadata:
+  labels:
+    app.kubernetes.io/name: wbconnection
+    app.kubernetes.io/instance: wbconnection-sample
+    app.kubernetes.io/part-of: wbconnection
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: wbconnection
+  name: wbconnection-sample
+spec:
+  # TODO(user): Add fields here

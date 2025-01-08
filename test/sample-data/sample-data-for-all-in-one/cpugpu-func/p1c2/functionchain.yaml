@@ -1,0 +1,37 @@
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: cpu-p1c2-chain
+  namespace: cpufunc-sample
+spec:
+  functionTypeNamespace: "cpufunc-sample"
+  connectionTypeNamespace: "cpufunc-sample"
+  functions:
+    pip:
+      functionName: "cpu-p1c2-pip"
+      version: "1.0.0"
+    rcv:
+      functionName: "cpu-p1c2-rcv"
+      version: "1.0.0"
+  connections:
+  - from:
+      functionKey: "wb-start-of-chain"
+      port: 0
+    to:
+      functionKey: "pip"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "pip"
+      port: 0
+    to:
+      functionKey: "rcv"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "rcv"
+      port: 0
+    to:
+      functionKey: "wb-end-of-chain"
+      port: 0
+    connectionTypeName: "auto"

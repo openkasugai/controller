@@ -1,0 +1,150 @@
+apiVersion: example.com/v1
+kind: SchedulingData
+metadata:
+  name: sample-flow
+  namespace: default
+spec:
+  filterPipeline:
+  - GenerateCombinations
+  - TargetResourceFit
+  - TargetResourceFitScore
+status:
+  status: Finish
+  currentFilterIndex: 3
+  targetCombinations:
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        functionIndex: null
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      glue-main:
+        deviceIndex: 0
+        deviceType: cpu
+        functionIndex: null
+        nodeName: node1
+        regionName: cpu
+      high-infer-main:
+        deviceIndex: 1
+        deviceType: a100
+        functionIndex: null
+        nodeName: node1
+        regionName: gpu
+    score: 15030076400881200
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        functionIndex: null
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      glue-main:
+        deviceIndex: 0
+        deviceType: cpu
+        functionIndex: null
+        nodeName: node1
+        regionName: cpu
+      high-infer-main:
+        deviceIndex: 0
+        deviceType: a100
+        functionIndex: null
+        nodeName: node1
+        regionName: gpu
+    score: 15030061400881200
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        functionIndex: null
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      glue-main:
+        deviceIndex: 0
+        deviceType: cpu
+        functionIndex: null
+        nodeName: node1
+        regionName: cpu
+      high-infer-main:
+        deviceIndex: 2
+        deviceType: a100
+        functionIndex: null
+        nodeName: node1
+        regionName: gpu
+    score: 15030061400881200
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        functionIndex: null
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane0
+      glue-main:
+        deviceIndex: 0
+        deviceType: cpu
+        functionIndex: null
+        nodeName: node1
+        regionName: cpu
+      high-infer-main:
+        deviceIndex: 1
+        deviceType: a100
+        functionIndex: null
+        nodeName: node1
+        regionName: gpu
+    score: 8030076400881200
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        functionIndex: null
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 2
+        nodeName: node1
+        regionName: lane0
+      glue-main:
+        deviceIndex: 0
+        deviceType: cpu
+        functionIndex: null
+        nodeName: node1
+        regionName: cpu
+      high-infer-main:
+        deviceIndex: 1
+        deviceType: a100
+        functionIndex: null
+        nodeName: node1
+        regionName: gpu
+    score: 8030076400881200
+  typeCombinations: null

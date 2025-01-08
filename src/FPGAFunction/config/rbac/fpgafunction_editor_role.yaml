@@ -1,0 +1,31 @@
+# permissions for end users to edit fpgafunctions.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: fpgafunction-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: fpgafunction
+    app.kubernetes.io/part-of: fpgafunction
+    app.kubernetes.io/managed-by: kustomize
+  name: fpgafunction-editor-role
+rules:
+- apiGroups:
+  - example.com
+  resources:
+  - fpgafunctions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - fpgafunctions/status
+  verbs:
+  - get

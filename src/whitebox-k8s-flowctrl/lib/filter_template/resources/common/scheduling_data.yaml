@@ -1,0 +1,10 @@
+apiVersion: example.com/v1
+kind: SchedulingData
+metadata:
+  name: sample-flow
+  namespace : default 
+spec:
+  filterPipeline:
+    - "Test"
+status:
+  currentFilterIndex: 0

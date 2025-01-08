@@ -1,0 +1,479 @@
+apiVersion: example.com/v1
+kind: ComputeResource
+metadata:
+  name: compute-swb-sm7
+  namespace: default
+spec:
+  nodeName: swb-sm7
+  regions:
+  - deviceUUID: 21330621t00d
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T00D
+    deviceIndex: 3
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 40
+      currentCapacity: 0
+      partitionName: "0"
+      functionIndex: 0
+      functionName: filter-resize-high-infer
+      maxDataFlows: 8
+      currentDataFlows: 0
+    name: lane0
+    type: alveo
+    maxFunctions: 1
+    currentFunctions: 1
+  - deviceUUID: 21330621t00d
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T00D
+    deviceIndex: 3
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 40
+      currentCapacity: 0
+      partitionName: "1"
+      functionIndex: 0
+      functionName: filter-resize-high-infer
+      maxDataFlows: 8
+      currentDataFlows: 0
+    name: lane1
+    type: alveo
+    maxFunctions: 1
+	status: "Ready"
+    currentFunctions: 1
+  - deviceUUID: 21330621t00y
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T00Y
+    deviceIndex: 2
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "0"
+      functionIndex: 0
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "1"
+      functionIndex: 1
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    name: lane0
+    type: alveo
+    maxFunctions: 2
+    currentFunctions: 2
+	status: "Ready"
+  - deviceUUID: 21330621t00y
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T00Y
+    deviceIndex: 2
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "2"
+      functionIndex: 0
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "3"
+      functionIndex: 1
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    name: lane1
+    type: alveo
+    maxFunctions: 2
+    currentFunctions: 2
+	status: "Ready"
+  - deviceUUID: 21330621t01j
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T01J
+    deviceIndex: 1
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "0"
+      functionIndex: 0
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "1"
+      functionIndex: 1
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    name: lane0
+    type: alveo
+    maxFunctions: 2
+    currentFunctions: 2
+	status: "Ready"
+  - deviceUUID: 21330621t01j
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T01J
+    deviceIndex: 1
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "2"
+      functionIndex: 0
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "3"
+      functionIndex: 1
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    name: lane1
+    type: alveo
+    maxFunctions: 2
+    currentFunctions: 2
+	status: "Ready"
+  - deviceUUID: 21330621t04l
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T04L
+    deviceIndex: 0
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 40
+      currentCapacity: 0
+      partitionName: "0"
+      functionIndex: 0
+      functionName: filter-resize-high-infer
+      maxDataFlows: 8
+      currentDataFlows: 0
+    name: lane0
+    type: alveo
+    maxFunctions: 1
+    currentFunctions: 1
+  - deviceUUID: 21330621t04l
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T04L
+    deviceIndex: 0
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 40
+      currentCapacity: 0
+      partitionName: "1"
+      functionIndex: 0
+      functionName: filter-resize-high-infer
+      maxDataFlows: 8
+      currentDataFlows: 0
+    name: lane1
+    type: alveo
+    maxFunctions: 1
+    currentFunctions: 1
+	status: "Ready"
+  - deviceUUID: gpu-b8b4f1f5-bf51-eaa3-6ec4-97190b7f6c98
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: ""
+    deviceIndex: 0
+    deviceType: t4
+    name: t4
+    type: t4
+    maxFunctions: 110
+    currentFunctions: 0
+	status: "Ready"
+  - deviceUUID: gpu-5b771964-ab74-a674-15d7-8f0d2cee4ef8
+    available: true
+    maxCapacity: 120
+    currentCapacity: 0
+    deviceFilePath: ""
+    deviceIndex: 1
+    deviceType: a100
+    name: a100
+    type: a100
+    maxFunctions: 110
+    currentFunctions: 0
+	status: "Ready"
+  - deviceUUID: swb-sm7-cpu0
+    available: true
+    maxCapacity: 120
+    currentCapacity: 0
+    deviceFilePath: ""
+    deviceIndex: 0
+    deviceType: cpu
+    name: cpu
+    type: cpu
+    maxFunctions: 110
+    currentFunctions: 0
+	status: "Ready"
+status:
+  nodeName: swb-sm7
+  regions:
+  - deviceUUID: 21330621t00d
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T00D
+    deviceIndex: 3
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 40
+      currentCapacity: 0
+      partitionName: "0"
+      functionIndex: 0
+      functionName: filter-resize-high-infer
+      maxDataFlows: 8
+      currentDataFlows: 0
+    name: lane0
+    type: alveo
+    maxFunctions: 1
+    currentFunctions: 1
+  - deviceUUID: 21330621t00d
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T00D
+    deviceIndex: 3
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 40
+      currentCapacity: 0
+      partitionName: "1"
+      functionIndex: 0
+      functionName: filter-resize-high-infer
+      maxDataFlows: 8
+      currentDataFlows: 0
+    name: lane1
+    type: alveo
+    maxFunctions: 1
+	status: "Ready"
+    currentFunctions: 1
+  - deviceUUID: 21330621t00y
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T00Y
+    deviceIndex: 2
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "0"
+      functionIndex: 0
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "1"
+      functionIndex: 1
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    name: lane0
+    type: alveo
+    maxFunctions: 2
+    currentFunctions: 2
+	status: "Ready"
+  - deviceUUID: 21330621t00y
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T00Y
+    deviceIndex: 2
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "2"
+      functionIndex: 0
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "3"
+      functionIndex: 1
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    name: lane1
+    type: alveo
+    maxFunctions: 2
+    currentFunctions: 2
+	status: "Ready"
+  - deviceUUID: 21330621t01j
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T01J
+    deviceIndex: 1
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "0"
+      functionIndex: 0
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "1"
+      functionIndex: 1
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    name: lane0
+    type: alveo
+    maxFunctions: 2
+    currentFunctions: 2
+	status: "Ready"
+  - deviceUUID: 21330621t01j
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T01J
+    deviceIndex: 1
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "2"
+      functionIndex: 0
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    - available: true
+      maxCapacity: 20
+      currentCapacity: 0
+      partitionName: "3"
+      functionIndex: 1
+      functionName: decode
+      maxDataFlows: 6
+      currentDataFlows: 0
+    name: lane1
+    type: alveo
+    maxFunctions: 2
+    currentFunctions: 2
+	status: "Ready"
+  - deviceUUID: 21330621t04l
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T04L
+    deviceIndex: 0
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 40
+      currentCapacity: 0
+      partitionName: "0"
+      functionIndex: 0
+      functionName: filter-resize-high-infer
+      maxDataFlows: 8
+      currentDataFlows: 0
+    name: lane0
+    type: alveo
+    maxFunctions: 1
+    currentFunctions: 1
+  - deviceUUID: 21330621t04l
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: /dev/xpcie_21330621T04L
+    deviceIndex: 0
+    deviceType: alveo
+    functions:
+    - available: true
+      maxCapacity: 40
+      currentCapacity: 0
+      partitionName: "1"
+      functionIndex: 0
+      functionName: filter-resize-high-infer
+      maxDataFlows: 8
+      currentDataFlows: 0
+    name: lane1
+    type: alveo
+    maxFunctions: 1
+    currentFunctions: 1
+	status: "Ready"
+  - deviceUUID: gpu-b8b4f1f5-bf51-eaa3-6ec4-97190b7f6c98
+    available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    deviceFilePath: ""
+    deviceIndex: 0
+    deviceType: t4
+    name: t4
+    type: t4
+    maxFunctions: 110
+    currentFunctions: 0
+	status: "Ready"
+  - deviceUUID: gpu-5b771964-ab74-a674-15d7-8f0d2cee4ef8
+    available: true
+    maxCapacity: 120
+    currentCapacity: 0
+    deviceFilePath: ""
+    deviceIndex: 1
+    deviceType: a100
+    name: a100
+    type: a100
+    maxFunctions: 110
+    currentFunctions: 0
+	status: "Ready"
+  - deviceUUID: swb-sm7-cpu0
+    available: true
+    maxCapacity: 120
+    currentCapacity: 0
+    deviceFilePath: ""
+    deviceIndex: 0
+    deviceType: cpu
+    name: cpu
+    type: cpu
+    maxFunctions: 110
+    currentFunctions: 0
+	status: "Ready"

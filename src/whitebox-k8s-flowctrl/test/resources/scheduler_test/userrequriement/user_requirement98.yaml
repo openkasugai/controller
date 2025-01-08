@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-requirement98
+  namespace : default
+data:
+  strategy : strategy
+  functionTargetNameSpace: hoge

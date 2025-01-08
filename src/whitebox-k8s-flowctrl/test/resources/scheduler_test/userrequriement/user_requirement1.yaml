@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-requirement1
+  namespace : default
+data:
+  strategy : strategy1

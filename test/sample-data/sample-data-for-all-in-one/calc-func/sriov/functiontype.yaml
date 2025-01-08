@@ -1,0 +1,84 @@
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-sriov-send
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-sriov-send
+  functionInfoCMRef:
+    name: funcinfo-calcapp-sriov-send
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-sriov-plus
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-sriov-plus
+  functionInfoCMRef:
+    name: funcinfo-calcapp-sriov-plus
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-sriov-minus
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-sriov-minus
+  functionInfoCMRef:
+    name: funcinfo-calcapp-sriov-minus
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-sriov-multiply
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-sriov-multiply
+  functionInfoCMRef:
+    name: funcinfo-calcapp-sriov-multiply
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-sriov-divide
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-sriov-divide
+  functionInfoCMRef:
+    name: funcinfo-calcapp-sriov-divide
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-sriov-average-results
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-sriov-average-results
+  functionInfoCMRef:
+    name: funcinfo-calcapp-sriov-average-results
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-sriov-rcv
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-sriov-rcv
+  functionInfoCMRef:
+    name: funcinfo-calcapp-sriov-rcv
+    namespace: cpufunc-calcapp
+  version: 1.0.0

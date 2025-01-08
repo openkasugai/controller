@@ -1,0 +1,37 @@
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-cpu-decode
+  namespace: wbfunc-imgproc
+spec:
+  functionName: cpu-decode
+  functionInfoCMRef:
+    name: funcinfo-cpu-decode
+    namespace: wbfunc-imgproc
+  version: 1.0.0
+
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-filter-resize-high-infer
+  namespace: wbfunc-imgproc
+spec:
+  functionName: filter-resize-high-infer
+  functionInfoCMRef:
+    name: funcinfo-filter-resize-high-infer
+    namespace: wbfunc-imgproc
+  version: 1.0.0
+ 
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-glue-fdma-to-tcp
+  namespace: wbfunc-imgproc
+spec:
+  functionName: glue-fdma-to-tcp
+  functionInfoCMRef:
+    name: funcinfo-glue-fdma-to-tcp
+    namespace: wbfunc-imgproc
+  version: 1.0.0

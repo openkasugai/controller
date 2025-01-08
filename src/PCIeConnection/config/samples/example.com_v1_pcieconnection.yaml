@@ -1,0 +1,12 @@
+apiVersion: example.com/v1
+kind: PCIeConnection
+metadata:
+  labels:
+    app.kubernetes.io/name: pcieconnection
+    app.kubernetes.io/instance: pcieconnection-sample
+    app.kubernetes.io/part-of: pcieconnection
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: pcieconnection
+  name: pcieconnection-sample
+spec:
+  # TODO(user): Add fields here

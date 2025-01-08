@@ -1,0 +1,27 @@
+# permissions for end users to view connectionTypes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: connectiontype-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: whitebox-k8s-flowctrl
+    app.kubernetes.io/part-of: whitebox-k8s-flowctrl
+    app.kubernetes.io/managed-by: kustomize
+  name: connectiontype-viewer-role
+rules:
+- apiGroups:
+  - example.com
+  resources:
+  - connectionTypes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - connectionTypes/status
+  verbs:
+  - get

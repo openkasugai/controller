@@ -1,0 +1,5 @@
+baseURL = 'https://example.org/'
+relativeURLs = true
+languageCode = 'en-us'
+title = 'Kubeflow Customization Guide for OpenKasugai'
+theme = 'hugo-book'

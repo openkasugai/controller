@@ -1,0 +1,12 @@
+apiVersion: example.com/v1
+kind: EthernetConnection
+metadata:
+  labels:
+    app.kubernetes.io/name: ethernetconnection
+    app.kubernetes.io/instance: ethernetconnection-sample
+    app.kubernetes.io/part-of: ethernetconnection
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: ethernetconnection
+  name: ethernetconnection-sample
+spec:
+  # TODO(user): Add fields here

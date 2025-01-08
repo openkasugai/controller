@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rcv-video-tool
+  namespace: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rcv-video-tool
+  template:
+    metadata:
+      labels:
+        app: rcv-video-tool
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule    
+      hostNetwork: true
+      shareProcessNamespace: true
+      containers:
+      - name: rcv-video-tool
+        image: localhost/rcv_video_tool:1.0.0
+        imagePullPolicy: IfNotPresent
+        command: ["tail", "-f", "/dev/null"]
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]

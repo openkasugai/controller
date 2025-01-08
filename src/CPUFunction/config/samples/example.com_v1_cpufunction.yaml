@@ -1,0 +1,12 @@
+apiVersion: example.com/v1
+kind: CPUFunction
+metadata:
+  labels:
+    app.kubernetes.io/name: cpufunction
+    app.kubernetes.io/instance: cpufunction-sample
+    app.kubernetes.io/part-of: cpufunction
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: cpufunction
+  name: cpufunction-sample
+spec:
+  # TODO(user): Add fields here

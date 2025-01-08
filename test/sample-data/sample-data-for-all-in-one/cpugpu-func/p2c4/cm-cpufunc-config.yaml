@@ -1,0 +1,330 @@
+---
+apiVersion: v1
+data:
+  cpufunc-config-cpu-p2c4-pip.json: |
+    [
+      {
+        "rxProtocol": "RTP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/cpufunc_gst:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "wrapper"
+        },
+        "Annotations": {
+          "ethernet.swb.example.com/network": "clusterip"
+        },
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_gst:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config-pip.yaml.tmpl /config/config.yaml.tmpl; /wrapper"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 5678,
+                    "protocol": "UDP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      },
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/cpufunc_gst:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "wrapper"
+        },
+        "Annotations": {
+          "ethernet.swb.example.com/network": "clusterip"
+        },
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_gst:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config-pip.yaml.tmpl /config/config.yaml.tmpl; /wrapper"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 5678,
+                    "protocol": "UDP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-cpu-p2c4-pip
+  namespace: default
+---
+apiVersion: v1
+data:
+  cpufunc-config-gpu-p2c4-dsa.json: |
+    [
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/gpufunc_dsa:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "wrapper",
+          "CUDA_MPS_PIPE_DIRECTORY": "/tmp/nvidia-mps",
+          "CUDA_MPS_LOG_DIRECTORY": "/tmp/nvidia-mps",
+          "GST_PLUGIN_PATH": "/opt/nvidia/deepstream/deepstream-6.3/fpga-software/tools/tcp_plugins/fpga_depayloader",
+          "HEIGHT": "1280",
+          "WIDTH": "1280"
+        },
+        "Annotations": {
+          "ethernet.swb.example.com/network": "clusterip"
+        },
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/gpufunc_dsa:latest",
+                "workingDir": "/opt/nvidia/deepstream/deepstream-6.3",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config-dsa.yaml.tmpl /config/config.yaml.tmpl; /wrapper"
+                ],
+                "securityContext": {
+                  "privileged": true
+                },
+                "volumeMounts": [
+                  {
+                    "name": "host-nvidia-mps",
+                    "mountPath": "/tmp/nvidia-mps"
+                  },
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "ports": [
+                  {
+                    "containerPort": 5678,
+                    "protocol": "UDP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "host-nvidia-mps",
+                "hostPath": {
+                  "path": "/tmp/nvidia-mps"
+                }
+              },
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "hostNetwork": false,
+            "hostIPC": true,
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-gpu-p2c4-dsa
+  namespace: default
+---
+apiVersion: v1
+data:
+  cpufunc-config-cpu-p2c4-rcv.json: |
+    [
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "RTP",
+        "imageURI": "localhost/cpufunc_gst:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "wrapper"
+        },
+        "Annotations": {
+          "ethernet.swb.example.com/network": "clusterip"
+        },
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_gst:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config-rcv.yaml.tmpl /config/config.yaml.tmpl; /wrapper"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 5678,
+                    "protocol": "UDP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-cpu-p2c4-rcv
+  namespace: default

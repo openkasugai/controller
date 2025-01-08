@@ -1,0 +1,121 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - ethernetconnections
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - ethernetconnections/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - ethernetconnections/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - pcieconnections
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - pcieconnections/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - pcieconnections/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - wbconnections
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - wbconnections/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - wbconnections/status
+  verbs:
+  - get
+  - patch
+  - update

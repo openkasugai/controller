@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: funcinfo-filter-resize-low-infer
+  namespace: wbfunc-imgproc
+data:
+  deployableItems: '[
+    {
+      "name": "item1",
+      "regionType": "alveo",
+      "inputInterfaceType": "dev25gether",
+      "outputInterfaceType": "mem",
+      "configName": "fpgafunc-config-filter-resize-low-infer",
+      "specName": "spec1"
+    }
+  ]'
+  spec: '[
+    {
+      "name": "spec1",
+      "minCore": 1,
+      "maxCore": 1,
+      "maxDataFlowsBase": 8,
+      "maxCapacityBase": 40,
+      "maxInputNum": 1,
+      "maxOutputNum":1
+    }
+  ]'

@@ -1,0 +1,84 @@
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-send
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-send
+  functionInfoCMRef:
+    name: funcinfo-calcapp-send
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-plus
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-plus
+  functionInfoCMRef:
+    name: funcinfo-calcapp-plus
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-minus
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-minus
+  functionInfoCMRef:
+    name: funcinfo-calcapp-minus
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-multiply
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-multiply
+  functionInfoCMRef:
+    name: funcinfo-calcapp-multiply
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-divide
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-divide
+  functionInfoCMRef:
+    name: funcinfo-calcapp-divide
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-average-results
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-average-results
+  functionInfoCMRef:
+    name: funcinfo-calcapp-average-results
+    namespace: cpufunc-calcapp
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-calcapp-rcv
+  namespace: cpufunc-calcapp
+spec:
+  functionName: calcapp-rcv
+  functionInfoCMRef:
+    name: funcinfo-calcapp-rcv
+    namespace: cpufunc-calcapp
+  version: 1.0.0

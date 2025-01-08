@@ -1,0 +1,104 @@
+name: golangci-lint
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    env:
+      GO_VERSION: '1.23.x'
+      GOLANGCI_LINT_VERSION: v1.61.0
+      CGO_CFLAGS_ALLOW: -mrtm
+    defaults:
+      run:
+        working-directory: src
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: setup-env
+        id: setup-env
+        run: |
+          git submodule update --init
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            python3-pip \
+            pkg-config \
+            libnuma-dev \
+            zlib1g-dev \
+            libpciaccess-dev
+          sudo pip3 install meson ninja pyelftools
+          go version
+          curl -sSfL \
+            https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
+            sh -s -- -b $(go env GOPATH)/bin ${{ env.GOLANGCI_LINT_VERSION }}
+          golangci-lint version
+          cd ${{ github.workspace }}/src/submodules/fpga-software/lib
+          make dpdk
+          make mcap
+          make json
+          make
+          sudo mkdir /usr/local/include/fpgalib
+          sudo cp -RT build/include/libfpga /usr/local/include/fpgalib
+          sudo mkdir /usr/local/lib/fpgalib
+          sudo cp build/libfpga.a /usr/local/lib/fpgalib/
+          sudo ln -s $PWD/DPDK/dpdk /usr/local/lib/fpgalib/dpdk
+          echo "PKG_CONFIG_PATH=$PWD/DPDK/dpdk/lib/x86_64-linux-gnu/pkgconfig:$PWD/build/pkgconfig" >> $GITHUB_ENV
+          cd ${{ github.workspace }}/src/fpgadb
+          make
+          sudo cp -RT build/include /usr/local/include/fpgalib
+          sudo cp build/libfpgadb.a /usr/local/lib/fpgalib/
+
+      - name: golangci-lint-cpufunction
+        if: steps.setup-env.conclusion == 'success'
+        run: |
+          golangci-lint run ./CPUFunction/...
+      - name: golangci-lint-deviceinfo
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./DeviceInfo/...
+      - name: golangci-lint-ethernetconnection
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./EthernetConnection/...
+      - name: golangci-lint-fpgafunction
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./FPGAFunction/...
+      - name: golangci-lint-gpufunction
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./GPUFunction/...
+      - name: golangci-lint-pcieconnection
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./PCIeConnection/...
+      - name: golangci-lint-wbconnection
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./WBConnection/...
+      - name: golangci-lint-wbfunction
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./WBFunction/...
+      - name: golangci-lint-wbk8sflowctrl
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./whitebox-k8s-flowctrl/...
+      - name: golangci-lint-tools-gpu-info
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./tools/gpu_info/...
+      - name: golangci-lint-tools-infocollector
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./tools/InfoCollector/...

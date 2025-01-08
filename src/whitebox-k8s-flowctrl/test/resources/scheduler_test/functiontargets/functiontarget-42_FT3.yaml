@@ -1,0 +1,25 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  name: node1.alveou250-1.lane0
+  namespace: default
+spec:
+status:
+  available: true
+  maxCapacity: 40
+  currentCapacity: 15
+  deviceIndex: 1
+  deviceType: alveou250
+  nodeName: node1
+  regionName: lane0
+  regionType: alveo
+  maxFunctions: 120
+  currentFunctions: 2
+  functions:
+  - functionIndex: 3
+    functionName: "decode"
+    available: true
+    maxDataFlows: 8
+    currentDataFlows: 1
+    maxCapacity: 20
+    currentCapacity: 15

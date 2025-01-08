@@ -1,0 +1,373 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "df-copy-branch01"
+  namespace: "test01"
+spec:
+  functionChainRef:
+    name: "decode-filter-resize-2types-infer-chain"
+    namespace: "chain-imgproc"
+  requirements:
+    all:
+      capacity: 15
+status:
+  connectionType: []
+  endPoint: ""
+  functionChain:
+    apiVersion: example.com/v1
+    kind: FunctionChain
+    metadata: {}
+    spec:
+      functionTypeNamespace: "wbfunc-imgproc"
+      connectionTypeNamespace: "default"
+      functions:
+        decode-main:
+          functionName: "cpu-decode"
+          version: "1.0.0"
+        filter-resize-main:
+          functionName: "cpu-filter-resize"
+          version: "1.0.0"
+        copy-branch-main:
+          functionName: "copy-branch"
+          version: "1.0.0"
+        infer-1:
+          functionName: "person-infer"
+          version: "1.0.0"
+        infer-2:
+          functionName: "vehicle-infer"
+          version: "1.0.0"
+      connections:
+        - from:
+            functionKey: "wb-start-of-chain"
+            port: 0
+          to:
+            functionKey: "decode-main"
+            port: 0
+          connectionTypeName: "auto"
+        - from:
+            functionKey: "decode-main"
+            port: 0
+          to:
+            functionKey: "filter-resize-main"
+            port: 0
+          connectionTypeName: "auto"
+        - from:
+            functionKey: "filter-resize-main"
+            port: 0
+          to:
+            functionKey: "copy-branch-main"
+            port: 0
+          connectionTypeName: "auto"
+        - from:
+            functionKey: "copy-branch-main"
+            port: 0
+          to:
+            functionKey: "infer-1"
+            port: 0
+          connectionTypeName: "auto"
+        - from:
+            functionKey: "copy-branch-main"
+            port: 1
+          to:
+            functionKey: "infer-2"
+            port: 0
+          connectionTypeName: "auto"
+        - from:
+            functionKey: "infer-1"
+            port: 0
+          to:
+            functionKey: "wb-end-of-chain-1"
+            port: 0
+          connectionTypeName: "auto"
+        - from:
+            functionKey: "infer-2"
+            port: 0
+          to:
+            functionKey: "wb-end-of-chain-2"
+            port: 0
+          connectionTypeName: "auto"
+    status:
+      status: Ready
+  functionType:
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-copy-branch
+        namespace: wbfunc-imgproc
+      functionName: copy-branch
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - cpu
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-cpu-decode
+        namespace: wbfunc-imgproc
+      functionName: cpu-decode
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - cpu
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-cpu-filter-resize
+        namespace: wbfunc-imgproc
+      functionName: cpu-filter-resize
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - cpu
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-person-infer
+        namespace: wbfunc-imgproc
+      functionName: person-infer
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - a100
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-vehicle-infer
+        namespace: wbfunc-imgproc
+      functionName: vehicle-infer
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - a100
+      status: Ready
+  scheduledConnections:
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: node0
+      usedType: ""
+    - entityID: node0.host100gether-0
+      usedType: Outgoing
+    - entityID: global.ether-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: swb-sm7.nic-0.host100gether-0
+      usedType: Incoming
+    - entityID: swb-sm7.nic-0
+      usedType: ""
+    - entityID: swb-sm7.nic-0.pcie-0
+      usedType: Outgoing
+    - entityID: swb-sm7.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: swb-sm7.cpu-0.pcie-0
+      usedType: Incoming
+    - entityID: swb-sm7.cpu-0
+      usedType: ""
+    from:
+      functionKey: wb-start-of-chain
+      port: 0
+      interfaceType: host100gether
+    to:
+      functionKey: decode-main
+      port: 0
+      interfaceType: host100gether
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: swb-sm7.cpu-0
+      usedType: ""
+    - entityID: swb-sm7.cpu-0.mem-0
+      usedType: Outgoing
+    - entityID: swb-sm7.memory-0.mem-0
+      usedType: Outgoing
+    - entityID: swb-sm7.memory-0
+      usedType: ""
+    - entityID: swb-sm7.memory-0.mem-0
+      usedType: Incoming
+    - entityID: swb-sm7.cpu-0.mem-0
+      usedType: Incoming
+    - entityID: swb-sm7.cpu-0
+      usedType: ""
+    from:
+      functionKey: decode-main
+      port: 0
+      interfaceType: host100gether
+    to:
+      functionKey: filter-resize-main
+      port: 0
+      interfaceType: host100gether
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: swb-sm7.cpu-0
+      usedType: ""
+    - entityID: swb-sm7.cpu-0.mem-0
+      usedType: Outgoing
+    - entityID: swb-sm7.memory-0.mem-0
+      usedType: Outgoing
+    - entityID: swb-sm7.memory-0
+      usedType: ""
+    - entityID: swb-sm7.memory-0.mem-0
+      usedType: Incoming
+    - entityID: swb-sm7.cpu-0.mem-0
+      usedType: Incoming
+    - entityID: swb-sm7.cpu-0
+      usedType: ""
+    from:
+      functionKey: filter-resize-main
+      port: 0
+      interfaceType: host100gether
+    to:
+      functionKey: copy-branch-main
+      port: 0
+      interfaceType: host100gether
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: swb-sm7.a100-1
+      usedType: ""
+    - entityID: swb-sm7.a100-1.pcie-0
+      usedType: Outgoing
+    - entityID: swb-sm7.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: swb-sm7.nic-0.pcie-0
+      usedType: Incoming
+    - entityID: swb-sm7.nic-0
+      usedType: ""
+    - entityID: swb-sm7.nic-0.host100gether-0
+      usedType: Outgoing
+    - entityID: global.ether-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node0.host100gether-0
+      usedType: Incoming
+    - entityID: node0
+      usedType: ""
+    from:
+      functionKey: copy-branch-main
+      port: 0
+      interfaceType: host100gether
+    to:
+      functionKey: infer-1
+      port: 0
+      interfaceType: host100gether
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: swb-sm7.a100-1
+      usedType: ""
+    - entityID: swb-sm7.a100-1.pcie-0
+      usedType: Outgoing
+    - entityID: swb-sm7.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: swb-sm7.nic-0.pcie-0
+      usedType: Incoming
+    - entityID: swb-sm7.nic-0
+      usedType: ""
+    - entityID: swb-sm7.nic-0.host100gether-0
+      usedType: Outgoing
+    - entityID: global.ether-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node0.host100gether-0
+      usedType: Incoming
+    - entityID: node0
+      usedType: ""
+    from:
+      functionKey: copy-branch-main
+      port: 1
+      interfaceType: host100gether
+    to:
+      functionKey: infer-2
+      port: 0
+      interfaceType: host100gether
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: swb-sm7.a100-1
+      usedType: ""
+    - entityID: swb-sm7.a100-1.pcie-0
+      usedType: Outgoing
+    - entityID: swb-sm7.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: swb-sm7.nic-0.pcie-0
+      usedType: Incoming
+    - entityID: swb-sm7.nic-0
+      usedType: ""
+    - entityID: swb-sm7.nic-0.host100gether-0
+      usedType: Outgoing
+    - entityID: global.ether-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node0.host100gether-0
+      usedType: Incoming
+    - entityID: node0
+      usedType: ""
+    from:
+      functionKey: infer-1
+      port: 0
+      interfaceType: host100gether
+    to:
+      functionKey: wb-end-of-chain-1
+      port: 0
+      interfaceType: host100gether
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: swb-sm7.a100-1
+      usedType: ""
+    - entityID: swb-sm7.a100-1.pcie-0
+      usedType: Outgoing
+    - entityID: swb-sm7.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: swb-sm7.nic-0.pcie-0
+      usedType: Incoming
+    - entityID: swb-sm7.nic-0
+      usedType: ""
+    - entityID: swb-sm7.nic-0.host100gether-0
+      usedType: Outgoing
+    - entityID: global.ether-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node0.host100gether-0
+      usedType: Incoming
+    - entityID: node0
+      usedType: ""
+    from:
+      functionKey: infer-2
+      port: 0
+      interfaceType: host100gether
+    to:
+      functionKey: wb-end-of-chain-2
+      port: 0
+      interfaceType: host100gether
+  scheduledFunctions:
+    decode-main:
+      deviceIndex: 0
+      deviceType: cpu
+      nodeName: swb-sm7
+      regionName: cpu
+    filter-resize-main:
+      deviceIndex: 0
+      deviceType: cpu
+      nodeName: swb-sm7
+      regionName: cpu
+    copy-branch-main:
+      deviceIndex: 0
+      deviceType: cpu
+      nodeName: swb-sm7
+      regionName: cpu
+    infer-1:
+      deviceIndex: 1
+      deviceType: a100
+      nodeName: swb-sm7
+      regionName: a100
+    infer-2:
+      deviceIndex: 1
+      deviceType: a100
+      nodeName: swb-sm7
+      regionName: a100
+  startPoint: ""
+  status: "WBFunction/WBConnection creation in progress"

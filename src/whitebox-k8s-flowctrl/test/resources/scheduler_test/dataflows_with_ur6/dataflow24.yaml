@@ -1,0 +1,95 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "test"
+  namespace: "default"
+spec:
+  functionChainRef:
+    name: "decode-filter-resize-high-infer-chain"
+    namespace: "chain-imgproc"
+  functionTargetSelectors:
+    - functionKey: decode-main
+      functionIndex: 19
+    - functionKey: filter-resize-main
+      deviceIndex: 0
+      regionName: lane0
+    - functionKey: high-infer-main
+      deviceType: a100
+      nodeName: node1
+  requirements:
+    all:
+      capacity: 15
+  userRequirement: "user-requirement6"
+status:
+  status: "Scheduling in progress"
+  functionChain:
+    spec:
+      functionTypeNamespace: "default"
+      connectionTypeNamespace: "default"
+      functions: 
+        decode-main:
+          functionName: "decode"
+          version:      "1.0.0"
+        filter-resize-main:
+          functionName: "filter-resize"
+          version:      "1.0.0"
+        high-infer-main:
+          functionName: "high-infer"
+          version:      "1.0.0"
+      connections:
+      - from:
+          functionKey: "wb-start-of-chain"
+          port: 0
+        to:
+          functionKey:   "decode-main"
+          port: 0
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "decode-main"
+          port: 0
+        to:
+          functionKey:   "filter-resize-main"
+          port: 0
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "filter-resize-main"
+          port: 0
+        to:
+          functionKey:   "high-infer-main"
+          port: 0
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "high-infer-main"
+          port: 0
+        to:
+          functionKey:   "wb-end-of-chain"
+          port: 0
+        connectionTypeName: "auto"
+  functionType:
+  - spec:
+      functionName:                  "decode"
+      functionInfoCMRef:
+        name:      "funcinfo-decode"
+        namespace: "wbfunc-imgproc"
+      version:               "1.0.0"
+    status:
+      status:               "Ready"
+      regionTypeCandidates: ["alveo"]
+  - spec:
+      functionName:                  "filter-resize"
+      functionInfoCMRef:
+        name:      "funcinfo-filter-resize"
+        namespace: "wbfunc-imgproc"
+      version:               "1.0.0"
+    status:
+      status:               "Ready"
+      regionTypeCandidates: ["alveo"]
+  - spec:
+      functionName:                  "high-infer"
+      functionInfoCMRef:
+        name:      "funcinfo-high-infer"
+        namespace: "wbfunc-imgproc"
+      version:               "1.0.0"
+    status:
+      status:               "Ready"
+      regionTypeCandidates: ["a100"]

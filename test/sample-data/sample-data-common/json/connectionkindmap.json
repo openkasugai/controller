@@ -1,0 +1,7 @@
+[{
+  "connectionMethod": "host-mem",
+  "connectionCRKind": "PCIeConnection"
+},{
+  "connectionMethod": "host-100gether",
+  "connectionCRKind": "EthernetConnection"
+}]

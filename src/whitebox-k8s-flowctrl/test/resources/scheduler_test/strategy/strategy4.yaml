@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: strategy4
+  namespace : default
+data:
+  filterPipeline: |
+    - GenerateCombinations
+    - TargetResourceFit
+    - GenerateRoute
+    - ConnectionResourceFit 
+    - TargetResourceFitScore
+    - RouteScore
+  selectTop : "5"

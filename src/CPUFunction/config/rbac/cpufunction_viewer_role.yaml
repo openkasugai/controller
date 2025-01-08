@@ -1,0 +1,27 @@
+# permissions for end users to view cpufunctions.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: cpufunction-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: cpufunction
+    app.kubernetes.io/part-of: cpufunction
+    app.kubernetes.io/managed-by: kustomize
+  name: cpufunction-viewer-role
+rules:
+- apiGroups:
+  - example.com
+  resources:
+  - cpufunctions
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - cpufunctions/status
+  verbs:
+  - get

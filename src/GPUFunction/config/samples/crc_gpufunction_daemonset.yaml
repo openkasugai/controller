@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: crc-gpufunction-daemon
+spec:
+  selector:
+    matchLabels:
+      app: crc-gpufunction-daemon
+  template:
+    metadata:
+      labels:
+        app: crc-gpufunction-daemon
+    spec:
+      containers:
+      - name: gpufunction-container0
+        image: localhost/gpufunction:1.0.0
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        args:
+        - "--kubeconfig=/kube/config"
+        env:
+        - name: K8S_NODENAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - mountPath: /kube/config
+          name: crc-gpufunc-daemon
+      volumes:
+      - name: crc-gpufunc-daemon
+        hostPath:
+          path: /etc/k8s_worker/config
+          type: File

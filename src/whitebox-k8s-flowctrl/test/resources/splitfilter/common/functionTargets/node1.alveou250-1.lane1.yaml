@@ -1,0 +1,41 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  creationTimestamp: null
+  name: node1.alveou250-1.lane1
+  namespace: default
+spec:
+  computeResourceRef:
+    name: ""
+    namespace: ""
+status:
+  status: Ready
+  available: true
+  maxCapacity: 100
+  currentCapacity: 30
+  deviceIndex: 1
+  deviceType: alveou250
+  functions:
+  - available: true
+    maxCapacity: 30
+    currentCapacity: 15
+    functionIndex: 1
+    functionName: decode
+    timeTotal: null
+    timeUsed: null
+    maxDataFlows: 8
+    currentDataFlows: 1
+  - available: true
+    maxCapacity: 30
+    currentCapacity: 15
+    functionIndex: 2
+    functionName: decode
+    timeTotal: null
+    timeUsed: null
+    maxDataFlows: 8
+    currentDataFlows: 1
+  nodeName: node1
+  regionName: lane1
+  regionType: alveo
+  maxFunctions: 2
+  currentFunctions: 2

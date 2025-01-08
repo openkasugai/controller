@@ -1,0 +1,31 @@
+# permissions for end users to edit gpufunctions.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: gpufunction-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: gpufunction
+    app.kubernetes.io/part-of: gpufunction
+    app.kubernetes.io/managed-by: kustomize
+  name: gpufunction-editor-role
+rules:
+- apiGroups:
+  - example.com
+  resources:
+  - gpufunctions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - gpufunctions/status
+  verbs:
+  - get

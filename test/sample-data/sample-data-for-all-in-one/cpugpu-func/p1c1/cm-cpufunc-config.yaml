@@ -1,0 +1,233 @@
+---
+apiVersion: v1
+data:
+  cpufunc-config-cpu-p1c1-pip.json: |
+    [
+      {
+        "rxProtocol": "RTP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/cpufunc_gst:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "wrapper"
+        },
+        "Annotations": {
+          "ethernet.swb.example.com/network": "clusterip"
+        },
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_gst:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config-pip.yaml.tmpl /config/config.yaml.tmpl; /wrapper"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 5678,
+                    "protocol": "UDP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      },
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/cpufunc_gst:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "wrapper"
+        },
+        "Annotations": {
+          "ethernet.swb.example.com/network": "clusterip"
+        },
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_gst:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config-pip.yaml.tmpl /config/config.yaml.tmpl; /wrapper"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 5678,
+                    "protocol": "UDP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-cpu-p1c1-pip
+  namespace: default
+---
+apiVersion: v1
+data:
+  cpufunc-config-cpu-p1c1-rcv.json: |
+    [
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "RTP",
+        "imageURI": "localhost/cpufunc_gst:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "wrapper"
+        },
+        "Annotations": {
+          "ethernet.swb.example.com/network": "clusterip"
+        },
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_gst:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config-rcv.yaml.tmpl /config/config.yaml.tmpl; /wrapper"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 5678,
+                    "protocol": "UDP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-cpu-p1c1-rcv
+  namespace: default

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: send-video-tool
+  namespace: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: send-video-tool
+  template:
+    metadata:
+      labels:
+        app: send-video-tool
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule    
+      hostNetwork: true
+      shareProcessNamespace: true      
+      containers:
+      - name: send-video-tool
+        image: localhost/send_video_tool:1.0.0
+        imagePullPolicy: IfNotPresent
+        command: ["tail", "-f", "/dev/null"]
+        securityContext:
+          privileged: true	
+        volumeMounts:
+        - mountPath: /opt/video
+          name: host-video
+      volumes:
+      - name: host-video
+        hostPath:
+          path: /opt/DATA/video
+          type: Directory

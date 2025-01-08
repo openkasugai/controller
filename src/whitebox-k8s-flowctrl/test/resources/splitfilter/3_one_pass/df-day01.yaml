@@ -1,0 +1,13 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "df-day01"
+  namespace: "test01"
+spec:
+  functionChainRef:
+    name: "decode-filter-resize-high-infer-chain"
+    namespace: "chain-imgproc"
+  requirements:
+    all:
+      capacity: 15
+  userRequirement: "user-requirement"

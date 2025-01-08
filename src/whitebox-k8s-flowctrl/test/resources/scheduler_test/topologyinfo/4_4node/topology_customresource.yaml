@@ -1,0 +1,1091 @@
+apiVersion: example.com/v1
+kind: TopologyInfo
+metadata:
+  name: topologyinfo
+  namespace: topologyinfo
+spec:
+  topologyDataCMRef:
+  - name: topologydata
+    namespace: topologyinfo
+status:
+  entities:
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 1000
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 1000
+      currentOutgoingCapacity: 0
+    id: global.ether-network-0
+    type: network
+    networkInfo:
+      networkIndex: 0
+      networkType: ether
+      networkSideType: outside
+  - available: true
+    id: node0
+    type: node
+    nodeInfo:
+      nodeName: node0
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node0.host100gether-0
+    type: interface
+    interfaceInfo:
+      interfaceIndex: 0
+      interfaceType: host100gether
+      interfaceSideType: outside
+      nodeName: node0
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 1000
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 1000
+      currentOutgoingCapacity: 0
+    id: node3.pcie-network-0
+    type: network
+    networkInfo:
+      networkIndex: 0
+      networkType: pcie
+      networkSideType: inside
+      nodeName: node3
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 1000
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 1000
+      currentOutgoingCapacity: 0
+    id: node3.pcie-network-1
+    type: network
+    networkInfo:
+      networkIndex: 1
+      networkType: pcie
+      networkSideType: inside
+      nodeName: node3
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      nodeName: node3
+    id: node3.cpu-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node3.cpu-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node3
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node3.cpu-0.pcie-1
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      interfaceIndex: 1
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node3
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: memory
+      nodeName: node3
+    id: node3.memory-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node3.memory-0.mem-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: memory
+      interfaceIndex: 0
+      interfaceType: mem
+      interfaceSideType: inside
+      nodeName: node3
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      nodeName: node3
+      regionName: lane0
+    id: node3.alveou250-0.lane0
+    type: device
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      nodeName: node3
+      regionName: lane1
+    id: node3.alveou250-0.lane1
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node3.alveou250-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node3
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node3.alveou250-0.dev25gether-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      interfaceIndex: 0
+      interfaceType: dev25gether
+      interfaceSideType: outside
+      nodeName: node3
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node3.alveou250-0.dev25gether-1
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      interfaceIndex: 1
+      interfaceType: dev25gether
+      interfaceSideType: outside
+      nodeName: node3
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 1000
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 1000
+      currentOutgoingCapacity: 0
+    id: node4.pcie-network-0
+    type: network
+    networkInfo:
+      networkIndex: 0
+      networkType: pcie
+      networkSideType: inside
+      nodeName: node4
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 1000
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 1000
+      currentOutgoingCapacity: 0
+    id: node4.pcie-network-1
+    type: network
+    networkInfo:
+      networkIndex: 1
+      networkType: pcie
+      networkSideType: inside
+      nodeName: node4
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      nodeName: node4
+    id: node4.cpu-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.cpu-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node4
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.cpu-0.pcie-1
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      interfaceIndex: 1
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node4
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: memory
+      nodeName: node4
+    id: node4.memory-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.memory-0.mem-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: memory
+      interfaceIndex: 0
+      interfaceType: mem
+      interfaceSideType: inside
+      nodeName: node4
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      nodeName: node4
+      regionName: lane0
+    id: node4.alveou250-0.lane0
+    type: device
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      nodeName: node4
+      regionName: lane1
+    id: node4.alveou250-0.lane1
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.alveou250-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node4
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.alveou250-0.dev25gether-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      interfaceIndex: 0
+      interfaceType: dev25gether
+      interfaceSideType: outside
+      nodeName: node4
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.alveou250-0.dev25gether-1
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      interfaceIndex: 1
+      interfaceType: dev25gether
+      interfaceSideType: outside
+      nodeName: node4
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: nic
+      nodeName: node4
+    id: node4.nic-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.nic-0.host100gether-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: nic
+      interfaceIndex: 0
+      interfaceType: host100gether
+      interfaceSideType: outside
+      nodeName: node4
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.nic-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: nic
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node4
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: a100
+      nodeName: node4
+    id: node4.a100-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.a100-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: a100
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node4
+  - available: true
+    deviceInfo:
+      deviceIndex: 1
+      deviceType: alveou250
+      nodeName: node4
+      regionName: lane0
+    id: node4.alveou250-1.lane0
+    type: device
+  - available: true
+    deviceInfo:
+      deviceIndex: 1
+      deviceType: alveou250
+      nodeName: node4
+      regionName: lane1
+    id: node4.alveou250-1.lane1
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.alveou250-1.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 1
+      deviceType: alveou250
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node4
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.alveou250-1.dev25gether-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 1
+      deviceType: alveou250
+      interfaceIndex: 0
+      interfaceType: dev25gether
+      interfaceSideType: outside
+      nodeName: node4
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node4.alveou250-1.dev25gether-1
+    type: interface
+    interfaceInfo:
+      deviceIndex: 1
+      deviceType: alveou250
+      interfaceIndex: 1
+      interfaceType: dev25gether
+      interfaceSideType: outside
+      nodeName: node4
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 1000
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 1000
+      currentOutgoingCapacity: 0
+    id: node5.pcie-network-0
+    type: network
+    networkInfo:
+      networkIndex: 0
+      networkType: pcie
+      networkSideType: inside
+      nodeName: node5
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 1000
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 1000
+      currentOutgoingCapacity: 0
+    id: node5.pcie-network-1
+    type: network
+    networkInfo:
+      networkIndex: 1
+      networkType: pcie
+      networkSideType: inside
+      nodeName: node5
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      nodeName: node5
+    id: node5.cpu-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node5.cpu-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node5
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node5.cpu-0.pcie-1
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      interfaceIndex: 1
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node5
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: memory
+      nodeName: node5
+    id: node5.memory-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node5.memory-0.mem-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: memory
+      interfaceIndex: 0
+      interfaceType: mem
+      interfaceSideType: inside
+      nodeName: node5
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      nodeName: node5
+      regionName: lane0
+    id: node5.alveou250-0.lane0
+    type: device
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      nodeName: node5
+      regionName: lane1
+    id: node5.alveou250-0.lane1
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node5.alveou250-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node5
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node5.alveou250-0.dev25gether-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      interfaceIndex: 0
+      interfaceType: dev25gether
+      interfaceSideType: outside
+      nodeName: node5
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node5.alveou250-0.dev25gether-1
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: alveou250
+      interfaceIndex: 1
+      interfaceType: dev25gether
+      interfaceSideType: outside
+      nodeName: node5
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: nic
+      nodeName: node5
+    id: node5.nic-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node5.nic-0.host100gether-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: nic
+      interfaceIndex: 0
+      interfaceType: host100gether
+      interfaceSideType: outside
+      nodeName: node5
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node5.nic-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: nic
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node5
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: a100
+      nodeName: node5
+    id: node5.a100-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node5.a100-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: a100
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node5
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 1000
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 1000
+      currentOutgoingCapacity: 0
+    id: node6.pcie-network-0
+    type: network
+    networkInfo:
+      networkIndex: 0
+      networkType: pcie
+      networkSideType: inside
+      nodeName: node6
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 1000
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 1000
+      currentOutgoingCapacity: 0
+    id: node6.pcie-network-1
+    type: network
+    networkInfo:
+      networkIndex: 1
+      networkType: pcie
+      networkSideType: inside
+      nodeName: node6
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      nodeName: node6
+    id: node6.cpu-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node6.cpu-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node6
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node6.cpu-0.pcie-1
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: cpu
+      interfaceIndex: 1
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node6
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: memory
+      nodeName: node6
+    id: node6.memory-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node6.memory-0.mem-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: memory
+      interfaceIndex: 0
+      interfaceType: mem
+      interfaceSideType: inside
+      nodeName: node6
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: nic
+      nodeName: node6
+    id: node6.nic-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node6.nic-0.host100gether-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: nic
+      interfaceIndex: 0
+      interfaceType: host100gether
+      interfaceSideType: outside
+      nodeName: node6
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node6.nic-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: nic
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node6
+  - available: true
+    deviceInfo:
+      deviceIndex: 0
+      deviceType: a100
+      nodeName: node6
+    id: node6.a100-0
+    type: device
+  - available: true
+    capacityInfo:
+      maxIncomingCapacity: 100
+      currentIncomingCapacity: 0
+      maxOutgoingCapacity: 100
+      currentOutgoingCapacity: 0
+    id: node6.a100-0.pcie-0
+    type: interface
+    interfaceInfo:
+      deviceIndex: 0
+      deviceType: a100
+      interfaceIndex: 0
+      interfaceType: pcie
+      interfaceSideType: inside
+      nodeName: node6
+  relations:
+  - available: true
+    from: node0
+    type: direct
+    to: node0.host100gether-0
+  - available: true
+    from: node0.host100gether-0
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node3.alveou250-0.dev25gether-0
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node3.alveou250-0.dev25gether-1
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node3.cpu-0
+    type: direct
+    to: node3.cpu-0.pcie-0
+  - available: true
+    from: node3.alveou250-0.lane0
+    type: direct
+    to: node3.alveou250-0.pcie-0
+  - available: true
+    from: node3.alveou250-0.lane0
+    type: direct
+    to: node3.alveou250-0.dev25gether-0
+  - available: true
+    from: node3.alveou250-0.lane1
+    type: direct
+    to: node3.alveou250-0.pcie-0
+  - available: true
+    from: node3.alveou250-0.lane1
+    type: direct
+    to: node3.alveou250-0.dev25gether-1
+  - available: true
+    from: node3.cpu-0.pcie-0
+    type: pcie
+    to: node3.pcie-network-0
+  - available: true
+    from: node3.alveou250-0.pcie-0
+    type: pcie
+    to: node3.pcie-network-0
+  - available: true
+    from: node3.cpu-0
+    type: direct
+    to: node3.cpu-0.pcie-1
+  - available: true
+    from: node3.cpu-0.pcie-1
+    type: pcie
+    to: node3.pcie-network-1
+  - available: true
+    from: node3.cpu-0
+    type: direct
+    to: node3.memory-0.mem-0
+  - available: true
+    from: node3.memory-0
+    type: direct
+    to: node3.memory-0.mem-0
+  - available: true
+    from: node4.alveou250-0.dev25gether-0
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node4.alveou250-0.dev25gether-1
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node4.alveou250-1.dev25gether-0
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node4.alveou250-1.dev25gether-1
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node4.nic-0.host100gether-0
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node4.cpu-0
+    type: direct
+    to: node4.cpu-0.pcie-0
+  - available: true
+    from: node4.cpu-0.pcie-0
+    type: pcie
+    to: node4.pcie-network-0
+  - available: true
+    from: node4.cpu-0
+    type: direct
+    to: node4.cpu-0.pcie-1
+  - available: true
+    from: node4.cpu-0.pcie-1
+    type: pcie
+    to: node4.pcie-network-1
+  - available: true
+    from: node4.cpu-0
+    type: direct
+    to: node4.memory-0.mem-0
+  - available: true
+    from: node4.memory-0
+    type: direct
+    to: node4.memory-0.mem-0
+  - available: true
+    from: node4.alveou250-0.lane0
+    type: direct
+    to: node4.alveou250-0.pcie-0
+  - available: true
+    from: node4.alveou250-0.lane0
+    type: direct
+    to: node4.alveou250-0.dev25gether-0
+  - available: true
+    from: node4.alveou250-0.lane1
+    type: direct
+    to: node4.alveou250-0.pcie-0
+  - available: true
+    from: node4.alveou250-0.lane1
+    type: direct
+    to: node4.alveou250-0.dev25gether-1
+  - available: true
+    from: node4.alveou250-0.pcie-0
+    type: pcie
+    to: node4.pcie-network-0
+  - available: true
+    from: node4.alveou250-1.lane0
+    type: direct
+    to: node4.alveou250-1.pcie-0
+  - available: true
+    from: node4.alveou250-1.lane0
+    type: direct
+    to: node4.alveou250-1.dev25gether-0
+  - available: true
+    from: node4.alveou250-1.lane1
+    type: direct
+    to: node4.alveou250-1.pcie-0
+  - available: true
+    from: node4.alveou250-1.lane1
+    type: direct
+    to: node4.alveou250-1.dev25gether-1
+  - available: true
+    from: node4.alveou250-1.pcie-0
+    type: pcie
+    to: node4.pcie-network-1
+  - available: true
+    from: node4.nic-0
+    type: direct
+    to: node4.nic-0.pcie-0
+  - available: true
+    from: node4.nic-0
+    type: direct
+    to: node4.nic-0.host100gether-0
+  - available: true
+    from: node4.nic-0.pcie-0
+    type: pcie
+    to: node4.pcie-network-0
+  - available: true
+    from: node4.a100-0
+    type: direct
+    to: node4.a100-0.pcie-0
+  - available: true
+    from: node4.a100-0.pcie-0
+    type: pcie
+    to: node4.pcie-network-1
+  - available: true
+    from: node5.alveou250-0.dev25gether-0
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node5.alveou250-0.dev25gether-1
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node5.nic-0.host100gether-0
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node5.cpu-0
+    type: direct
+    to: node5.cpu-0.pcie-0
+  - available: true
+    from: node5.cpu-0.pcie-0
+    type: pcie
+    to: node5.pcie-network-0
+  - available: true
+    from: node5.cpu-0
+    type: direct
+    to: node5.cpu-0.pcie-1
+  - available: true
+    from: node5.cpu-0.pcie-1
+    type: pcie
+    to: node5.pcie-network-1
+  - available: true
+    from: node5.cpu-0
+    type: direct
+    to: node5.memory-0.mem-0
+  - available: true
+    from: node5.memory-0
+    type: direct
+    to: node5.memory-0.mem-0
+  - available: true
+    from: node5.alveou250-0.lane0
+    type: direct
+    to: node5.alveou250-0.pcie-0
+  - available: true
+    from: node5.alveou250-0.lane0
+    type: direct
+    to: node5.alveou250-0.dev25gether-0
+  - available: true
+    from: node5.alveou250-0.lane1
+    type: direct
+    to: node5.alveou250-0.pcie-0
+  - available: true
+    from: node5.alveou250-0.lane1
+    type: direct
+    to: node5.alveou250-0.dev25gether-1
+  - available: true
+    from: node5.alveou250-0.pcie-0
+    type: pcie
+    to: node5.pcie-network-0
+  - available: true
+    from: node5.nic-0
+    type: direct
+    to: node5.nic-0.pcie-0
+  - available: true
+    from: node5.nic-0
+    type: direct
+    to: node5.nic-0.host100gether-0
+  - available: true
+    from: node5.nic-0.pcie-0
+    type: pcie
+    to: node5.pcie-network-0
+  - available: true
+    from: node5.a100-0
+    type: direct
+    to: node5.a100-0.pcie-0
+  - available: true
+    from: node5.a100-0.pcie-0
+    type: pcie
+    to: node5.pcie-network-1
+  - available: true
+    from: node6.nic-0.host100gether-0
+    type: ether
+    to: global.ether-network-0
+  - available: true
+    from: node6.cpu-0
+    type: direct
+    to: node6.cpu-0.pcie-0
+  - available: true
+    from: node6.cpu-0.pcie-0
+    type: pcie
+    to: node6.pcie-network-0
+  - available: true
+    from: node6.cpu-0
+    type: direct
+    to: node6.cpu-0.pcie-1
+  - available: true
+    from: node6.cpu-0.pcie-1
+    type: pcie
+    to: node6.pcie-network-1
+  - available: true
+    from: node6.cpu-0
+    type: direct
+    to: node6.memory-0.mem-0
+  - available: true
+    from: node6.memory-0
+    type: direct
+    to: node6.memory-0.mem-0
+  - available: true
+    from: node6.nic-0
+    type: direct
+    to: node6.nic-0.pcie-0
+  - available: true
+    from: node6.nic-0
+    type: direct
+    to: node6.nic-0.host100gether-0
+  - available: true
+    from: node6.nic-0.pcie-0
+    type: pcie
+    to: node6.pcie-network-0
+  - available: true
+    from: node6.a100-0
+    type: direct
+    to: node6.a100-0.pcie-0
+  - available: true
+    from: node6.a100-0.pcie-0
+    type: pcie
+    to: node6.pcie-network-1

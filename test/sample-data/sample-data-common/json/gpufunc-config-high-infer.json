@@ -1,0 +1,129 @@
+[{
+  "rxProtocol": "DMA",
+  "txProtocol":"RTP",
+  "sharedMemoryMiB": 256,
+  "imageURI": "localhost/gpu_infer_dma:1.0.0",
+  "additionalNetwork": true,
+  "virtualNetworkDeviceDriverType": "sriov",
+  "envs":{
+    "CUDA_MPS_PIPE_DIRECTORY": "/tmp/nvidia-mps",
+    "CUDA_MPS_LOG_DIRECTORY": "/tmp/nvidia-mps",
+    "SHMEM_SECONDARY": "1",
+    "HEIGHT": "1280",
+    "WIDTH": "1280"
+  },
+  "template":{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "spec":{
+      "containers":[{
+        "name": "gfunc-hi-1",
+        "workingDir": "/opt/nvidia/deepstream/deepstream-7.0",
+        "command": ["sh", "-c"],
+        "args":["cd /opt/DeepStream-Yolo && gst-launch-1.0 -ev fpgasrc !",
+           "'video/x-raw,format=(string)BGR,%WIDTH%,%HEIGHT%'",
+           "! nvvideoconvert ! 'video/x-raw(memory:NVMM), format=(string)RGBA'",
+           "! m.sink_0 nvstreammux name=m nvbuf-memory-type=0 batch-size=1",
+           "%WIDTH%",
+           "%HEIGHT%",
+           "! queue ! nvinfer config-file-path=./config_infer_primary_yoloV4_p6_th020_040.txt batch-size=1",
+           "model-engine-file=./model_b1_gpu0_fp16.engine ! queue ! nvdsosd process-mode=1 ! nvvideoconvert !",
+           "'video/x-raw, format=(string)BGR' ! videoconvert ! queue ! perf ! rtpvrawpay ! udpsink",
+           "%OUTPUTIP%",
+           "%OUTPUTPORT%",
+           "sync=true"],
+        "securityContext":{
+          "privileged": true
+        },
+        "volumeMounts":[{
+          "name": "hugepage-1gi",
+          "mountPath": "/dev/hugepages"
+        },{
+          "name": "host-nvidia-mps",
+          "mountPath": "/tmp/nvidia-mps"
+        },{
+          "name": "dpdk",
+          "mountPath": "/var/run/dpdk"
+        }],
+        "resources":{
+          "requests":{
+            "memory": "8Gi"
+          },
+          "limits":{
+            "hugepages-1Gi": "1Gi"
+          }
+        }
+      }],
+      "volumes":[{
+        "name": "hugepage-1gi",
+        "hostPath":
+         {"path": "/dev/hugepages"}
+      },{
+        "name": "host-nvidia-mps",
+        "hostPath":
+         {"path": "/tmp/nvidia-mps"}
+      },{
+        "name": "dpdk",
+        "hostPath":
+         {"path": "/var/run/dpdk"}
+      }],
+      "hostNetwork": false,
+      "hostIPC": true,
+      "restartPolicy": "Always"
+    }
+  }
+},
+{
+  "rxProtocol": "TCP",
+  "txProtocol":"RTP",
+  "imageURI": "localhost/gpu_infer_tcp:1.0.0",
+  "additionalNetwork": true,
+  "virtualNetworkDeviceDriverType": "sriov",
+  "envs":{
+    "CUDA_MPS_PIPE_DIRECTORY": "/tmp/nvidia-mps",
+    "CUDA_MPS_LOG_DIRECTORY": "/tmp/nvidia-mps",
+    "GST_PLUGIN_PATH": "/opt/nvidia/deepstream/deepstream-7.0/sample-functions/functions/gpu_infer_tcp_plugins/fpga_depayloader",
+    "HEIGHT": "1280",
+    "WIDTH": "1280"
+  },
+  "template":{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "spec":{
+      "containers":[{
+        "name": "gfunc-hi-1",
+        "workingDir": "/opt/nvidia/deepstream/deepstream-7.0",
+        "command": ["sh", "-c"],
+        "args":["cd /opt/DeepStream-Yolo && gst-launch-1.0 -ev fpgadepay",
+           "%INPUTIP%",
+           "%INPUTPORT%",
+           "! 'video/x-raw,format=(string)BGR,%WIDTH%,%HEIGHT%'",
+           "! nvvideoconvert ! 'video/x-raw(memory:NVMM), format=(string)RGBA'",
+           "! m.sink_0 nvstreammux name=m nvbuf-memory-type=0 batch-size=1",
+           "%WIDTH%",
+           "%HEIGHT%",
+           "! queue ! nvinfer config-file-path=./config_infer_primary_yoloV4_p6_th020_040.txt batch-size=1",
+           "model-engine-file=./model_b1_gpu0_fp16.engine ! queue ! nvdsosd process-mode=1 ! nvvideoconvert !",
+           "'video/x-raw, format=(string)BGR' ! videoconvert ! queue ! perf ! rtpvrawpay ! udpsink",
+           "%OUTPUTIP%",
+           "%OUTPUTPORT%",
+           "sync=true"],
+        "securityContext":{
+          "privileged": true
+        },
+        "volumeMounts":[{
+          "name": "host-nvidia-mps",
+          "mountPath": "/tmp/nvidia-mps"
+        }]
+      }],
+      "volumes":[{
+        "name": "host-nvidia-mps",
+        "hostPath":
+         {"path": "/tmp/nvidia-mps"}
+      }],
+      "hostNetwork": false,
+      "hostIPC": true,
+      "restartPolicy": "Always"
+    }
+  }
+}]

@@ -1,0 +1,17 @@
+go 1.23
+
+toolchain go1.23.0
+
+use (
+	./CPUFunction
+	./DeviceInfo
+	./EthernetConnection
+	./FPGAFunction
+	./GPUFunction
+	./PCIeConnection
+	./WBConnection
+	./WBFunction
+	./tools/InfoCollector
+	./tools/gpu_info
+	./whitebox-k8s-flowctrl
+)

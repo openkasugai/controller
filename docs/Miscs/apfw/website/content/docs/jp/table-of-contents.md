@@ -1,0 +1,47 @@
+---
+weight: 1
+title: "目次"
+---
+## 目次
+
+- [概要](../overview)
+- 目次
+- [改修対象と改修の流れについて](../about-the-target-of-modifications-and-the-flow-of-modifications)
+- [環境情報・前提条件](../environment-information-and-prerequisites)
+- 改修手順
+    - Custom Kubeflow Backend関連改修手順
+        - [go.mod改修](../modification-procedure/apfw-backend-related-modification-procedure/modify-go.mod)
+        - [argo.go改修](../modification-procedure/apfw-backend-related-modification-procedure/modify-argo.go)
+        - [visitor.go改修](../modification-procedure/apfw-backend-related-modification-procedure/modify-visitor.go)
+        - [resource_manager.go改修](../modification-procedure/apfw-backend-related-modification-procedure/modify-resource_manager.go)
+        - [v2_template.go改修](../modification-procedure/apfw-backend-related-modification-procedure/modify-v2_template.go)
+        - [install-go-licenses.sh改修](../modification-procedure/apfw-backend-related-modification-procedure/modify-install-go-licenses.sh)
+        - [Makefile改修](../modification-procedure/apfw-backend-related-modification-procedure/modify-makefile)
+        - [Dockerfile改修](../modification-procedure/apfw-backend-related-modification-procedure/modify-dockerfile)
+        - [不要ファイル削除](../modification-procedure/apfw-backend-related-modification-procedure/delete-unnecessary-files)
+    - Custom Kubeflow SDK関連改修手順
+        - [OpenKasugaiライブラリ追加](../modification-procedure/apfw-sdk-related-modification-procedure/add-dci-library)
+        - [requirements追加](../modification-procedure/apfw-sdk-related-modification-procedure/add-requirements)
+        - [pipeline_spec.proto改修](../modification-procedure/apfw-sdk-related-modification-procedure/modify-pipeline_spec.proto)
+        - [Components改修](../modification-procedure/apfw-sdk-related-modification-procedure/modify-components)
+        - [Pipeline改修](../modification-procedure/apfw-sdk-related-modification-procedure/modify-pipeline)
+        - [Compiler改修](../modification-procedure/apfw-sdk-related-modification-procedure/modify-compiler)
+        - [structures改修](../modification-procedure/apfw-sdk-related-modification-procedure/modify-structures)
+- ビルド手順
+    - Custom Kubeflow Backend関連ビルド手順
+        - [pipeline_spec.protoビルド(バックエンド)](../build-procedure/apfw-backend-related-build-procedure/build-pipeline_spec.proto)
+        - [ライセンス情報の更新](../build-procedure/apfw-backend-related-build-procedure/updating-licenses-info)
+        - [Custom Kubeflow Backendビルド](../build-procedure/apfw-backend-related-build-procedure/build-apfw-backend)
+    - Custom Kubeflow SDK関連ビルド手順
+        - [pipeline_spec.protoビルド(SDK)](../build-procedure/apfw-sdk-related-build-procedure/build-pipeline_spec.proto)
+- デプロイ手順
+    - OpenKasugaiコントローラノードへの設定
+        - [Namespace作成とRole設定](../deployment-procedure/configuration-on-dci-controller-node/create-namespace-and-set-role)
+    - Custom Kubeflow Backend関連デプロイ手順
+        - [Custom Kubeflow Backendデプロイ](../deployment-procedure/apfw-backend-related-deployment-procedure/deploy-apfw-backend)
+- 動作確認
+    - Custom Kubeflow SDK動作確認
+        - [Custom Kubeflow SDKインストール手順](../operation-confirmation/apfw-sdk-operation-confirmation/apfw-sdk-install)
+        - [IR YAMLの出力による動作確認](../operation-confirmation/apfw-sdk-operation-confirmation/operation-confirmation-by-iryaml-output)
+        - [Dataflowのデプロイによる動作確認](../operation-confirmation/apfw-sdk-operation-confirmation/operation-confirmation-by-dataflow-deployment)
+- [Pipelineサンプル](../pipeline-sample)

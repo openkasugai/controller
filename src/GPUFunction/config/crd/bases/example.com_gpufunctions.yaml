@@ -1,0 +1,267 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  name: gpufunctions.example.com
+spec:
+  group: example.com
+  names:
+    kind: GPUFunction
+    listKind: GPUFunctionList
+    plural: gpufunctions
+    singular: gpufunction
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.status
+      name: STATUS
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: GPUFunction is the Schema for the gpufunctions API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: GPUFunctionSpec defines the desired state of GPUFunction
+            properties:
+              acceleratorIDs:
+                items:
+                  properties:
+                    id:
+                      type: string
+                    partitionName:
+                      type: string
+                  required:
+                  - id
+                  type: object
+                type: array
+              configName:
+                type: string
+              dataFlowRef:
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+              deviceType:
+                type: string
+              envs:
+                items:
+                  properties:
+                    eachEnv:
+                      items:
+                        description: Environmental information
+                        properties:
+                          envKey:
+                            type: string
+                          envValue:
+                            type: string
+                        required:
+                        - envKey
+                        - envValue
+                        type: object
+                      type: array
+                    partitionName:
+                      type: string
+                  required:
+                  - eachEnv
+                  - partitionName
+                  type: object
+                type: array
+              functionIndex:
+                format: int32
+                type: integer
+              functionName:
+                type: string
+              nextFunctions:
+                additionalProperties:
+                  properties:
+                    port:
+                      format: int32
+                      type: integer
+                    wbFunctionRef:
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                      required:
+                      - name
+                      - namespace
+                      type: object
+                  required:
+                  - port
+                  - wbFunctionRef
+                  type: object
+                type: object
+              nodeName:
+                type: string
+              params:
+                additionalProperties:
+                  anyOf:
+                  - type: integer
+                  - type: string
+                  x-kubernetes-int-or-string: true
+                type: object
+              previousFunctions:
+                additionalProperties:
+                  properties:
+                    port:
+                      format: int32
+                      type: integer
+                    wbFunctionRef:
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                      required:
+                      - name
+                      - namespace
+                      type: object
+                  required:
+                  - port
+                  - wbFunctionRef
+                  type: object
+                type: object
+              protocol:
+                type: string
+              regionName:
+                type: string
+              requestMemorySize:
+                format: int32
+                type: integer
+              sharedMemory:
+                description: Shared memory information
+                properties:
+                  commandQueueID:
+                    type: string
+                  filePrefix:
+                    type: string
+                  sharedMemoryMiB:
+                    format: int32
+                    type: integer
+                required:
+                - commandQueueID
+                - filePrefix
+                - sharedMemoryMiB
+                type: object
+            required:
+            - acceleratorIDs
+            - configName
+            - dataFlowRef
+            - deviceType
+            - functionName
+            - nodeName
+            - regionName
+            type: object
+          status:
+            description: GPUFunctionStatus defines the observed state of GPUFunction
+            properties:
+              Ip:
+                type: string
+              acceleratorStatuses:
+                items:
+                  properties:
+                    partitionName:
+                      type: string
+                    statuses:
+                      items:
+                        properties:
+                          acceleratorID:
+                            type: string
+                          status:
+                            type: string
+                        type: object
+                      type: array
+                  type: object
+                type: array
+              additionalNetwork:
+                type: boolean
+              configName:
+                type: string
+              dataFlowRef:
+                description: |-
+                  INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+                  Important: Run "make" to regenerate code after modifying this file
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+              functionIndex:
+                format: int32
+                type: integer
+              functionName:
+                type: string
+              imageURI:
+                type: string
+              rxProtocol:
+                type: string
+              sharedMemory:
+                description: Shared memory information
+                properties:
+                  commandQueueID:
+                    type: string
+                  filePrefix:
+                    type: string
+                  sharedMemoryMiB:
+                    format: int32
+                    type: integer
+                required:
+                - commandQueueID
+                - filePrefix
+                - sharedMemoryMiB
+                type: object
+              startTime:
+                format: date-time
+                type: string
+              status:
+                default: Pending
+                type: string
+              txProtocol:
+                type: string
+              virtualNetworkDeviceDriverType:
+                type: string
+            required:
+            - configName
+            - dataFlowRef
+            - functionName
+            - imageURI
+            - startTime
+            - status
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources: {}

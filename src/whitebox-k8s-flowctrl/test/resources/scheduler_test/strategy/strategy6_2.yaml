@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: strategy6-2
+  namespace : default
+data:
+  selectTop: "8"

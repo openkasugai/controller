@@ -1,0 +1,63 @@
+[{
+  "subDeviceSpecRef": "0100001c",
+  "functionTargets":[{
+    "regionName": "lane0",
+    "regionType": "alveou250-0100001c-2lanes-0nics",
+    "maxFunctions": 1,
+    "maxCapacity": 40
+  },{
+    "regionName": "lane1",
+    "regionType": "alveou250-0100001c-2lanes-0nics",
+    "maxFunctions": 1,
+    "maxCapacity": 40
+  }]
+},{
+  "subDeviceSpecRef": "fffffff0",
+  "functionTargets":[{
+    "regionName": "lane0",
+    "regionType": "alveou250-0100001c-2lanes-0nics"
+  },{
+    "regionName": "lane1",
+    "regionType": "alveou250-0100001c-2lanes-0nics"
+  }]
+},{
+  "subDeviceSpecRef": "Tesla T4",
+  "functionTargets":[{
+    "regionName": "t4",
+    "regionType": "t4",
+    "maxFunctions": 110,
+    "maxCapacity": 40
+  }]
+},{
+  "subDeviceSpecRef": "NVIDIA A100 80GB PCIe",
+  "functionTargets":[{
+    "regionName": "a100",
+    "regionType": "a100",
+    "maxFunctions": 110,
+    "maxCapacity": 120
+  }]
+},{
+  "subDeviceSpecRef": "Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz",
+  "functionTargets":[{
+    "regionName": "cpu",
+    "regionType": "cpu",
+    "maxFunctions": 110,
+    "maxCapacity": 120
+  }]
+},{
+  "subDeviceSpecRef": "Intel(R) Xeon(R) Gold 6348 CPU @ 2.60GHz",
+  "functionTargets":[{
+    "regionName": "cpu",
+    "regionType": "cpu",
+    "maxFunctions": 110,
+    "maxCapacity": 120
+  }]
+},{
+  "subDeviceSpecRef": "Intel(R) Xeon(R) Gold 6330 CPU @ 2.00GHz",
+  "functionTargets":[{
+    "regionName": "cpu",
+    "regionType": "cpu",
+    "maxFunctions": 110,
+    "maxCapacity": 120
+  }]
+}]

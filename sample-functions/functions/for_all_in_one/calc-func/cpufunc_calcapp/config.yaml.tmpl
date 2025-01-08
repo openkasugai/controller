@@ -1,0 +1,8 @@
+next:
+{{- if .ips}}
+  host: "{{index .ips 0}}"
+  port: {{(index .ports 0).port}}
+{{- else}}
+  host: "localhost"
+  port: 8080
+{{- end}}

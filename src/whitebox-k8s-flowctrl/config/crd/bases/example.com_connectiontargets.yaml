@@ -1,0 +1,104 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  name: connectiontargets.example.com
+spec:
+  group: example.com
+  names:
+    kind: ConnectionTarget
+    listKind: ConnectionTargetList
+    plural: connectiontargets
+    singular: connectiontarget
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.nodeName
+      name: NodeName
+      type: string
+    - jsonPath: .status.DeviceType
+      name: DeviceType
+      type: string
+    - jsonPath: .status.deviceIndex
+      name: DeviceIndex
+      type: integer
+    - jsonPath: .status.regionName
+      name: RegionName
+      type: integer
+    - jsonPath: .status.interfaceName
+      name: InterfaceName
+      type: string
+    - jsonPath: .status.interfaceType
+      name: InterfaceType
+      type: string
+    - jsonPath: .status.interfaceSideType
+      name: InterfaceSideType
+      type: string
+    - jsonPath: .status.available
+      name: Available
+      type: boolean
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: ConnectionTarget is the Schema for the connectiontargets API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ConnectionTargetSpec defines the desired state of ConnectionTarget
+            properties:
+              ioResourceRef:
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            required:
+            - ioResourceRef
+            type: object
+          status:
+            description: ConnectionTargetStatus defines the desired state of ConnectionTarget
+            properties:
+              DeviceType:
+                type: string
+              available:
+                type: boolean
+              deviceIndex:
+                type: integer
+              interfaceName:
+                type: string
+              interfaceSideType:
+                type: string
+              interfaceType:
+                type: string
+              nodeName:
+                type: string
+              region:
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

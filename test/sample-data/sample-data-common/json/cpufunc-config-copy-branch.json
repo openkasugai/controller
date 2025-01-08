@@ -1,0 +1,30 @@
+[{
+  "rxProtocol":"TCP",
+  "txProtocol":"TCP",
+  "additionalNetwork": true,
+  "virtualNetworkDeviceDriverType": "sriov",
+  "copyMemorySize": "1024",
+  "imageURI": "localhost/cpu_copy_branch:1.0.0",
+  "template":{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "spec":{
+      "containers":[{
+        "name": "cfunc-copy-branch-1",
+        "workingDir": "/opt/openkasugai-controller/sample-functions/functions-ext/cpu_copy_branch",
+        "command": ["sh","-c"],
+        "args":["./copy_branch",
+           "%RECEIVING%",
+           "%NUM%",
+           "%FORWARDING%",
+           "%MEMSIZE%"],
+        "securityContext":{
+          "privileged": true
+        }
+      }],
+      "hostNetwork": false,
+      "hostIPC": true,
+      "restartPolicy": "Always"
+    }
+  }
+}]

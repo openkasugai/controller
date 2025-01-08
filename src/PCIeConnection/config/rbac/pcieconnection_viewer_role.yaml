@@ -1,0 +1,27 @@
+# permissions for end users to view pcieconnections.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: pcieconnection-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: pcieconnection
+    app.kubernetes.io/part-of: pcieconnection
+    app.kubernetes.io/managed-by: kustomize
+  name: pcieconnection-viewer-role
+rules:
+- apiGroups:
+  - example.com
+  resources:
+  - pcieconnections
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - pcieconnections/status
+  verbs:
+  - get

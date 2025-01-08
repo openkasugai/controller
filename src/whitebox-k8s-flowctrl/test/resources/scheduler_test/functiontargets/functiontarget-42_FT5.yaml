@@ -1,0 +1,17 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  name: node1.a100-2.gpu-1234
+  namespace: default
+spec:
+status:
+  available: true
+  maxCapacity: 100
+  currentCapacity: 0
+  deviceIndex: 2
+  deviceType: a100
+  nodeName: node1
+  regionName: gpu-1234
+  regionType: a100
+  maxFunctions: 110
+  currentFunctions: 0

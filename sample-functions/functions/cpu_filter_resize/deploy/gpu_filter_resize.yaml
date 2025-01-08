@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-filter-resize
+spec:
+  containers:
+  - name: fr
+    image: localhost/filter-resize-gpu:1.0.0
+    env:
+    - name: USE_GPU
+      value: "1"
+    - name: FRENV_INPUT_PORT
+      value: "8888"
+    - name: FRENV_OUTPUT_IP
+      value: 10.38.119.20
+    - name: FRENV_OUTPUT_PORT
+      value: "9999"
+    - name: FRENV_INPUT_WIDTH
+      value: "3840"
+    - name: FRENV_INPUT_HEIGHT
+      value: "2160"
+    - name: FRENV_OUTPUT_WIDTH
+      value: "1280"
+    - name: FRENV_OUTPUT_HEIGHT
+      value: "1280"
+    - name: FRENV_APPLOG_LEVEL
+      value: "INFO"
+    command: 
+    - "python"
+    - "fr.py"
+    - "--in_port=$(FRENV_INPUT_PORT)"
+    - "--out_addr=$(FRENV_OUTPUT_IP)"
+    - "--out_port=$(FRENV_OUTPUT_PORT)" 
+    - "--in_width=$(FRENV_INPUT_WIDTH)"
+    - "--in_height=$(FRENV_INPUT_HEIGHT)"
+    - "--out_width=$(FRENV_OUTPUT_WIDTH)"
+    - "--out_height=$(FRENV_OUTPUT_HEIGHT)"
+    - "--loglevel=$(FRENV_APPLOG_LEVEL)"
+    securityContext:
+      privileged: true
+  hostNetwork: true
+  hostIPC: true
+  affinity:
+    nodeAffinity:  
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - wbta06

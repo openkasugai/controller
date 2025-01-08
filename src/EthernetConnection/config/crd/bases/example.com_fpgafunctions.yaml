@@ -1,0 +1,325 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  name: fpgafunctions.example.com
+spec:
+  group: example.com
+  names:
+    kind: FPGAFunction
+    listKind: FPGAFunctionList
+    plural: fpgafunctions
+    singular: fpgafunction
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.status
+      name: STATUS
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: FPGAFunction is the Schema for the fpgafunctions API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: FPGAFunctionSpec defines the desired state of FPGAFunction
+            properties:
+              acceleratorIDs:
+                items:
+                  properties:
+                    id:
+                      type: string
+                    partitionName:
+                      type: string
+                  required:
+                  - id
+                  - partitionName
+                  type: object
+                type: array
+              configName:
+                type: string
+              dataFlowRef:
+                description: |-
+                  INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                  Important: Run "make" to regenerate code after modifying this file
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+              deviceType:
+                type: string
+              envs:
+                items:
+                  properties:
+                    eachEnv:
+                      items:
+                        properties:
+                          envKey:
+                            type: string
+                          envValue:
+                            type: string
+                        required:
+                        - envKey
+                        - envValue
+                        type: object
+                      type: array
+                    partitionName:
+                      type: string
+                  required:
+                  - eachEnv
+                  - partitionName
+                  type: object
+                type: array
+              frameworkKernelID:
+                format: int32
+                type: integer
+              functionChannelID:
+                format: int32
+                type: integer
+              functionIndex:
+                format: int32
+                type: integer
+              functionKernelID:
+                format: int32
+                type: integer
+              functionName:
+                type: string
+              nodeName:
+                type: string
+              ptuKernelID:
+                format: int32
+                type: integer
+              regionName:
+                type: string
+              rx:
+                properties:
+                  dmaChannelID:
+                    format: int32
+                    type: integer
+                  fdmaConnectorID:
+                    format: int32
+                    type: integer
+                  gatewayAddress:
+                    type: string
+                  ipAddress:
+                    type: string
+                  port:
+                    format: int32
+                    type: integer
+                  protocol:
+                    type: string
+                  subnetAddress:
+                    type: string
+                required:
+                - protocol
+                type: object
+              sharedMemory:
+                properties:
+                  commandQueueID:
+                    type: string
+                  filePrefix:
+                    type: string
+                  sharedMemoryMiB:
+                    format: int32
+                    type: integer
+                required:
+                - commandQueueID
+                - filePrefix
+                - sharedMemoryMiB
+                type: object
+              tx:
+                properties:
+                  dmaChannelID:
+                    format: int32
+                    type: integer
+                  fdmaConnectorID:
+                    format: int32
+                    type: integer
+                  gatewayAddress:
+                    type: string
+                  ipAddress:
+                    type: string
+                  port:
+                    format: int32
+                    type: integer
+                  protocol:
+                    type: string
+                  subnetAddress:
+                    type: string
+                required:
+                - protocol
+                type: object
+            required:
+            - acceleratorIDs
+            - configName
+            - dataFlowRef
+            - deviceType
+            - frameworkKernelID
+            - functionChannelID
+            - functionKernelID
+            - functionName
+            - nodeName
+            - ptuKernelID
+            - regionName
+            - rx
+            - tx
+            type: object
+          status:
+            description: FPGAFunctionStatus defines the observed state of FPGAFunction
+            properties:
+              acceleratorStatuses:
+                items:
+                  properties:
+                    partitionName:
+                      type: string
+                    statuses:
+                      items:
+                        properties:
+                          acceleratorID:
+                            type: string
+                          status:
+                            type: string
+                        type: object
+                      type: array
+                  type: object
+                type: array
+              childBitstreamName:
+                type: string
+              dataFlowRef:
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+              frameworkKernelID:
+                format: int32
+                type: integer
+              functionChannelID:
+                format: int32
+                type: integer
+              functionKernelID:
+                format: int32
+                type: integer
+              functionName:
+                type: string
+              parentBitstreamName:
+                type: string
+              ptuKernelID:
+                format: int32
+                type: integer
+              rx:
+                properties:
+                  dmaChannelID:
+                    format: int32
+                    type: integer
+                  fdmaConnectorID:
+                    format: int32
+                    type: integer
+                  gatewayAddress:
+                    type: string
+                  ipAddress:
+                    type: string
+                  port:
+                    format: int32
+                    type: integer
+                  protocol:
+                    type: string
+                  subnetAddress:
+                    type: string
+                required:
+                - protocol
+                type: object
+              sharedMemory:
+                properties:
+                  commandQueueID:
+                    type: string
+                  filePrefix:
+                    type: string
+                  sharedMemoryMiB:
+                    format: int32
+                    type: integer
+                required:
+                - commandQueueID
+                - filePrefix
+                - sharedMemoryMiB
+                type: object
+              startTime:
+                description: |-
+                  INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+                  Important: Run "make" to regenerate code after modifying this file
+                format: date-time
+                type: string
+              status:
+                default: Pending
+                type: string
+              tx:
+                properties:
+                  dmaChannelID:
+                    format: int32
+                    type: integer
+                  fdmaConnectorID:
+                    format: int32
+                    type: integer
+                  gatewayAddress:
+                    type: string
+                  ipAddress:
+                    type: string
+                  port:
+                    format: int32
+                    type: integer
+                  protocol:
+                    type: string
+                  subnetAddress:
+                    type: string
+                required:
+                - protocol
+                type: object
+            required:
+            - childBitstreamName
+            - dataFlowRef
+            - frameworkKernelID
+            - functionChannelID
+            - functionKernelID
+            - functionName
+            - parentBitstreamName
+            - ptuKernelID
+            - rx
+            - startTime
+            - status
+            - tx
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources: {}

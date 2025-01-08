@@ -1,0 +1,63 @@
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-cpu-decode
+  namespace: wbfunc-imgproc
+spec:
+  functionName: cpu-decode
+  functionInfoCMRef:
+    name: funcinfo-cpu-decode
+    namespace: wbfunc-imgproc
+  version: 1.0.0
+
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-cpu-filter-resize
+  namespace: wbfunc-imgproc
+spec:
+  functionName: cpu-filter-resize
+  functionInfoCMRef:
+    name: funcinfo-cpu-filter-resize
+    namespace: wbfunc-imgproc
+  version: 1.0.0
+ 
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-copy-branch
+  namespace: wbfunc-imgproc
+spec:
+  functionName: copy-branch
+  functionInfoCMRef:
+    name: funcinfo-copy-branch
+    namespace: wbfunc-imgproc
+  version: 1.0.0
+ 
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-person-infer
+  namespace: wbfunc-imgproc
+spec:
+  functionName: person-infer
+  functionInfoCMRef:
+    name: funcinfo-person-infer
+    namespace: wbfunc-imgproc
+  version: 1.0.0
+
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-vehicle-infer
+  namespace: wbfunc-imgproc
+spec:
+  functionName: vehicle-infer
+  functionInfoCMRef:
+    name: funcinfo-vehicle-infer
+    namespace: wbfunc-imgproc
+  version: 1.0.0

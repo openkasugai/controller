@@ -1,0 +1,190 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  name: topologyinfos.example.com
+spec:
+  group: example.com
+  names:
+    kind: TopologyInfo
+    listKind: TopologyInfoList
+    plural: topologyinfos
+    singular: topologyinfo
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: TopologyInfo is the Schema for the topologyinfos API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: TopologyInfoSpec defines the desired state of TopologyInfo
+            properties:
+              topologyDataCMRef:
+                items:
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  required:
+                  - name
+                  - namespace
+                  type: object
+                type: array
+            required:
+            - topologyDataCMRef
+            type: object
+          status:
+            description: TopologyInfoStatus defines the observed state of TopologyInfo
+            properties:
+              entities:
+                items:
+                  properties:
+                    available:
+                      type: boolean
+                    capacityInfo:
+                      properties:
+                        currentFunctions:
+                          format: int32
+                          type: integer
+                        currentIncomingCapacity:
+                          format: int32
+                          type: integer
+                        currentOutgoingCapacity:
+                          format: int32
+                          type: integer
+                        maxFunctions:
+                          format: int32
+                          type: integer
+                        maxIncomingCapacity:
+                          format: int32
+                          type: integer
+                        maxOutgoingCapacity:
+                          format: int32
+                          type: integer
+                      type: object
+                    deviceInfo:
+                      properties:
+                        deviceIndex:
+                          format: int32
+                          type: integer
+                        deviceType:
+                          type: string
+                        nodeName:
+                          type: string
+                        regionName:
+                          type: string
+                      required:
+                      - deviceIndex
+                      - deviceType
+                      - nodeName
+                      type: object
+                    id:
+                      type: string
+                    interfaceInfo:
+                      properties:
+                        deviceIndex:
+                          format: int32
+                          type: integer
+                        deviceType:
+                          type: string
+                        interfaceIndex:
+                          format: int32
+                          type: integer
+                        interfaceSideType:
+                          type: string
+                        interfaceType:
+                          type: string
+                        nodeName:
+                          type: string
+                      required:
+                      - interfaceIndex
+                      - interfaceSideType
+                      - interfaceType
+                      - nodeName
+                      type: object
+                    locationInfo:
+                      properties:
+                        dataCenter:
+                          type: string
+                        rack:
+                          type: string
+                      type: object
+                    networkInfo:
+                      properties:
+                        networkIndex:
+                          format: int32
+                          type: integer
+                        networkSideType:
+                          type: string
+                        networkType:
+                          type: string
+                        nodeName:
+                          type: string
+                      required:
+                      - networkIndex
+                      - networkSideType
+                      - networkType
+                      type: object
+                    nodeInfo:
+                      properties:
+                        nodeName:
+                          type: string
+                      required:
+                      - nodeName
+                      type: object
+                    type:
+                      type: string
+                  required:
+                  - available
+                  - id
+                  - type
+                  type: object
+                type: array
+              relations:
+                items:
+                  properties:
+                    available:
+                      type: boolean
+                    from:
+                      type: string
+                    to:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - available
+                  - from
+                  - to
+                  - type
+                  type: object
+                type: array
+            required:
+            - entities
+            - relations
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

@@ -1,0 +1,21 @@
+#!/bin/bash
+# Copyright 2024 NTT Corporation, FUJITSU LIMITED
+
+docker run \
+  -it \
+  -d \
+  --net=host \
+  -e DECENV_APPLOG_LEVEL=4 \
+  -e DECENV_VIDEOSRC_PROTOCOL="RTSP" \
+  -e DECENV_VIDEOSRC_PORT=8554 \
+  -e DECENV_VIDEOSRC_IPA="192.168.0.51" \
+  -e DECENV_FRAME_FPS=5.0 \
+  -e DECENV_FRAME_WIDTH=3840 \
+  -e DECENV_FRAME_HEIGHT=2160 \
+  -e DECENV_OUTDST_PROTOCOL="TCP" \
+  -e DECENV_VIDEO_CONNECT_LIMIT=0 \
+  -e DECENV_OUTDST_IPA="192.168.0.222" \
+  -e DECENV_OUTDST_PORT=12000 \
+  -e DECENV_FPGA_CH_ID=0 \
+  --name cpu_decode_00 \
+  cpu_decode

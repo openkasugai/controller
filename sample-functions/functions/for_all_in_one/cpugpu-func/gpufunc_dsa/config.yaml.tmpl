@@ -1,0 +1,4 @@
+command:
+- /bin/bash
+- -c
+- echo "IP:[{{index .ips 0}}] Port:[{{(index .ports 0).port}}]"; sleep 30000;

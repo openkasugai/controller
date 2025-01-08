@@ -1,0 +1,407 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "sample-flow"
+  namespace: "default"
+spec:
+  functionChainRef:
+    name: "sample-chain"
+    namespace: "default"
+  startPoint:
+    ip: "10.10.10.10"
+    port: 80
+    protocol: "TCP"
+  endPoint:
+    ip: "10.10.10.20"
+    port: 8080
+    protocol: "UDP"
+  requirements:
+    all:
+      capacity: 15
+  userRequirement: "user-requirement"
+status:
+  functionChain:
+    metadata:
+      creationTimestamp: null
+    spec:
+      functionTypeNamespace: ""
+      connectionTypeNamespace: ""
+      functions:
+        decode-main:
+          functionName: cpu-decode
+          version: 1.0.0
+        filter-resize-main:
+          functionName: cpu-filter-resize
+          version: 1.0.0
+        copy-branch-main:
+          functionName: copy-branch
+          version: 1.0.0
+        high-infer-main-1:
+          functionName: high-infer
+          version: 1.0.0
+        high-infer-main-2:
+          functionName: high-infer
+          version: 1.0.0
+      connections:
+      - from:
+          functionKey: wb-start-of-chain
+          port: 0
+        to:
+          functionKey: decode-main
+          port: 0
+        connectionTypeName: auto
+      - from:
+          functionKey: decode-main
+          port: 0
+        to:
+          functionKey: filter-resize-main
+          port: 0
+        connectionTypeName: auto
+      - from:
+          functionKey: filter-resize-main
+          port: 0
+        to:
+          functionKey: copy-branch-main
+          port: 0
+        connectionTypeName: auto
+      - from:
+          functionKey: copy-branch-main
+          port: 0
+        to:
+          functionKey: high-infer-main-1
+          port: 0
+        connectionTypeName: auto
+      - from:
+          functionKey: copy-branch-main
+          port: 1
+        to:
+          functionKey: high-infer-main-2
+          port: 0
+        connectionTypeName: auto
+      - from:
+          functionKey: high-infer-main-1
+          port: 0
+        to:
+          functionKey: wb-end-of-chain-1
+          port: 0
+        connectionTypeName: auto
+      - from:
+          functionKey: high-infer-main-2
+          port: 0
+        to:
+          functionKey: wb-end-of-chain-2
+          port: 0
+        connectionTypeName: auto  
+    status:
+      status: ""
+  functionType:
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-cpu-decode
+        namespace: default
+      functionName: cpu-decode
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - cpu
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-cpu-filter-resize
+        namespace: default
+      functionName: cpu-filter-resize
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - cpu
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-copy-branch
+        namespace: default
+      functionName: copy-branch
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - cpu
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-high-infer
+        namespace: default
+      functionName: high-infer
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - a100
+      status: Ready
+  scheduledConnections:
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: node0
+      usedType: ""
+    - entityID: node0.host100gether-0
+      usedType: Outgoing
+    - entityID: global.ether-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.nic-0.host100gether-0
+      usedType: Incoming
+    - entityID: node1.nic-0
+      usedType: ""
+    - entityID: node1.nic-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.cpu-0
+      usedType: ""
+    from:
+      functionKey: wb-start-of-chain
+      interfaceType: host100gether
+      port: 0
+    to:
+      functionKey: decode-main
+      interfaceType: host100gether
+      port: 0
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: node1.cpu-0
+      usedType: ""
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.nic-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.nic-0
+      usedType: ""
+    - entityID: node1.nic-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.cpu-0
+      usedType: ""
+    from:
+      functionKey: decode-main
+      interfaceType: host100gether
+      port: 0
+    to:
+      functionKey: filter-resize-main
+      interfaceType: host100gether
+      port: 0
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: node1.cpu-0
+      usedType: ""
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.nic-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.nic-0
+      usedType: ""
+    - entityID: node1.nic-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.cpu-0
+      usedType: ""
+    from:
+      functionKey: filter-resize-main
+      interfaceType: host100gether
+      port: 0
+    to:
+      functionKey: copy-branch-main
+      interfaceType: host100gether
+      port: 0
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: node1.cpu-0
+      usedType: ""
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.nic-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.nic-0
+      usedType: ""
+    - entityID: node1.nic-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.cpu-0
+      usedType: ""
+    - entityID: node1.cpu-0.pcie-1
+      usedType: Outgoing
+    - entityID: node1.pcie-network-1
+      usedType: IncomingAndOutgoing
+    - entityID: node1.a100-1.pcie-0
+      usedType: Incoming
+    - entityID: node1.a100-1
+      usedType: ""
+    from:
+      functionKey: copy-branch-main
+      interfaceType: host100gether
+      port: 0
+    to:
+      functionKey: high-infer-main-1
+      interfaceType: host100gether
+      port: 0
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: node1.cpu-0
+      usedType: ""
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.nic-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.nic-0
+      usedType: ""
+    - entityID: node1.nic-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.cpu-0
+      usedType: ""
+    - entityID: node1.cpu-0.pcie-1
+      usedType: Outgoing
+    - entityID: node1.pcie-network-1
+      usedType: IncomingAndOutgoing
+    - entityID: node1.a100-1.pcie-0
+      usedType: Incoming
+    - entityID: node1.a100-1
+      usedType: ""
+    from:
+      functionKey: copy-branch-main
+      interfaceType: host100gether
+      port: 1
+    to:
+      functionKey: high-infer-main-2
+      interfaceType: host100gether
+      port: 0
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: node1.a100-1
+      usedType: ""
+    - entityID: node1.a100-1.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-1
+      usedType: IncomingAndOutgoing
+    - entityID: node1.cpu-0.pcie-1
+      usedType: Incoming
+    - entityID: node1.cpu-0
+      usedType: ""
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.nic-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.nic-0
+      usedType: ""
+    - entityID: node1.nic-0.host100gether-0
+      usedType: Outgoing
+    - entityID: global.ether-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node0.host100gether-0
+      usedType: Incoming
+    - entityID: node0
+      usedType: ""
+    from:
+      functionKey: high-infer-main-1
+      interfaceType: host100gether
+      port: 0
+    to:
+      functionKey: wb-end-of-chain-1
+      interfaceType: host100gether
+      port: 0
+  - connectionMethod: host-100gether
+    connectionPath:
+    - entityID: node1.a100-1
+      usedType: ""
+    - entityID: node1.a100-1.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-1
+      usedType: IncomingAndOutgoing
+    - entityID: node1.cpu-0.pcie-1
+      usedType: Incoming
+    - entityID: node1.cpu-0
+      usedType: ""
+    - entityID: node1.cpu-0.pcie-0
+      usedType: Outgoing
+    - entityID: node1.pcie-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node1.nic-0.pcie-0
+      usedType: Incoming
+    - entityID: node1.nic-0
+      usedType: ""
+    - entityID: node1.nic-0.host100gether-0
+      usedType: Outgoing
+    - entityID: global.ether-network-0
+      usedType: IncomingAndOutgoing
+    - entityID: node0.host100gether-0
+      usedType: Incoming
+    - entityID: node0
+      usedType: ""
+    from:
+      functionKey: high-infer-main-2
+      interfaceType: host100gether
+      port: 0
+    to:
+      functionKey: wb-end-of-chain-2
+      interfaceType: host100gether
+      port: 0
+  scheduledFunctions:
+    decode-main:
+      deviceIndex: 0
+      deviceType: cpu
+      nodeName: node1
+      regionName: cpu
+    filter-resize-main:
+      deviceIndex: 0
+      deviceType: cpu
+      nodeName: node1
+      regionName: cpu
+    copy-branch-main:
+      deviceIndex: 0
+      deviceType: cpu
+      nodeName: node1
+      regionName: cpu
+    high-infer-main-1:
+      deviceIndex: 1
+      deviceType: a100
+      nodeName: node1
+      regionName: gpu
+    high-infer-main-2:
+      deviceIndex: 1
+      deviceType: a100
+      nodeName: node1
+      regionName: gpu
+  startPoint: ""
+  endPoint: ""
+  status: "WBFunction/WBConnection creation in progress"

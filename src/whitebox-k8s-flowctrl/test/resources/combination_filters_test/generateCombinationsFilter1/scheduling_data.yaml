@@ -1,0 +1,11 @@
+apiVersion: example.com/v1
+kind: SchedulingData
+metadata:
+  name: test
+  namespace : default 
+spec:
+  filterPipeline:
+    - "GenerateCombinations"
+status:
+  status: "Filtering"
+  currentFilterIndex: 0

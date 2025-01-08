@@ -1,0 +1,155 @@
+apiVersion: example.com/v1
+kind: SchedulingData
+metadata:
+  name: sample-flow
+  namespace: default
+spec:
+  filterPipeline:
+  - GenerateCombinations
+  - TargetResourceFit
+  - TargetResourceFitScore
+status:
+  status: Finish
+  currentFilterIndex: 3
+  targetCombinations:
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      copy-branch-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      high-infer-main-1:
+        deviceIndex: 1
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+      high-infer-main-2:
+        deviceIndex: 1
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+    score: 150501139000
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      copy-branch-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      high-infer-main-1:
+        deviceIndex: 0
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+      high-infer-main-2:
+        deviceIndex: 0
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+    score: 120501139000
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      copy-branch-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      high-infer-main-1:
+        deviceIndex: 0
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+      high-infer-main-2:
+        deviceIndex: 1
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+    score: 120501139000
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      copy-branch-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      high-infer-main-1:
+        deviceIndex: 1
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+      high-infer-main-2:
+        deviceIndex: 0
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+    score: 120501139000
+  - scheduledConnections: null
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      copy-branch-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      high-infer-main-1:
+        deviceIndex: 1
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+      high-infer-main-2:
+        deviceIndex: 2
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+    score: 120501139000
+  typeCombinations: null

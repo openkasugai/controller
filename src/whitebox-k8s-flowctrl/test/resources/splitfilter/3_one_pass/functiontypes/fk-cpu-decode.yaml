@@ -1,0 +1,10 @@
+apiVersion: example.com/v1
+kind: FunctionKind
+metadata:
+  name: fk-cpu-decode
+  namespace: wbfunc-imgproc
+spec:
+  name: cpu-decode
+  function_info_name: funcinfo-cpu-decode
+  function_info_namespace: wbfunc-imgproc
+  version: 1.0.0

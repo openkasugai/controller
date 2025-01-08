@@ -1,0 +1,201 @@
+diff --git b/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV3_tiny.txt a/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV3_tiny.txt
+index 40ca7d5..85973d0 100644
+--- b/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV3_tiny.txt
++++ a/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV3_tiny.txt
+@@ -57,7 +57,7 @@ model-file=yolov3-tiny.weights
+ #model-engine-file=yolov3-tiny_b1_gpu0_fp32.engine
+ labelfile-path=labels.txt
+ ## 0=FP32, 1=INT8, 2=FP16 mode
+-network-mode=0
++network-mode=1
+ num-detected-classes=80
+ gie-unique-id=1
+ network-type=0
+@@ -70,6 +70,7 @@ custom-lib-path=nvdsinfer_custom_impl_Yolo/libnvdsinfer_custom_impl_Yolo.so
+ engine-create-func-name=NvDsInferYoloCudaEngineGet
+ #scaling-filter=0
+ #scaling-compute-hw=0
++filter-out-class-ids=1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45;46;47;48;49;50;51;52;53;54;55;56;57;58;59;60;61;62;63;64;65;66;67;68;69;70;71;72;73;74;75;76;77;78;79
+ 
+ [class-attrs-all]
+ nms-iou-threshold=0.3
+diff --git b/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6.txt a/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6.txt
+index 56d164c..80ca940 100644
+--- b/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6.txt
++++ a/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6.txt
+@@ -50,27 +50,27 @@
+ [property]
+ gpu-id=0
+ net-scale-factor=0.0039215697906911373
+-#0=RGB, 1=BGR
+ model-color-format=0
+-custom-network-config=yolov2.cfg
+-model-file=yolov2.weights
+-#model-engine-file=yolov2_b1_gpu0_fp32.engine
++custom-network-config=yolov4-p6.cfg
++model-file=yolov4-p6.weights
++model-engine-file=model_b1_gpu0_fp16.engine
++#int8-calib-file=calib.table
+ labelfile-path=labels.txt
+-## 0=FP32, 1=INT8, 2=FP16 mode
+-network-mode=0
++batch-size=1
++network-mode=2
+ num-detected-classes=80
++interval=0
+ gie-unique-id=1
++process-mode=1
+ network-type=0
+-is-classifier=0
+-## 1=DBSCAN, 2=NMS, 3= DBSCAN+NMS Hybrid, 4 = None(No clustering)
+ cluster-mode=2
+ maintain-aspect-ratio=1
+-parse-bbox-func-name=NvDsInferParseCustomYoloV2
++parse-bbox-func-name=NvDsInferParseYolo
+ custom-lib-path=nvdsinfer_custom_impl_Yolo/libnvdsinfer_custom_impl_Yolo.so
+ engine-create-func-name=NvDsInferYoloCudaEngineGet
+-#scaling-filter=0
+-#scaling-compute-hw=0
++filter-out-class-ids=1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45;46;47;48;49;50;51;52;53;54;55;56;57;58;59;60;61;62;63;64;65;66;67;68;69;70;71;72;73;74;75;76;77;78;79
+ 
+ [class-attrs-all]
+-nms-iou-threshold=0.3
+-threshold=0.6
++nms-iou-threshold=0.20
++pre-cluster-threshold=0.40
++topk=300
+diff --git b/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_025.txt a/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_025.txt
+index 56d164c..8cbd2e7 100644
+--- b/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_025.txt
++++ a/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_025.txt
+@@ -50,27 +50,27 @@
+ [property]
+ gpu-id=0
+ net-scale-factor=0.0039215697906911373
+-#0=RGB, 1=BGR
+ model-color-format=0
+-custom-network-config=yolov2.cfg
+-model-file=yolov2.weights
+-#model-engine-file=yolov2_b1_gpu0_fp32.engine
++custom-network-config=yolov4-p6.cfg
++model-file=yolov4-p6.weights
++model-engine-file=model_b1_gpu0_fp16.engine
++#int8-calib-file=calib.table
+ labelfile-path=labels.txt
+-## 0=FP32, 1=INT8, 2=FP16 mode
+-network-mode=0
++batch-size=1
++network-mode=2
+ num-detected-classes=80
++interval=0
+ gie-unique-id=1
++process-mode=1
+ network-type=0
+-is-classifier=0
+-## 1=DBSCAN, 2=NMS, 3= DBSCAN+NMS Hybrid, 4 = None(No clustering)
+ cluster-mode=2
+ maintain-aspect-ratio=1
+-parse-bbox-func-name=NvDsInferParseCustomYoloV2
++parse-bbox-func-name=NvDsInferParseYolo
+ custom-lib-path=nvdsinfer_custom_impl_Yolo/libnvdsinfer_custom_impl_Yolo.so
+ engine-create-func-name=NvDsInferYoloCudaEngineGet
+-#scaling-filter=0
+-#scaling-compute-hw=0
++filter-out-class-ids=1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45;46;47;48;49;50;51;52;53;54;55;56;57;58;59;60;61;62;63;64;65;66;67;68;69;70;71;72;73;74;75;76;77;78;79
+ 
+ [class-attrs-all]
+-nms-iou-threshold=0.3
+-threshold=0.6
++nms-iou-threshold=0.20
++pre-cluster-threshold=0.25
++topk=300
+diff --git b/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_040.txt a/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_040.txt
+index 56d164c..80ca940 100644
+--- b/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_040.txt
++++ a/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_040.txt
+@@ -50,27 +50,27 @@
+ [property]
+ gpu-id=0
+ net-scale-factor=0.0039215697906911373
+-#0=RGB, 1=BGR
+ model-color-format=0
+-custom-network-config=yolov2.cfg
+-model-file=yolov2.weights
+-#model-engine-file=yolov2_b1_gpu0_fp32.engine
++custom-network-config=yolov4-p6.cfg
++model-file=yolov4-p6.weights
++model-engine-file=model_b1_gpu0_fp16.engine
++#int8-calib-file=calib.table
+ labelfile-path=labels.txt
+-## 0=FP32, 1=INT8, 2=FP16 mode
+-network-mode=0
++batch-size=1
++network-mode=2
+ num-detected-classes=80
++interval=0
+ gie-unique-id=1
++process-mode=1
+ network-type=0
+-is-classifier=0
+-## 1=DBSCAN, 2=NMS, 3= DBSCAN+NMS Hybrid, 4 = None(No clustering)
+ cluster-mode=2
+ maintain-aspect-ratio=1
+-parse-bbox-func-name=NvDsInferParseCustomYoloV2
++parse-bbox-func-name=NvDsInferParseYolo
+ custom-lib-path=nvdsinfer_custom_impl_Yolo/libnvdsinfer_custom_impl_Yolo.so
+ engine-create-func-name=NvDsInferYoloCudaEngineGet
+-#scaling-filter=0
+-#scaling-compute-hw=0
++filter-out-class-ids=1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45;46;47;48;49;50;51;52;53;54;55;56;57;58;59;60;61;62;63;64;65;66;67;68;69;70;71;72;73;74;75;76;77;78;79
+ 
+ [class-attrs-all]
+-nms-iou-threshold=0.3
+-threshold=0.6
++nms-iou-threshold=0.20
++pre-cluster-threshold=0.40
++topk=300
+diff --git b/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_070.txt a/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_070.txt
+index 56d164c..7c084e9 100644
+--- b/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_070.txt
++++ a/sample-functions/functions/gpu_infer_dma_plugins/fpgasrc/build_docker/gpu-deepstream/config_infer_primary_yoloV4_p6_th020_070.txt
+@@ -50,27 +50,27 @@
+ [property]
+ gpu-id=0
+ net-scale-factor=0.0039215697906911373
+-#0=RGB, 1=BGR
+ model-color-format=0
+-custom-network-config=yolov2.cfg
+-model-file=yolov2.weights
+-#model-engine-file=yolov2_b1_gpu0_fp32.engine
++custom-network-config=yolov4-p6.cfg
++model-file=yolov4-p6.weights
++model-engine-file=model_b1_gpu0_fp16.engine
++#int8-calib-file=calib.table
+ labelfile-path=labels.txt
+-## 0=FP32, 1=INT8, 2=FP16 mode
+-network-mode=0
++batch-size=1
++network-mode=2
+ num-detected-classes=80
++interval=0
+ gie-unique-id=1
++process-mode=1
+ network-type=0
+-is-classifier=0
+-## 1=DBSCAN, 2=NMS, 3= DBSCAN+NMS Hybrid, 4 = None(No clustering)
+ cluster-mode=2
+ maintain-aspect-ratio=1
+-parse-bbox-func-name=NvDsInferParseCustomYoloV2
++parse-bbox-func-name=NvDsInferParseYolo
+ custom-lib-path=nvdsinfer_custom_impl_Yolo/libnvdsinfer_custom_impl_Yolo.so
+ engine-create-func-name=NvDsInferYoloCudaEngineGet
+-#scaling-filter=0
+-#scaling-compute-hw=0
++filter-out-class-ids=1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45;46;47;48;49;50;51;52;53;54;55;56;57;58;59;60;61;62;63;64;65;66;67;68;69;70;71;72;73;74;75;76;77;78;79
+ 
+ [class-attrs-all]
+-nms-iou-threshold=0.3
+-threshold=0.6
++nms-iou-threshold=0.20
++pre-cluster-threshold=0.70
++topk=300

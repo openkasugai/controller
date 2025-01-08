@@ -1,0 +1,167 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  name: schedulingdata.example.com
+spec:
+  group: example.com
+  names:
+    kind: SchedulingData
+    listKind: SchedulingDataList
+    plural: schedulingdata
+    singular: schedulingdata
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.status
+      name: Status
+      type: string
+    - jsonPath: .status.currentFilterIndex
+      name: Index
+      type: string
+    - jsonPath: .spec.userRequirement
+      name: UserRequirement
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              filterPipeline:
+                items:
+                  type: string
+                type: array
+            required:
+            - filterPipeline
+            type: object
+          status:
+            properties:
+              currentFilterIndex:
+                format: int32
+                type: integer
+              status:
+                type: string
+              targetCombinations:
+                items:
+                  properties:
+                    scheduledConnections:
+                      items:
+                        properties:
+                          connectionMethod:
+                            type: string
+                          connectionPath:
+                            items:
+                              properties:
+                                entityID:
+                                  type: string
+                                usedType:
+                                  type: string
+                              required:
+                              - entityID
+                              - usedType
+                              type: object
+                            type: array
+                          from:
+                            properties:
+                              functionKey:
+                                type: string
+                              interfaceType:
+                                type: string
+                              port:
+                                format: int32
+                                type: integer
+                            required:
+                            - functionKey
+                            type: object
+                          to:
+                            properties:
+                              functionKey:
+                                type: string
+                              interfaceType:
+                                type: string
+                              port:
+                                format: int32
+                                type: integer
+                            required:
+                            - functionKey
+                            type: object
+                        required:
+                        - connectionMethod
+                        - from
+                        - to
+                        type: object
+                      type: array
+                    scheduledFunctions:
+                      additionalProperties:
+                        properties:
+                          deviceIndex:
+                            format: int32
+                            type: integer
+                          deviceType:
+                            type: string
+                          functionIndex:
+                            format: int32
+                            type: integer
+                          nodeName:
+                            type: string
+                          regionName:
+                            type: string
+                        required:
+                        - deviceIndex
+                        - deviceType
+                        - nodeName
+                        - regionName
+                        type: object
+                      type: object
+                    score:
+                      format: int64
+                      type: integer
+                  type: object
+                type: array
+              typeCombinations:
+                items:
+                  properties:
+                    connectionTypes:
+                      items:
+                        type: string
+                      type: array
+                    deviceTypes:
+                      additionalProperties:
+                        type: string
+                      type: object
+                    score:
+                      format: int64
+                      type: integer
+                  type: object
+                type: array
+            required:
+            - status
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

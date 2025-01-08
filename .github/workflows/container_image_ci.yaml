@@ -1,0 +1,181 @@
+name: Docker Image Build and Push
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      push-image:
+        description: "push image"
+        default: false
+        required: true
+        type: boolean
+      tag-name:
+        description: "Enter tag name"
+        required: false
+        type: string
+      no-cache:
+        description: "Build docker images with no cache"
+        default: false
+        required: false
+        type: boolean
+
+jobs:
+  docker-build-and-push:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    env:
+      GHCR_ADDRESS: ghcr.io
+      REGISTRY_PROJECT: openkasugai/controller
+      GO_VERSION: '1.23.x'
+      CGO_CFLAGS_ALLOW: -mrtm
+      PKG_CONFIG_PATH: ${{ github.workspace }}/src/submodules/fpga-software/lib/DPDK/dpdk/lib/x86_64-linux-gnu/pkgconfig:${{ github.workspace }}/src/submodules/fpga-software/lib/build/pkgconfig
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - file: ./sample-functions/utils/rcv_video_tool/Dockerfile
+            context: ./sample-functions/utils/rcv_video_tool
+            image: rcv_video_tool
+            pkg_config_path: ""
+          - file: ./sample-functions/utils/send_video_tool/Dockerfile
+            context: ./sample-functions/utils/send_video_tool
+            image: send_video_tool
+            pkg_config_path: ""
+          - file: ./src/WBFunction/Dockerfile
+            context: ./src
+            image: wbfunction
+            pkg_config_path: ""
+          - file: ./src/WBConnection/Dockerfile
+            context: ./src
+            image: wbconnection
+            pkg_config_path: ""
+          - file: ./src/whitebox-k8s-flowctrl/Dockerfile
+            context: ./src
+            image: whitebox-k8s-flowctrl
+            pkg_config_path: ""
+          - file: ./src/CPUFunction/Dockerfile
+            context: ./src
+            image: cpufunction
+            pkg_config_path: ""
+          - file: ./src/GPUFunction/Dockerfile
+            context: ./src
+            image: gpufunction
+            pkg_config_path: ""
+          - file: ./src/FPGAFunction/Dockerfile
+            context: ./src
+            image: fpgafunction
+            pkg_config_path: ${PKG_CONFIG_PATH}:/workspace/openkasugai-hardware-drivers/lib/DPDK/dpdk/lib/x86_64-linux-gnu/pkgconfig:/workspace/openkasugai-hardware-drivers/lib/build/pkgconfig
+          - file: ./src/EthernetConnection/Dockerfile
+            context: ./src
+            image: ethernetconnection
+            pkg_config_path: ${PKG_CONFIG_PATH}:/workspace/openkasugai-hardware-drivers/lib/DPDK/dpdk/lib/x86_64-linux-gnu/pkgconfig:/workspace/openkasugai-hardware-drivers/lib/build/pkgconfig
+          - file: ./src/PCIeConnection/Dockerfile
+            context: ./src
+            image: pcieconnection
+            pkg_config_path: ${PKG_CONFIG_PATH}:/workspace/openkasugai-hardware-drivers/lib/DPDK/dpdk/lib/x86_64-linux-gnu/pkgconfig:/workspace/openkasugai-hardware-drivers/lib/build/pkgconfig
+          - file: ./src/DeviceInfo/Dockerfile
+            context: ./src
+            image: deviceinfo
+            pkg_config_path: ""
+          - file: ./sample-functions/functions/cpu_decode/docker/Dockerfile
+            context: ./
+            image: cpu_decode
+            pkg_config_path: ""
+          - file: ./sample-functions/functions/cpu_filter_resize/containers/cpu/Dockerfile
+            context: ./sample-functions/functions/cpu_filter_resize
+            image: cpu_filter_resize
+            pkg_config_path: ""
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build FPGA libraries
+        run: |
+          git submodule update --init
+          sudo apt-get update
+          sudo apt-get install -y \
+            tree \
+            build-essential \
+            python3-pip \
+            pkg-config \
+            libnuma-dev \
+            zlib1g-dev \
+            libpciaccess-dev
+          sudo pip3 install meson ninja pyelftools
+          go version
+          cd ${{ github.workspace }}/src/submodules/fpga-software/lib
+          make dpdk
+          make mcap
+          make json
+          make
+          sudo mkdir /usr/local/include/fpgalib
+          sudo cp -RT ./build/include/libfpga /usr/local/include/fpgalib/
+          sudo cp -r ./libfpga/include/libfpga_internal /usr/local/include/fpgalib/
+          sudo mkdir /usr/local/lib/fpgalib
+          sudo cp ./build/libfpga.a /usr/local/lib/fpgalib/
+          sudo ln -s $PWD/DPDK/dpdk /usr/local/lib/fpgalib/dpdk
+          cd ${{ github.workspace }}/src/fpgadb
+          make
+          sudo cp -RT build/include /usr/local/include/fpgalib
+          sudo cp build/libfpgadb.a /usr/local/lib/fpgalib/
+          cd ${{ github.workspace }}
+          cp -pr ./src/submodules/fpga-software ./src/PCIeConnection/openkasugai-hardware-drivers
+          cp -pr ./src/submodules/fpga-software ./src/EthernetConnection/openkasugai-hardware-drivers
+          cp -pr ./src/submodules/fpga-software ./src/FPGAFunction/openkasugai-hardware-drivers
+          cp -pr ./src/fpgadb ./src/FPGAFunction/
+          git clone https://github.com/openkasugai/hardware-design.git -b v1.0.0 --depth 1 openkasugai-hardware-design
+          cp openkasugai-hardware-design/example-design/bitstream/OpenKasugai-fpga-example-design-1.0.0-2.bit ./src/FPGAFunction/
+
+      - name: Set up Docker Context for Buildx
+        run: docker context create builders || docker context use builders
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-flags: --debug
+          endpoint: builders
+
+      - name: Login to ghcr
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GHCR_ADDRESS }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.GHCR_ADDRESS }}/${{ env.REGISTRY_PROJECT }}/${{ matrix.image }}
+          tags: |
+            type=semver,pattern={{version}},enable=${{ github.event_name == 'push' }}
+            type=raw,value=${{ inputs.tag-name }},enable=${{ github.event_name == 'workflow_dispatch' }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.context }}
+          file: ./${{ matrix.file }}
+          build-args: |
+            PKG_CONFIG_PATH=${{ matrix.pkg_config_path }}
+          push: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.push-image == true) }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          no-cache: ${{ inputs.no-cache == true }}
+          cache-from: type=registry,ref=${{ env.GHCR_ADDRESS }}/${{ env.REGISTRY_PROJECT }}/${{ matrix.image }}:buildcache
+          cache-to: type=registry,ref=${{ env.GHCR_ADDRESS }}/${{ env.REGISTRY_PROJECT }}/${{ matrix.image }}:buildcache,image-manifest=true,oci-mediatypes=true,mode=max,ignore-error=${{ github.event_name == 'pull_request' }}
+          provenance: false

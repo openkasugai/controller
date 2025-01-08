@@ -1,0 +1,18 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  creationTimestamp: null
+  name: node1.alveou250-1.lane0
+  namespace: default
+spec:
+  computeResourceRef:
+    name: ""
+    namespace: ""
+status:
+  status: NotReady
+  available: true
+  deviceIndex: 1
+  deviceType: alveou250
+  nodeName: node1
+  regionName: lane0
+  regionType: alveo

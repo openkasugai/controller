@@ -1,0 +1,28 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  name: swb-sm7.alveo-3.lane1
+  namespace: default
+spec:
+  computeResourceRef:
+    name: compute-swb-sm7
+    namespace: default
+status:
+  available: true
+  maxCapacity: 40
+  currentCapacity: 0
+  deviceIndex: 3
+  deviceType: alveo
+  functions:
+  - available: true
+    maxCapacity: 40
+    currentCapacity: 0
+    functionIndex: 0
+    functionName: filter-resize-high-infer
+    maxDataFlows: 8
+    currentDataFlows: 0
+  nodeName: swb-sm7
+  regionName: lane1
+  regionType: alveo
+  maxFunctions: 1
+  currentFunctions: 1

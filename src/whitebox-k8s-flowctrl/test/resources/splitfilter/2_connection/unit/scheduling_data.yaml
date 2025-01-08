@@ -1,0 +1,16 @@
+apiVersion: example.com/v1
+kind: SchedulingData
+metadata:
+  name: sample-flow
+  namespace: default 
+spec:
+  filterPipeline:
+    - "GenerateCombinations"
+    - "TargetResourceFit"
+    - "TargetResourceFitScore"
+    - "GenerateRoute"
+    - "ConnectionResourceFit"
+    - "RouteScore"
+status:
+  status: "Filtering"
+  currentFilterIndex: 0

@@ -1,0 +1,89 @@
+[{
+  "rxProtocol":"RTP",
+  "txProtocol":"DMA",
+  "sharedMemoryMiB": 256,
+  "imageURI": "localhost/cpu_decode:1.0.0",
+  "additionalNetwork": true,
+  "virtualNetworkDeviceDriverType": "sriov",
+  "envs":{
+    "DECENV_APPLOG_LEVEL": "6",
+    "DECENV_FRAME_WIDTH": "3840",
+    "DECENV_FRAME_HEIGHT": "2160",
+    "DECENV_VIDEO_CONNECT_LIMIT": "0",
+    "DECENV_VIDEOSRC_PROTOCOL": "RTP",
+    "DECENV_OUTDST_PROTOCOL": "DMA"
+  },
+  "template":{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "spec":{
+      "containers":[{
+        "name": "cfunc-1",
+        "command": ["sh","-c"],
+        "args":["./sample-functions/functions/cpu_decode/build/cpu_decode-shared"],
+        "securityContext":{
+          "privileged": true
+        },
+        "volumeMounts":[{
+          "name": "hugepage-1gi",
+          "mountPath": "/dev/hugepages"
+        },{
+          "name": "dpdk",
+          "mountPath": "/var/run/dpdk"
+        }],
+        "resources":{
+          "requests":{
+            "memory": "8Gi"
+          },
+          "limits":{
+            "hugepages-1Gi": "1Gi"
+          }
+        }
+      }],
+      "volumes":[{
+        "name": "hugepage-1gi",
+        "hostPath":
+         {"path": "/dev/hugepages"}
+      },{
+        "name": "dpdk",
+        "hostPath":
+         {"path": "/var/run/dpdk"}
+      }],
+      "hostNetwork": false,
+      "hostIPC": true,
+      "restartPolicy": "Always"
+    }
+  }
+},
+{
+  "rxProtocol":"RTP",
+  "txProtocol":"TCP",
+  "imageURI": "localhost/cpu_decode:1.0.0",
+  "additionalNetwork": true,
+  "virtualNetworkDeviceDriverType": "sriov",
+  "envs":{
+    "DECENV_APPLOG_LEVEL": "6",
+    "DECENV_FRAME_WIDTH": "3840",
+    "DECENV_FRAME_HEIGHT": "2160",
+    "DECENV_VIDEO_CONNECT_LIMIT": "0",
+    "DECENV_VIDEOSRC_PROTOCOL": "RTP",
+    "DECENV_OUTDST_PROTOCOL": "TCP"
+  },
+  "template":{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "spec":{
+      "containers":[{
+        "name": "cfunc-1",
+        "command": ["sh","-c"],
+        "args":["./sample-functions/functions/cpu_decode/build/cpu_decode-shared"],
+        "securityContext":{
+          "privileged": true
+        }
+      }],
+      "hostNetwork": false,
+      "hostIPC": true,
+      "restartPolicy": "Always"
+    }
+  }
+}]

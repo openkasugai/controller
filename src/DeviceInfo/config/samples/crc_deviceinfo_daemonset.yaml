@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: crc-deviceinfo-daemon
+spec:
+  selector:
+    matchLabels:
+      app: crc-deviceinfo-daemon
+  template:
+    metadata:
+      labels:
+        app: crc-deviceinfo-daemon
+    spec:
+      containers:
+      - name: deviceinfo-container0
+        image: localhost/deviceinfo:1.0.0
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        args:
+        - "--kubeconfig=/kube/config"
+        env:
+        - name: K8S_CLUSTERNAME
+          value: default
+        - name: K8S_NODENAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - mountPath: /kube/config
+          name: crc-deviceinfo-daemon
+      volumes:
+      - name: crc-deviceinfo-daemon
+        hostPath:
+          path: /etc/k8s_worker/config
+          type: File

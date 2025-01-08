@@ -1,0 +1,91 @@
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: test-32
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "cpu-decode"
+      version: "1.0.0"
+    filter-resize-main:
+      functionName: "cpu-filter-resize"
+      version: "1.0.0"
+    copy-branch-main:
+      functionName: "copy-branch"
+      version: "1.0.0"
+    infer-1:
+      functionName: "person-infer"
+      version: "1.0.0"
+    infer-2:
+      functionName: "vehicle-infer"
+      version: "1.0.0"
+    infer-3:
+      functionName: "test-infer"
+      version: "1.0.0"
+  connections:
+    - from:
+        functionKey: "wb-start-of-chain"
+        port: 0
+      to:
+        functionKey: "decode-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "decode-main"
+        port: 0
+      to:
+        functionKey: "filter-resize-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "filter-resize-main"
+        port: 0
+      to:
+        functionKey: "copy-branch-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "copy-branch-main"
+        port: 0
+      to:
+        functionKey: "infer-1"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "copy-branch-main"
+        port: 0
+      to:
+        functionKey: "infer-2"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "copy-branch-main"
+        port: 0
+      to:
+        functionKey: "infer-3"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "infer-1"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain-1"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "infer-2"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain-2"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "infer-3"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain-3"
+        port: 0
+      connectionTypeName: "auto"

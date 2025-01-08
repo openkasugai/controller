@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: funcinfo-high-infer
+  namespace: wbfunc-imgproc
+data:
+  deployableItems: '[
+    {
+      "name": "item1",
+      "regionType": "a100",
+      "inputInterfaceType": "host100gether",
+      "outputInterfaceType": "host100gether",
+      "configName": "gpufunc-config-high-infer-1",
+      "specName": "spec1"
+    },
+    {
+      "name": "item2",
+      "regionType": "a100",
+      "inputInterfaceType": "mem",
+      "outputInterfaceType": "host100gether",
+      "configName": "gpufunc-config-high-infer-2",
+      "specName": "spec1"
+    }
+  ]'
+  spec: '[
+    {
+      "name": "spec1",
+      "minCore": 1,
+      "maxCore": 1,
+      "maxDataFlowsBase": 1,
+      "maxCapacityBase": 15,
+      "maxInputNum": 1,
+      "maxOutputNum":1
+    }
+  ]'

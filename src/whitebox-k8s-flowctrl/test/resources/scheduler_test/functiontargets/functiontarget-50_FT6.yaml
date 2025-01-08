@@ -1,0 +1,32 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  name: node2.a100-1.gpu
+  namespace: default
+spec:
+status:
+  available: true
+  maxCapacity: 60
+  currentCapacity: 60
+  deviceIndex: 1
+  deviceType: a100
+  nodeName: node2
+  regionName: gpu
+  regionType: a100
+  maxFunctions: 120
+  currentFunctions: 2
+  functions:
+  - functionIndex: 1
+    functionName: "high-infer"
+    available: false
+    maxDataFlows: 1
+    currentDataFlows: 1
+    maxCapacity: 30
+    currentCapacity: 30
+  - functionIndex: 2
+    functionName: "high-infer"
+    available: true
+    maxDataFlows: 1
+    currentDataFlows: 1
+    maxCapacity: 30
+    currentCapacity: 30

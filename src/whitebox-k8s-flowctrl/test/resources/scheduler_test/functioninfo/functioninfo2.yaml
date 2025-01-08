@@ -1,0 +1,87 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: funcinfo-decode-cpu
+    namespace: default
+  data:
+    cpu: '{
+      "items": {
+        "host100gether": {
+          "configName": "fpgafunc-config-decode-cpu",
+          "minCore": 1,
+          "maxCore": 1,
+          "maxDataFlowsBase": 1,
+          "maxCapacityBase": 20
+        },
+        "mem": {
+          "configName": "fpgafunc-config-decode-cpu",
+          "minCore": 1,
+          "maxCore": 1,
+          "maxDataFlowsBase": 1,
+          "maxCapacityBase": 20
+        }
+      }
+    }'
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: funcinfo-filter-resize-cpu
+    namespace: default
+  data:
+    cpu: '{
+      "items": {
+        "host100gether": {
+          "configName": "fpgafunc-config-filter-resize-cpu",
+          "minCore": 1,
+          "maxCore": 1,
+          "maxDataFlowsBase": 1,
+          "maxCapacityBase": 40
+        },
+        "mem": {
+          "configName": "fpgafunc-config-filter-resize-cpu",
+          "minCore": 1,
+          "maxCore": 1,
+          "maxDataFlowsBase": 1,
+          "maxCapacityBase": 40
+        }
+      }
+    }'
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: funcinfo-decode-cpu-outer
+    namespace: default
+  data:
+    cpu: '{
+      "items": {
+        "host100gether": {
+          "configName": "fpgafunc-config-decode-cpu-outer",
+          "minCore": 1,
+          "maxCore": 1,
+          "maxDataFlowsBase": 1,
+          "maxCapacityBase": 20
+        }
+      }
+    }'
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: funcinfo-filter-resize-inner
+    namespace: default
+  data:
+    alveo: '{
+      "items": {
+        "mem": {
+          "configName": "fpgafunc-config-filter-resize",
+          "minCore": 1,
+          "maxCore": 1,
+          "maxDataFlowsBase": 8,
+          "maxCapacityBase": 40
+        }
+      }
+    }'
+
+kind: List
+

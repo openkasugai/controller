@@ -1,0 +1,57 @@
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: cpu-p2c4-chain
+  namespace: cpufunc-sample
+spec:
+  functionTypeNamespace: "cpufunc-sample"
+  connectionTypeNamespace: "cpufunc-sample"
+  functions:
+    pip:
+      functionName: "cpu-p2c4-pip"
+      version: "1.0.0"
+    pipbr:
+      functionName: "cpu-p2c4-pip"
+      version: "1.0.0"
+    dsa:
+      functionName: "gpu-p2c4-dsa"
+      version: "1.0.0"
+    rcv:
+      functionName: "cpu-p2c4-rcv"
+      version: "1.0.0"
+  connections:
+  - from:
+      functionKey: "wb-start-of-chain"
+      port: 0
+    to:
+      functionKey: "pip"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "pip"
+      port: 0
+    to:
+      functionKey: "pipbr"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "pipbr"
+      port: 0
+    to:
+      functionKey: "dsa"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "dsa"
+      port: 0
+    to:
+      functionKey: "rcv"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "rcv"
+      port: 0
+    to:
+      functionKey: "wb-end-of-chain"
+      port: 0
+    connectionTypeName: "auto"

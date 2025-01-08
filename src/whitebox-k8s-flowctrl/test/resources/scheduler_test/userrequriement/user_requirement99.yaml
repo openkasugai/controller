@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-requirement99
+  namespace : default
+data:
+  dummy: dummy

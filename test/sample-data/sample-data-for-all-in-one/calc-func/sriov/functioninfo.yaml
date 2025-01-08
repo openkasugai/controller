@@ -1,0 +1,196 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: funcinfo-calcapp-sriov-send
+  namespace: cpufunc-calcapp
+data:
+  deployableItems: '[
+    {
+      "name": "item1",
+      "regionType": "cpu",
+      "inputInterfaceType": "host100gether",
+      "outputInterfaceType": "host100gether",
+      "configName": "cpufunc-config-calcapp-sriov-send",
+      "specName": "spec1"
+    }
+  ]'
+  spec: '[
+    {
+      "name": "spec1",
+      "minCore": 1,
+      "maxCore": 1,
+      "maxDataFlowsBase": 1,
+      "maxCapacityBase": 20,
+      "maxInputNum": 1,
+      "maxOutputNum":1
+    }
+  ]'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: funcinfo-calcapp-sriov-plus
+  namespace: cpufunc-calcapp
+data:
+  deployableItems: '[
+    {
+      "name": "item1",
+      "regionType": "cpu",
+      "inputInterfaceType": "host100gether",
+      "outputInterfaceType": "host100gether",
+      "configName": "cpufunc-config-calcapp-sriov-plus",
+      "specName": "spec1"
+    }
+  ]'
+  spec: '[
+    {
+      "name": "spec1",
+      "minCore": 1,
+      "maxCore": 1,
+      "maxDataFlowsBase": 1,
+      "maxCapacityBase": 20,
+      "maxInputNum": 1,
+      "maxOutputNum":1
+    }
+  ]'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: funcinfo-calcapp-sriov-minus
+  namespace: cpufunc-calcapp
+data:
+  deployableItems: '[
+    {
+      "name": "item1",
+      "regionType": "cpu",
+      "inputInterfaceType": "host100gether",
+      "outputInterfaceType": "host100gether",
+      "configName": "cpufunc-config-calcapp-sriov-minus",
+      "specName": "spec1"
+    }
+  ]'
+  spec: '[
+    {
+      "name": "spec1",
+      "minCore": 1,
+      "maxCore": 1,
+      "maxDataFlowsBase": 1,
+      "maxCapacityBase": 20,
+      "maxInputNum": 1,
+      "maxOutputNum":1
+    }
+  ]'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: funcinfo-calcapp-sriov-multiply
+  namespace: cpufunc-calcapp
+data:
+  deployableItems: '[
+    {
+      "name": "item1",
+      "regionType": "cpu",
+      "inputInterfaceType": "host100gether",
+      "outputInterfaceType": "host100gether",
+      "configName": "cpufunc-config-calcapp-sriov-multiply",
+      "specName": "spec1"
+    }
+  ]'
+  spec: '[
+    {
+      "name": "spec1",
+      "minCore": 1,
+      "maxCore": 1,
+      "maxDataFlowsBase": 1,
+      "maxCapacityBase": 20,
+      "maxInputNum": 1,
+      "maxOutputNum":1
+    }
+  ]'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: funcinfo-calcapp-sriov-divide
+  namespace: cpufunc-calcapp
+data:
+  deployableItems: '[
+    {
+      "name": "item1",
+      "regionType": "cpu",
+      "inputInterfaceType": "host100gether",
+      "outputInterfaceType": "host100gether",
+      "configName": "cpufunc-config-calcapp-sriov-divide",
+      "specName": "spec1"
+    }
+  ]'
+  spec: '[
+    {
+      "name": "spec1",
+      "minCore": 1,
+      "maxCore": 1,
+      "maxDataFlowsBase": 1,
+      "maxCapacityBase": 20,
+      "maxInputNum": 1,
+      "maxOutputNum":1
+    }
+  ]'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: funcinfo-calcapp-sriov-average-results
+  namespace: cpufunc-calcapp
+data:
+  deployableItems: '[
+    {
+      "name": "item1",
+      "regionType": "cpu",
+      "inputInterfaceType": "host100gether",
+      "outputInterfaceType": "host100gether",
+      "configName": "cpufunc-config-calcapp-sriov-average-results",
+      "specName": "spec1"
+    }
+  ]'
+  spec: '[
+    {
+      "name": "spec1",
+      "minCore": 1,
+      "maxCore": 1,
+      "maxDataFlowsBase": 1,
+      "maxCapacityBase": 20,
+      "maxInputNum": 1,
+      "maxOutputNum":1
+    }
+  ]'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: funcinfo-calcapp-sriov-rcv
+  namespace: cpufunc-calcapp
+data:
+  deployableItems: '[
+    {
+      "name": "item1",
+      "regionType": "cpu",
+      "inputInterfaceType": "host100gether",
+      "outputInterfaceType": "host100gether",
+      "configName": "cpufunc-config-calcapp-sriov-rcv",
+      "specName": "spec1"
+    }
+  ]'
+  spec: '[
+    {
+      "name": "spec1",
+      "minCore": 1,
+      "maxCore": 1,
+      "maxDataFlowsBase": 1,
+      "maxCapacityBase": 20,
+      "maxInputNum": 1,
+      "maxOutputNum":1
+    }
+  ]'

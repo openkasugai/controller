@@ -1,0 +1,12 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "df-join01"
+  namespace: "test01"
+spec:
+  functionChainRef:
+    name: "2data-join-filter-resize-infer-chain"
+    namespace: "chain-imgproc"
+  requirements:
+    all:
+      capacity: 15

@@ -1,0 +1,12 @@
+apiVersion: example.com/v1
+kind: GPUFunction
+metadata:
+  labels:
+    app.kubernetes.io/name: gpufunction
+    app.kubernetes.io/instance: gpufunction-sample
+    app.kubernetes.io/part-of: gpufunction
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: gpufunction
+  name: gpufunction-sample
+spec:
+  # TODO(user): Add fields here

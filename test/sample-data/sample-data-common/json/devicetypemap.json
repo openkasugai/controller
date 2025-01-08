@@ -1,0 +1,19 @@
+[{
+  "inputDeviceType": "ALVEO U250 PQ",
+  "outputDeviceType": "alveou250"
+},{
+  "inputDeviceType": "Tesla T4",
+  "outputDeviceType": "t4"
+},{
+  "inputDeviceType": "NVIDIA A100 80GB PCIe",
+  "outputDeviceType": "a100"
+},{
+  "inputDeviceType": "Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz",
+  "outputDeviceType": "cpu"
+},{
+  "inputDeviceType": "Intel(R) Xeon(R) Gold 6348 CPU @ 2.60GHz",
+  "outputDeviceType": "cpu"
+},{
+  "inputDeviceType": "Intel(R) Xeon(R) Gold 6330 CPU @ 2.00GHz",
+  "outputDeviceType": "cpu"
+}]

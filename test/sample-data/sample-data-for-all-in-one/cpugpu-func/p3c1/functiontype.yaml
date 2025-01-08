@@ -1,0 +1,24 @@
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-cpu-p3c1-pip
+  namespace: cpufunc-sample
+spec:
+  functionName: cpu-p3c1-pip
+  functionInfoCMRef:
+    name: funcinfo-cpu-p3c1-pip
+    namespace: cpufunc-sample
+  version: 1.0.0
+---
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-cpu-p3c1-rcv
+  namespace: cpufunc-sample
+spec:
+  functionName: cpu-p3c1-rcv
+  functionInfoCMRef:
+    name: funcinfo-cpu-p3c1-rcv
+    namespace: cpufunc-sample
+  version: 1.0.0

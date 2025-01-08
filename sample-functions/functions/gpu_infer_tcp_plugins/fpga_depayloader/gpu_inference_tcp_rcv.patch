@@ -1,0 +1,1170 @@
+diff --git a/tools/tcp_plugins/fpga_depayloader/gstfpgadepayloader.c b/tools/tcp_plugins/fpga_depayloader/gstfpgadepayloader.c
+index b4152353..82dade2e 100644
+--- a/tools/tcp_plugins/fpga_depayloader/gstfpgadepayloader.c
++++ b/tools/tcp_plugins/fpga_depayloader/gstfpgadepayloader.c
+@@ -1,8 +1,9 @@
++/*****************************************************************
++ * Copyright 2024 NTT Corporation, FUJITSU LIMITED
++ *****************************************************************/
++
+ /* GStreamer
+- * Copyright (C) <1999> Erik Walthinsen <omega@cse.ogi.edu>
+- * Copyright (C) <2004> Thomas Vander Stichele <thomas at apestaart dot org>
+- * Copyright (C) <2011> Collabora Ltd.
+- *     Author: Sebastian Dröge <sebastian.droege@collabora.co.uk>
++ * Copyright (C) 2024 FIXME <fixme@example.com>
+  *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Library General Public
+@@ -16,79 +17,76 @@
+  *
+  * You should have received a copy of the GNU Library General Public
+  * License along with this library; if not, write to the
+- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+- * Boston, MA 02110-1301, USA.
++ * Free Software Foundation, Inc., 51 Franklin Street, Suite 500,
++ * Boston, MA 02110-1335, USA.
+  */
+-
+ /**
+- * SECTION:element-tcpserversrc
+- * @title: tcpserversrc
+- * @see_also: #tcpserversink
++ * SECTION:element-gstfpgadepayloader
+  *
+- * ## Example launch line (server):
+- * |[
+- * gst-launch-1.0 tcpserversrc port=3000 ! fdsink fd=2
+- * ]|
+- * ## Example launch line (client):
++ * The fpgadepayloader element does FIXME stuff.
++ *
++ * <refsect2>
++ * <title>Example launch line</title>
+  * |[
+- * gst-launch-1.0 fdsrc fd=1 ! tcpclientsink port=3000
++ * gst-launch-1.0 -v fakesrc ! fpgadepayloader ! FIXME ! fakesink
+  * ]|
+- *
++ * FIXME Describe what the pipeline does.
++ * </refsect2>
+  */
+ 
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+ #endif
+ 
+-#include <gst/gst-i18n-plugin.h>
+-#include "gsttcpelements.h"
+-#include "gsttcpsrcstats.h"
+-#include "gsttcpserversrc.h"
++#include "gst-i18n-plugin.h"
++#include "gstfpgadepayloader.h"
+ 
+-GST_DEBUG_CATEGORY_STATIC (tcpserversrc_debug);
+-#define GST_CAT_DEFAULT tcpserversrc_debug
++GST_DEBUG_CATEGORY_STATIC (gst_fpga_depayloader_debug_category);
++#define GST_CAT_DEFAULT gst_fpga_depayloader_debug_category
+ 
+ #define TCP_DEFAULT_LISTEN_HOST         NULL    /* listen on all interfaces */
+ #define TCP_BACKLOG                     1       /* client connection queue */
+ 
+-#define MAX_READ_SIZE                   4 * 1024
++/* prototypes */
++
++#define gst_fpga_depayloader_parent_class parent_class
++G_DEFINE_TYPE (GstFpgaDepayloader, gst_fpga_depayloader, GST_TYPE_PUSH_SRC);
++
++static void gst_fpga_depayloader_finalize (GObject * gobject);
++static gboolean gst_fpga_depayloader_start (GstBaseSrc * bsrc);
++static gboolean gst_fpga_depayloader_stop (GstBaseSrc * bsrc);
++
++static gboolean gst_fpga_depayloader_unlock (GstBaseSrc * bsrc);
++static gboolean gst_fpga_depayloader_unlock_stop (GstBaseSrc * bsrc);
+ 
+-static GstStaticPadTemplate srctemplate = GST_STATIC_PAD_TEMPLATE ("src",
++static GstFlowReturn gst_fpga_depayloader_create (GstPushSrc * psrc,
++    GstBuffer ** buf);
++
++static void gst_fpga_depayloader_set_property (GObject * object,
++    guint property_id, const GValue * value, GParamSpec * pspec);
++static void gst_fpga_depayloader_get_property (GObject * object,
++    guint property_id, GValue * value, GParamSpec * pspec);
++
++/* pad templates */
++
++static GstStaticPadTemplate gst_fpga_depayloader_src_template =
++GST_STATIC_PAD_TEMPLATE ("src",
+     GST_PAD_SRC,
+     GST_PAD_ALWAYS,
+-    GST_STATIC_CAPS_ANY);
++    GST_STATIC_CAPS ("video/x-raw(ANY)")
++    );
+ 
+ enum
+ {
+   PROP_0,
+   PROP_HOST,
+   PROP_PORT,
+-  PROP_CURRENT_PORT,
+-  PROP_STATS,
++  PROP_CURRENT_PORT
+ };
+ 
+-#define gst_tcp_server_src_parent_class parent_class
+-G_DEFINE_TYPE (GstTCPServerSrc, gst_tcp_server_src, GST_TYPE_PUSH_SRC);
+-GST_ELEMENT_REGISTER_DEFINE_WITH_CODE (tcpserversrc, "tcpserversrc",
+-    GST_RANK_NONE, GST_TYPE_TCP_SERVER_SRC, tcp_element_init (plugin));
+-
+-static void gst_tcp_server_src_finalize (GObject * gobject);
+-
+-static gboolean gst_tcp_server_src_start (GstBaseSrc * bsrc);
+-static gboolean gst_tcp_server_src_stop (GstBaseSrc * bsrc);
+-static gboolean gst_tcp_server_src_unlock (GstBaseSrc * bsrc);
+-static gboolean gst_tcp_server_src_unlock_stop (GstBaseSrc * bsrc);
+-static GstFlowReturn gst_tcp_server_src_create (GstPushSrc * psrc,
+-    GstBuffer ** buf);
+-
+-static void gst_tcp_server_src_set_property (GObject * object, guint prop_id,
+-    const GValue * value, GParamSpec * pspec);
+-static void gst_tcp_server_src_get_property (GObject * object, guint prop_id,
+-    GValue * value, GParamSpec * pspec);
+-static GstStructure *gst_tcp_server_src_get_stats (GstTCPServerSrc * src);
+-
++/* class initialization */
+ static void
+-gst_tcp_server_src_class_init (GstTCPServerSrcClass * klass)
++gst_fpga_depayloader_class_init (GstFpgaDepayloaderClass * klass)
+ {
+   GObjectClass *gobject_class;
+   GstElementClass *gstelement_class;
+@@ -100,503 +98,600 @@ gst_tcp_server_src_class_init (GstTCPServerSrcClass * klass)
+   gstbasesrc_class = (GstBaseSrcClass *) klass;
+   gstpush_src_class = (GstPushSrcClass *) klass;
+ 
+-  gobject_class->set_property = gst_tcp_server_src_set_property;
+-  gobject_class->get_property = gst_tcp_server_src_get_property;
+-  gobject_class->finalize = gst_tcp_server_src_finalize;
++  gobject_class->set_property = gst_fpga_depayloader_set_property;
++  gobject_class->get_property =  gst_fpga_depayloader_get_property;
++  gobject_class->finalize = gst_fpga_depayloader_finalize;
+ 
+-  /* FIXME 2.0: Rename this to bind-address, host does not make much
+-   * sense here */
+   g_object_class_install_property (gobject_class, PROP_HOST,
+       g_param_spec_string ("host", "Host", "The hostname to listen as",
+           TCP_DEFAULT_LISTEN_HOST, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
++
+   g_object_class_install_property (gobject_class, PROP_PORT,
+       g_param_spec_int ("port", "Port",
+           "The port to listen to (0=random available port)",
+           0, TCP_HIGHEST_PORT, TCP_DEFAULT_PORT,
+           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+-  /**
+-   * GstTCPServerSrc:current-port:
+-   *
+-   * The port number the socket is currently bound to. Applications can use
+-   * this property to retrieve the port number actually bound to in case
+-   * the port requested was 0 (=allocate a random available port).
+-   *
+-   * Since: 1.0.2
+-   **/
++
+   g_object_class_install_property (gobject_class, PROP_CURRENT_PORT,
+       g_param_spec_int ("current-port", "current-port",
+           "The port number the socket is currently bound to", 0,
+           TCP_HIGHEST_PORT, 0, G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
+ 
+-  /**
+-   * GstTCPServerSrc::stats:
+-   *
+-   * Sends a GstStructure with statistics. We count bytes-received in a
+-   * platform-independent way and the rest via the tcp_info struct, if it's
+-   * available. The OS takes care of the TCP layer for us so we can't know it
+-   * from here.
+-   *
+-   * Struct members:
+-   *
+-   * bytes-received (uint64): Total bytes received (platform-independent)
+-   * reordering (uint): Amount of reordering (linux-specific)
+-   * unacked (uint): Un-acked packets (linux-specific)
+-   * sacked (uint): Selective acked packets (linux-specific)
+-   * lost (uint): Lost packets (linux-specific)
+-   * retrans (uint): Retransmits (linux-specific)
+-   * fackets (uint): Forward acknowledgement (linux-specific)
+-   *
+-   * Since: 1.18
+-   */
+-  g_object_class_install_property (gobject_class, PROP_STATS,
+-      g_param_spec_boxed ("stats", "Stats", "Retrieve a statistics structure",
+-          GST_TYPE_STRUCTURE, G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
+-
+-  gst_element_class_add_static_pad_template (gstelement_class, &srctemplate);
++  gst_element_class_add_static_pad_template (gstelement_class, &gst_fpga_depayloader_src_template);
+ 
+   gst_element_class_set_static_metadata (gstelement_class,
+-      "TCP server source", "Source/Network",
+-      "Receive data as a server over the network via TCP",
+-      "Thomas Vander Stichele <thomas at apestaart dot org>");
++      "FPGA Data Depayloader", "Source/Network",
++      "Receive FPGA data as a server over the network via TCP",
++      "FIXME");
+ 
+-  gstbasesrc_class->start = gst_tcp_server_src_start;
+-  gstbasesrc_class->stop = gst_tcp_server_src_stop;
+-  gstbasesrc_class->unlock = gst_tcp_server_src_unlock;
+-  gstbasesrc_class->unlock_stop = gst_tcp_server_src_unlock_stop;
++  gstbasesrc_class->start = gst_fpga_depayloader_start;
++  gstbasesrc_class->stop = gst_fpga_depayloader_stop;
++  gstbasesrc_class->unlock = gst_fpga_depayloader_unlock;
++  gstbasesrc_class->unlock_stop = gst_fpga_depayloader_unlock_stop;
+ 
+-  gstpush_src_class->create = gst_tcp_server_src_create;
++  gstpush_src_class->create = gst_fpga_depayloader_create;
+ 
+-  GST_DEBUG_CATEGORY_INIT (tcpserversrc_debug, "tcpserversrc", 0,
+-      "TCP Server Source");
++  GST_DEBUG_CATEGORY_INIT (gst_fpga_depayloader_debug_category, "fpgadepay", 0,
++      "Depayload frame header from TCP packet");
+ }
+ 
+ static void
+-gst_tcp_server_src_init (GstTCPServerSrc * src)
++gst_fpga_depayloader_init (GstFpgaDepayloader * fpgadepayloader)
+ {
+-  src->server_port = TCP_DEFAULT_PORT;
+-  src->host = g_strdup (TCP_DEFAULT_HOST);
+-  src->server_socket = NULL;
+-  src->client_socket = NULL;
+-  src->cancellable = g_cancellable_new ();
+-
+-  GST_OBJECT_FLAG_UNSET (src, GST_TCP_SERVER_SRC_OPEN);
+-}
+-
+-static void
+-gst_tcp_server_src_finalize (GObject * gobject)
+-{
+-  GstTCPServerSrc *src = GST_TCP_SERVER_SRC (gobject);
+-
+-  if (src->cancellable)
+-    g_object_unref (src->cancellable);
+-  src->cancellable = NULL;
+-  if (src->server_socket)
+-    g_object_unref (src->server_socket);
+-  src->server_socket = NULL;
+-  if (src->client_socket)
+-    g_object_unref (src->client_socket);
+-  src->client_socket = NULL;
+-
+-  g_free (src->host);
+-  src->host = NULL;
+-
+-  gst_clear_structure (&src->stats);
+-
+-  G_OBJECT_CLASS (parent_class)->finalize (gobject);
++  fpgadepayloader->server_port = TCP_DEFAULT_PORT;
++  fpgadepayloader->host = g_strdup (TCP_DEFAULT_HOST);
++  fpgadepayloader->server_socket = NULL;
++  fpgadepayloader->client_socket = NULL;
++  fpgadepayloader->cancellable = g_cancellable_new ();
++
++  char *strenv;
++  uint32_t width,height;
++  
++  // Get Width.
++  strenv = getenv("WIDTH");
++  assert(strenv != NULL);
++
++  width = atoi(strenv);
++  
++  // Exit if the WIDTH environment variable value is incorrect.
++  assert(width != 0);
++
++  g_print ("Image Width = %d\n", width);
++
++  // Get Height.
++  strenv = getenv("HEIGHT");
++  assert(strenv != NULL);
++
++  height = atoi(strenv);
++  
++  // Exit if the HEIGHT environment variable is incorrect.
++  assert(height != 0);
++  
++  g_print ("Image Height = %d\n", height);
++  
++  // Sets the height and width of the input image.
++  fpgadepayloader->width = width;
++  fpgadepayloader->height = height;
++  
++  // Address initialization of received data.
++  fpgadepayloader->receive_data = NULL;
++
++  // Initializing the receive size.
++  fpgadepayloader->receive_size = 0;
++
++
++  GST_OBJECT_FLAG_UNSET (fpgadepayloader, GST_TCP_SERVER_SRC_OPEN);
+ }
+ 
+-static GstFlowReturn
+-gst_tcp_server_src_create (GstPushSrc * psrc, GstBuffer ** outbuf)
++void
++gst_fpga_depayloader_finalize (GObject * object)
+ {
+-  GstTCPServerSrc *src;
+-  GstFlowReturn ret = GST_FLOW_OK;
+-  gssize rret, avail;
+-  gsize read;
+-  GError *err = NULL;
+-  GstMapInfo map;
++  GstFpgaDepayloader *fpgadepayloader = GST_FPGA_DEPAYLOADER (object);
+ 
+-  src = GST_TCP_SERVER_SRC (psrc);
+-
+-  if (!GST_OBJECT_FLAG_IS_SET (src, GST_TCP_SERVER_SRC_OPEN))
+-    goto wrong_state;
++  GST_DEBUG_OBJECT (fpgadepayloader, "finalize");
+ 
+-  if (!src->client_socket) {
+-    /* wait on server socket for connections */
+-    src->client_socket =
+-        g_socket_accept (src->server_socket, src->cancellable, &err);
+-    if (!src->client_socket)
+-      goto accept_error;
+-    GST_DEBUG_OBJECT (src, "closing server socket");
+-
+-    if (!g_socket_close (src->server_socket, &err)) {
+-      GST_ERROR_OBJECT (src, "Failed to close socket: %s", err->message);
+-      g_clear_error (&err);
+-    }
+-    /* now read from the socket. */
++  if (fpgadepayloader->cancellable){
++    g_object_unref (fpgadepayloader->cancellable);
+   }
+-
+-  /* if we have a client, wait for read */
+-  GST_LOG_OBJECT (src, "asked for a buffer");
+-
+-  /* read the buffer header */
+-  avail = g_socket_get_available_bytes (src->client_socket);
+-  if (avail < 0) {
+-    goto get_available_error;
+-  } else if (avail == 0) {
+-    GIOCondition condition;
+-
+-    if (!g_socket_condition_wait (src->client_socket,
+-            G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP, src->cancellable, &err))
+-      goto select_error;
+-
+-    condition =
+-        g_socket_condition_check (src->client_socket,
+-        G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP);
+-
+-    if ((condition & G_IO_ERR)) {
+-      GST_ELEMENT_ERROR (src, RESOURCE, READ, (NULL),
+-          ("Socket in error state"));
+-      *outbuf = NULL;
+-      ret = GST_FLOW_ERROR;
+-      goto done;
+-    } else if ((condition & G_IO_HUP)) {
+-      GST_DEBUG_OBJECT (src, "Connection closed");
+-      *outbuf = NULL;
+-      ret = GST_FLOW_EOS;
+-      goto done;
+-    }
+-    avail = g_socket_get_available_bytes (src->client_socket);
+-    if (avail < 0)
+-      goto get_available_error;
++  fpgadepayloader->cancellable = NULL;
++  
++  if (fpgadepayloader->server_socket){
++    g_object_unref (fpgadepayloader->server_socket);
+   }
+-
+-  if (avail > 0) {
+-    read = MIN (avail, MAX_READ_SIZE);
+-    *outbuf = gst_buffer_new_and_alloc (read);
+-    gst_buffer_map (*outbuf, &map, GST_MAP_READWRITE);
+-    rret =
+-        g_socket_receive (src->client_socket, (gchar *) map.data, read,
+-        src->cancellable, &err);
+-  } else {
+-    /* Connection closed */
+-    rret = 0;
+-    *outbuf = NULL;
+-    read = 0;
++  fpgadepayloader->server_socket = NULL;
++  
++  if (fpgadepayloader->client_socket){
++    g_object_unref (fpgadepayloader->client_socket);
+   }
++  fpgadepayloader->client_socket = NULL;
+ 
+-  if (rret == 0) {
+-    GST_DEBUG_OBJECT (src, "Connection closed");
+-    ret = GST_FLOW_EOS;
+-    if (*outbuf) {
+-      gst_buffer_unmap (*outbuf, &map);
+-      gst_buffer_unref (*outbuf);
+-    }
+-    *outbuf = NULL;
+-  } else if (rret < 0) {
+-    if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+-      ret = GST_FLOW_FLUSHING;
+-      GST_DEBUG_OBJECT (src, "Cancelled reading from socket");
+-    } else {
+-      ret = GST_FLOW_ERROR;
+-      GST_ELEMENT_ERROR (src, RESOURCE, READ, (NULL),
+-          ("Failed to read from socket: %s", err->message));
+-    }
+-    gst_buffer_unmap (*outbuf, &map);
+-    gst_buffer_unref (*outbuf);
+-    *outbuf = NULL;
+-  } else {
+-    ret = GST_FLOW_OK;
+-    gst_buffer_unmap (*outbuf, &map);
+-    gst_buffer_resize (*outbuf, 0, rret);
+-    src->bytes_received += read;
++  g_free (fpgadepayloader->host);
++  fpgadepayloader->host = NULL;
+ 
+-    GST_LOG_OBJECT (src,
+-        "Returning buffer from _get of size %" G_GSIZE_FORMAT ", ts %"
+-        GST_TIME_FORMAT ", dur %" GST_TIME_FORMAT
+-        ", offset %" G_GINT64_FORMAT ", offset_end %" G_GINT64_FORMAT,
+-        gst_buffer_get_size (*outbuf),
+-        GST_TIME_ARGS (GST_BUFFER_TIMESTAMP (*outbuf)),
+-        GST_TIME_ARGS (GST_BUFFER_DURATION (*outbuf)),
+-        GST_BUFFER_OFFSET (*outbuf), GST_BUFFER_OFFSET_END (*outbuf));
+-  }
+-  g_clear_error (&err);
+-
+-done:
+-  return ret;
++  fpgadepayloader->receive_data = NULL;
+ 
+-wrong_state:
+-  {
+-    GST_DEBUG_OBJECT (src, "connection to closed, cannot read data");
+-    return GST_FLOW_FLUSHING;
+-  }
+-accept_error:
+-  {
+-    if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+-      GST_DEBUG_OBJECT (src, "Cancelled accepting of client");
+-      ret = GST_FLOW_FLUSHING;
+-    } else {
+-      GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
+-          ("Failed to accept client: %s", err->message));
+-      ret = GST_FLOW_ERROR;
+-    }
+-    g_clear_error (&err);
+-    return ret;
+-  }
+-select_error:
+-  {
+-    if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+-      GST_DEBUG_OBJECT (src, "Cancelled select");
+-      ret = GST_FLOW_FLUSHING;
+-    } else {
+-      GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
+-          ("Select failed: %s", err->message));
+-      ret = GST_FLOW_ERROR;
+-    }
+-    g_clear_error (&err);
+-    return ret;
+-  }
+-get_available_error:
+-  {
+-    GST_ELEMENT_ERROR (src, RESOURCE, READ, (NULL),
+-        ("Failed to get available bytes from socket"));
+-    return GST_FLOW_ERROR;
+-  }
++  G_OBJECT_CLASS (parent_class)->finalize (object);
+ }
+ 
+-static void
+-gst_tcp_server_src_set_property (GObject * object, guint prop_id,
++void
++gst_fpga_depayloader_set_property (GObject * object, guint property_id,
+     const GValue * value, GParamSpec * pspec)
+ {
+-  GstTCPServerSrc *tcpserversrc = GST_TCP_SERVER_SRC (object);
++  GstFpgaDepayloader *fpgadepayloader = GST_FPGA_DEPAYLOADER (object);
+ 
+-  switch (prop_id) {
++  GST_DEBUG_OBJECT (fpgadepayloader, "set_property");
++
++  switch (property_id) {
+     case PROP_HOST:
+       if (!g_value_get_string (value)) {
+         g_warning ("host property cannot be NULL");
+         break;
+       }
+-      g_free (tcpserversrc->host);
+-      tcpserversrc->host = g_value_dup_string (value);
++      g_free (fpgadepayloader->host);
++      fpgadepayloader->host = g_strdup (g_value_get_string (value));
+       break;
+     case PROP_PORT:
+-      tcpserversrc->server_port = g_value_get_int (value);
++      fpgadepayloader->server_port = g_value_get_int (value);
+       break;
+ 
+     default:
+-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+       break;
+   }
+ }
+ 
+-static void
+-gst_tcp_server_src_get_property (GObject * object, guint prop_id,
++void
++gst_fpga_depayloader_get_property (GObject * object, guint property_id,
+     GValue * value, GParamSpec * pspec)
+ {
+-  GstTCPServerSrc *tcpserversrc = GST_TCP_SERVER_SRC (object);
++  GstFpgaDepayloader *fpgadepayloader = GST_FPGA_DEPAYLOADER (object);
+ 
+-  switch (prop_id) {
++  GST_DEBUG_OBJECT (fpgadepayloader, "get_property");
++
++  switch (property_id) {
+     case PROP_HOST:
+-      g_value_set_string (value, tcpserversrc->host);
++      g_value_set_string (value, fpgadepayloader->host);
+       break;
+     case PROP_PORT:
+-      g_value_set_int (value, tcpserversrc->server_port);
++      g_value_set_int (value, fpgadepayloader->server_port);
+       break;
+     case PROP_CURRENT_PORT:
+-      g_value_set_int (value, g_atomic_int_get (&tcpserversrc->current_port));
+-      break;
+-    case PROP_STATS:
+-      g_value_take_boxed (value, gst_tcp_server_src_get_stats (tcpserversrc));
++      g_value_set_int (value, g_atomic_int_get (&fpgadepayloader->current_port));
+       break;
+     default:
+-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+       break;
+   }
+ }
+ 
+-/* set up server */
++/* start and stop processing, ideal for opening/closing the resource */
+ static gboolean
+-gst_tcp_server_src_start (GstBaseSrc * bsrc)
++gst_fpga_depayloader_start (GstBaseSrc * bsrc)
+ {
+-  GstTCPServerSrc *src = GST_TCP_SERVER_SRC (bsrc);
++  GstFpgaDepayloader *fpgadepayloader = GST_FPGA_DEPAYLOADER (bsrc);
++
+   GError *err = NULL;
+-  GList *addrs;
+-  GList *cur_addr;
+-  GSocketAddress *saddr = NULL;
++  GInetAddress *addr;
++  GSocketAddress *saddr;
++  GResolver *resolver;
+   gint bound_port = 0;
+ 
+-  src->bytes_received = 0;
+-  gst_clear_structure (&src->stats);
++  /* look up name if we need to */
++  addr = g_inet_address_new_from_string (fpgadepayloader->host);
++  if (!addr) {
++    GList *results;
+ 
+-  addrs =
+-      tcp_get_addresses (GST_ELEMENT (src), src->host, src->cancellable, &err);
+-  if (!addrs)
+-    goto name_resolve;
++    resolver = g_resolver_get_default ();
+ 
+-  /* iterate over addresses until one works */
+-  cur_addr = addrs;
+-  src->server_socket =
+-      tcp_create_socket (GST_ELEMENT (src), &cur_addr, src->server_port,
+-      &saddr, &err);
+-  g_list_free_full (addrs, g_object_unref);
++    results =
++        g_resolver_lookup_by_name (resolver, fpgadepayloader->host, fpgadepayloader->cancellable, &err);
++    if (!results)
++      goto name_resolve;
++    addr = G_INET_ADDRESS (g_object_ref (results->data));
+ 
+-  if (!src->server_socket)
++    g_resolver_free_addresses (results);
++    g_object_unref (resolver);
++  }
++#ifndef GST_DISABLE_GST_DEBUG
++  {
++    gchar *ip = g_inet_address_to_string (addr);
++
++    GST_DEBUG_OBJECT (fpgadepayloader, "IP address for host %s is %s", fpgadepayloader->host, ip);
++    g_free (ip);
++  }
++#endif
++
++  saddr = g_inet_socket_address_new (addr, fpgadepayloader->server_port);
++  g_object_unref (addr);
++
++  /* create the server listener socket */
++  fpgadepayloader->server_socket =
++      g_socket_new (g_socket_address_get_family (saddr), G_SOCKET_TYPE_STREAM,
++      G_SOCKET_PROTOCOL_TCP, &err);
++  if (!fpgadepayloader->server_socket)
+     goto no_socket;
+ 
+-  GST_DEBUG_OBJECT (src, "opened receiving server socket");
++  GST_DEBUG_OBJECT (fpgadepayloader, "opened receiving server socket");
+ 
+   /* bind it */
+-  GST_DEBUG_OBJECT (src, "binding server socket to address");
+-  if (!g_socket_bind (src->server_socket, saddr, TRUE, &err))
++  GST_DEBUG_OBJECT (fpgadepayloader, "binding server socket to address");
++  if (!g_socket_bind (fpgadepayloader->server_socket, saddr, TRUE, &err))
+     goto bind_failed;
+ 
+   g_object_unref (saddr);
+ 
+-  GST_DEBUG_OBJECT (src, "listening on server socket");
++  GST_DEBUG_OBJECT (fpgadepayloader, "listening on server socket");
+ 
+-  g_socket_set_listen_backlog (src->server_socket, TCP_BACKLOG);
++  g_socket_set_listen_backlog (fpgadepayloader->server_socket, TCP_BACKLOG);
+ 
+-  if (!g_socket_listen (src->server_socket, &err))
++  if (!g_socket_listen (fpgadepayloader->server_socket, &err))
+     goto listen_failed;
+ 
+-  GST_OBJECT_FLAG_SET (src, GST_TCP_SERVER_SRC_OPEN);
++  GST_OBJECT_FLAG_SET (fpgadepayloader, GST_TCP_SERVER_SRC_OPEN);
+ 
+-  if (src->server_port == 0) {
+-    saddr = g_socket_get_local_address (src->server_socket, NULL);
++  if (fpgadepayloader->server_port == 0) {
++    saddr = g_socket_get_local_address (fpgadepayloader->server_socket, NULL);
+     bound_port = g_inet_socket_address_get_port ((GInetSocketAddress *) saddr);
+     g_object_unref (saddr);
+   } else {
+-    bound_port = src->server_port;
++    bound_port = fpgadepayloader->server_port;
+   }
+ 
+-  GST_DEBUG_OBJECT (src, "listening on port %d", bound_port);
++  GST_DEBUG_OBJECT (fpgadepayloader, "listening on port %d", bound_port);
+ 
+-  g_atomic_int_set (&src->current_port, bound_port);
+-  g_object_notify (G_OBJECT (src), "current-port");
++  g_atomic_int_set (&fpgadepayloader->current_port, bound_port);
++  g_object_notify (G_OBJECT (fpgadepayloader), "current-port");
+ 
+   return TRUE;
+ 
+   /* ERRORS */
+ no_socket:
+   {
+-    GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
++    GST_ELEMENT_ERROR (fpgadepayloader, RESOURCE, OPEN_READ, (NULL),
+         ("Failed to create socket: %s", err->message));
+     g_clear_error (&err);
++    g_object_unref (saddr);
+     return FALSE;
+   }
+ name_resolve:
+   {
+     if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+-      GST_DEBUG_OBJECT (src, "Cancelled name resolution");
++      GST_DEBUG_OBJECT (fpgadepayloader, "Cancelled name resolval");
+     } else {
+-      GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
+-          ("Failed to resolve host '%s': %s", src->host, err->message));
++      GST_ELEMENT_ERROR (fpgadepayloader, RESOURCE, OPEN_READ, (NULL),
++          ("Failed to resolve host '%s': %s", fpgadepayloader->host, err->message));
+     }
+     g_clear_error (&err);
++    g_object_unref (resolver);
+     return FALSE;
+   }
+ bind_failed:
+   {
+     if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+-      GST_DEBUG_OBJECT (src, "Cancelled binding");
++      GST_DEBUG_OBJECT (fpgadepayloader, "Cancelled binding");
+     } else {
+-      GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
+-          ("Failed to bind on host '%s:%d': %s", src->host, src->server_port,
++      GST_ELEMENT_ERROR (fpgadepayloader, RESOURCE, OPEN_READ, (NULL),
++          ("Failed to bind on host '%s:%d': %s", fpgadepayloader->host, fpgadepayloader->server_port,
+               err->message));
+     }
+     g_clear_error (&err);
+     g_object_unref (saddr);
+-    gst_tcp_server_src_stop (GST_BASE_SRC (src));
++    gst_fpga_depayloader_stop (GST_BASE_SRC (fpgadepayloader));
+     return FALSE;
+   }
+ listen_failed:
+   {
+     if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+-      GST_DEBUG_OBJECT (src, "Cancelled listening");
++      GST_DEBUG_OBJECT (fpgadepayloader, "Cancelled listening");
+     } else {
+-      GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
+-          ("Failed to listen on host '%s:%d': %s", src->host, src->server_port,
++      GST_ELEMENT_ERROR (fpgadepayloader, RESOURCE, OPEN_READ, (NULL),
++          ("Failed to listen on host '%s:%d': %s", fpgadepayloader->host, fpgadepayloader->server_port,
+               err->message));
+     }
+     g_clear_error (&err);
+-    gst_tcp_server_src_stop (GST_BASE_SRC (src));
++    gst_fpga_depayloader_stop (GST_BASE_SRC (fpgadepayloader));
+     return FALSE;
+   }
++
++  GST_DEBUG_OBJECT (fpgadepayloader, "start");
++
++  return TRUE;
+ }
+ 
+ static gboolean
+-gst_tcp_server_src_stop (GstBaseSrc * bsrc)
++gst_fpga_depayloader_stop (GstBaseSrc * bsrc)
+ {
+-  GstTCPServerSrc *src = GST_TCP_SERVER_SRC (bsrc);
++  GstFpgaDepayloader *fpgadepayloader = GST_FPGA_DEPAYLOADER (bsrc);
+   GError *err = NULL;
+ 
+-  if (src->client_socket) {
+-    GST_DEBUG_OBJECT (src, "closing socket");
+-
+-    src->stats = gst_tcp_server_src_get_stats (src);
++  if (fpgadepayloader->client_socket) {
++    GST_DEBUG_OBJECT (fpgadepayloader, "closing socket");
+ 
+-    if (!g_socket_close (src->client_socket, &err)) {
+-      GST_ERROR_OBJECT (src, "Failed to close socket: %s", err->message);
++    if (!g_socket_close (fpgadepayloader->client_socket, &err)) {
++      GST_ERROR_OBJECT (fpgadepayloader, "Failed to close socket: %s", err->message);
+       g_clear_error (&err);
+     }
+-    g_object_unref (src->client_socket);
+-    src->client_socket = NULL;
++    g_object_unref (fpgadepayloader->client_socket);
++    fpgadepayloader->client_socket = NULL;
+   }
+ 
+-  if (src->server_socket) {
+-    GST_DEBUG_OBJECT (src, "closing socket");
++  if (fpgadepayloader->server_socket) {
++    GST_DEBUG_OBJECT (fpgadepayloader, "closing socket");
+ 
+-    if (!g_socket_close (src->server_socket, &err)) {
+-      GST_ERROR_OBJECT (src, "Failed to close socket: %s", err->message);
++    if (!g_socket_close (fpgadepayloader->server_socket, &err)) {
++      GST_ERROR_OBJECT (fpgadepayloader, "Failed to close socket: %s", err->message);
+       g_clear_error (&err);
+     }
+-    g_object_unref (src->server_socket);
+-    src->server_socket = NULL;
++    g_object_unref (fpgadepayloader->server_socket);
++    fpgadepayloader->server_socket = NULL;
+ 
+-    g_atomic_int_set (&src->current_port, 0);
+-    g_object_notify (G_OBJECT (src), "current-port");
++    g_atomic_int_set (&fpgadepayloader->current_port, 0);
++    g_object_notify (G_OBJECT (fpgadepayloader), "current-port");
+   }
+ 
+-  GST_OBJECT_FLAG_UNSET (src, GST_TCP_SERVER_SRC_OPEN);
++  GST_OBJECT_FLAG_UNSET (fpgadepayloader, GST_TCP_SERVER_SRC_OPEN);
++
++  GST_DEBUG_OBJECT (fpgadepayloader, "stop");
+ 
+   return TRUE;
+ }
+ 
+-/* will be called only between calls to start() and stop() */
++/* unlock any pending access to the resource. subclasses should unlock
++ * any function ASAP. */
+ static gboolean
+-gst_tcp_server_src_unlock (GstBaseSrc * bsrc)
++gst_fpga_depayloader_unlock (GstBaseSrc * bsrc)
+ {
+-  GstTCPServerSrc *src = GST_TCP_SERVER_SRC (bsrc);
++  GstFpgaDepayloader *fpgadepayloader = GST_FPGA_DEPAYLOADER (bsrc);
+ 
+-  g_cancellable_cancel (src->cancellable);
++  g_cancellable_cancel (fpgadepayloader->cancellable);
++
++  GST_DEBUG_OBJECT (fpgadepayloader, "unlock");
+ 
+   return TRUE;
+ }
+ 
++/* Clear any pending unlock request, as we succeeded in unlocking */
+ static gboolean
+-gst_tcp_server_src_unlock_stop (GstBaseSrc * bsrc)
++gst_fpga_depayloader_unlock_stop (GstBaseSrc * bsrc)
+ {
+-  GstTCPServerSrc *src = GST_TCP_SERVER_SRC (bsrc);
++  GstFpgaDepayloader *fpgadepayloader = GST_FPGA_DEPAYLOADER (bsrc);
++
++  g_object_unref (fpgadepayloader->cancellable);
++  fpgadepayloader->cancellable = g_cancellable_new ();
+ 
+-  g_object_unref (src->cancellable);
+-  src->cancellable = g_cancellable_new ();
++  GST_DEBUG_OBJECT (fpgadepayloader, "unlock_stop");
+ 
+   return TRUE;
+ }
+ 
++static void callback(void* data) {
++  free(data);
++}
+ 
+-static GstStructure *
+-gst_tcp_server_src_get_stats (GstTCPServerSrc * src)
++/* ask the subclass to create a buffer with offset and size, the default
++ * implementation will call alloc and fill. */
++static GstFlowReturn
++gst_fpga_depayloader_create (GstPushSrc * psrc, GstBuffer ** outbuf)
+ {
+-  GstStructure *s;
++  GstFpgaDepayloader *fpgadepayloader = GST_FPGA_DEPAYLOADER (psrc);
++  GST_DEBUG_OBJECT (fpgadepayloader, "create");
++
++  GstFlowReturn ret = GST_FLOW_OK;
++  gssize rret, avail;
++  gsize read;
++  GError *err = NULL;
++
++  uint32_t data_size = fpgadepayloader->width * fpgadepayloader->height * 3;
++  uint32_t header_size = sizeof(frameheader_t);
++  void* receive_addr;
++
++  if (!GST_OBJECT_FLAG_IS_SET (fpgadepayloader, GST_TCP_SERVER_SRC_OPEN))
++    goto wrong_state;
++
++  if (!fpgadepayloader->client_socket) {
++    /* wait on server socket for connections */
++    fpgadepayloader->client_socket =
++        g_socket_accept (fpgadepayloader->server_socket, fpgadepayloader->cancellable, &err);
++    if (!fpgadepayloader->client_socket)
++      goto accept_error;
++    GST_DEBUG_OBJECT (fpgadepayloader, "closing server socket");
++
++    if (!g_socket_close (fpgadepayloader->server_socket, &err)) {
++      GST_ERROR_OBJECT (fpgadepayloader, "Failed to close socket: %s", err->message);
++      g_clear_error (&err);
++    }
++    /* now read from the socket. */
++  }
++
++  /* if we have a client, wait for read */
++  GST_LOG_OBJECT (fpgadepayloader, "asked for a buffer");
++
++  /* read the buffer header */
++  avail = g_socket_get_available_bytes (fpgadepayloader->client_socket);
++  if (avail < 0) {
++    goto get_available_error;
++  } else if (avail == 0) {
++    GIOCondition condition;
++
++    if (!g_socket_condition_wait (fpgadepayloader->client_socket,
++            G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP, fpgadepayloader->cancellable, &err))
++      goto select_error;
++
++    condition =
++        g_socket_condition_check (fpgadepayloader->client_socket,
++        G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP);
++
++    if ((condition & G_IO_ERR)) {
++      GST_ELEMENT_ERROR (fpgadepayloader, RESOURCE, READ, (NULL),
++          ("Socket in error state"));
++      *outbuf = NULL;
++      ret = GST_FLOW_ERROR;
++      goto done;
++    } else if ((condition & G_IO_HUP)) {
++      GST_DEBUG_OBJECT (fpgadepayloader, "Connection closed");
++      *outbuf = NULL;
++      ret = GST_FLOW_EOS;
++      goto done;
++    }
++    avail = g_socket_get_available_bytes (fpgadepayloader->client_socket);
++    if (avail < 0)
++      goto get_available_error;
++  }
++
++  if (avail > 0) {
++    // Allocate memory when a new packet is received.
++    if(fpgadepayloader->receive_size == 0){
++      fpgadepayloader->receive_data = malloc(data_size + header_size);
++    }
++
++receive:
++    // When the amount of data accumulated in the reception buffer is larger than the size of the image data, the data size is adjusted.
++    if((data_size + header_size) < (avail + fpgadepayloader->receive_size)){
++          avail = (data_size + header_size) - fpgadepayloader->receive_size;
++    }
++
++    read = MIN (avail, MAX_READ_SIZE);
++    receive_addr = (void *)((uint64_t)(fpgadepayloader->receive_data)+fpgadepayloader->receive_size);
++    rret =
++        g_socket_receive (fpgadepayloader->client_socket, 
++                            (gchar *) receive_addr, 
++                            read,
++                            fpgadepayloader->cancellable,
++                            &err);
++
++    // Terminates processing if reception fails.
++    if(rret <= 0){
++      *outbuf = NULL;
++      free(fpgadepayloader->receive_data);
++    }else{
++      fpgadepayloader->receive_size += read;
++    
++      // When the size of the received data does not reach the size of the image data, the reception processing is performed again.
++      if(fpgadepayloader->receive_size < (data_size + header_size)){
++        do{
++          avail = g_socket_get_available_bytes (fpgadepayloader->client_socket);
++        }while(avail == 0);
++//      GST_LOG_OBJECT (fpgadepayloader, "Receive data is less than data size.: %ld/%d", 
++//                      fpgadepayloader->receive_size, (data_size + header_size));
++        goto receive;
++      }
++    }
++  } else {
++    /* Connection closed */
++    rret = 0;
++    *outbuf = NULL;
++    read = 0;
++  }
+ 
+-  /* we can't get the values post stop so just return the saved ones */
+-  if (src->stats)
+-    return gst_structure_copy (src->stats);
++  if (rret == 0) {
++    GST_DEBUG_OBJECT (fpgadepayloader, "Connection closed");
++    ret = GST_FLOW_EOS;
++    *outbuf = NULL;
++  } else if (rret < 0) {
++    if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
++      ret = GST_FLOW_FLUSHING;
++      GST_DEBUG_OBJECT (fpgadepayloader, "Cancelled reading from socket");
++    } else {
++      ret = GST_FLOW_ERROR;
++      GST_ELEMENT_ERROR (fpgadepayloader, RESOURCE, READ, (NULL),
++          ("Failed to read from socket: %s", err->message));
++    }
++    *outbuf = NULL;
++  } else {
++    ret = GST_FLOW_OK;
++    // Create a new GstBuffer and allocate the memory for storing image data.
++    *outbuf = gst_buffer_new();
++    GstMemory *mem = gst_memory_new_wrapped(0, fpgadepayloader->receive_data, fpgadepayloader->receive_size,
++                                                 0, fpgadepayloader->receive_size, fpgadepayloader->receive_data, callback);
++    gst_buffer_append_memory(*outbuf, mem);
++    
++    // Remove the header by shifting the starting position of the data backward by the size of the frame header.
++    gst_buffer_resize (*outbuf, sizeof(frameheader_t), data_size);
++    
++    // Initialize the size of the received data.
++    fpgadepayloader->receive_size = 0;
++
++    GST_LOG_OBJECT (fpgadepayloader,
++        "Returning buffer from _get of size %" G_GSIZE_FORMAT ", ts %"
++        GST_TIME_FORMAT ", dur %" GST_TIME_FORMAT
++        ", offset %" G_GINT64_FORMAT ", offset_end %" G_GINT64_FORMAT,
++        gst_buffer_get_size (*outbuf),
++        GST_TIME_ARGS (GST_BUFFER_TIMESTAMP (*outbuf)),
++        GST_TIME_ARGS (GST_BUFFER_DURATION (*outbuf)),
++        GST_BUFFER_OFFSET (*outbuf), GST_BUFFER_OFFSET_END (*outbuf));
++  }
++  g_clear_error (&err);
+ 
+-  s = gst_structure_new ("GstTCPServerSrcStats",
+-      "bytes-received", G_TYPE_UINT64, src->bytes_received, NULL);
++done:
++  return ret;
+ 
+-  gst_tcp_stats_from_socket (s, src->client_socket);
++wrong_state:
++  {
++    GST_DEBUG_OBJECT (fpgadepayloader, "connection to closed, cannot read data");
++    return GST_FLOW_FLUSHING;
++  }
++accept_error:
++  {
++    if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
++      GST_DEBUG_OBJECT (fpgadepayloader, "Cancelled accepting of client");
++      ret = GST_FLOW_FLUSHING;
++    } else {
++      GST_ELEMENT_ERROR (fpgadepayloader, RESOURCE, OPEN_READ, (NULL),
++          ("Failed to accept client: %s", err->message));
++      ret = GST_FLOW_ERROR;
++    }
++    g_clear_error (&err);
++    return ret;
++  }
++select_error:
++  {
++    if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
++      GST_DEBUG_OBJECT (fpgadepayloader, "Cancelled select");
++      ret = GST_FLOW_FLUSHING;
++    } else {
++      GST_ELEMENT_ERROR (fpgadepayloader, RESOURCE, OPEN_READ, (NULL),
++          ("Select failed: %s", err->message));
++      ret = GST_FLOW_ERROR;
++    }
++    g_clear_error (&err);
++    return ret;
++  }
++get_available_error:
++  {
++    GST_ELEMENT_ERROR (fpgadepayloader, RESOURCE, READ, (NULL),
++        ("Failed to get available bytes from socket"));
++    return GST_FLOW_ERROR;
++  }
++}
+ 
+-  return s;
++static gboolean
++plugin_init (GstPlugin * plugin)
++{
++  /* FIXME Remember to set the rank if it's an element that is meant
++     to be autoplugged by decodebin. */
++  return gst_element_register (plugin, "fpgadepay", GST_RANK_NONE,
++      GST_TYPE_FPGA_DEPAYLOADER);
+ }
++
++/* FIXME: these are normally defined by the GStreamer build system.
++   If you are creating an element to be included in gst-plugins-*,
++   remove these, as they're always defined.  Otherwise, edit as
++   appropriate for your external plugin package. */
++#ifndef VERSION
++#define VERSION "0.0.FIXME"
++#endif
++#ifndef PACKAGE
++#define PACKAGE "FIXME_package"
++#endif
++#ifndef PACKAGE_NAME
++#define PACKAGE_NAME "FIXME_package_name"
++#endif
++#ifndef GST_PACKAGE_ORIGIN
++#define GST_PACKAGE_ORIGIN "http://FIXME.org/"
++#endif
++
++GST_PLUGIN_DEFINE (GST_VERSION_MAJOR,
++    GST_VERSION_MINOR,
++    fpgadepayloader,
++    "transfer fpga data over the network via TCP",
++    plugin_init, VERSION, "LGPL", PACKAGE_NAME, GST_PACKAGE_ORIGIN)
+diff --git a/tools/tcp_plugins/fpga_depayloader/gstfpgadepayloader.h b/tools/tcp_plugins/fpga_depayloader/gstfpgadepayloader.h
+index 61c1c60d..0d202222 100644
+--- a/tools/tcp_plugins/fpga_depayloader/gstfpgadepayloader.h
++++ b/tools/tcp_plugins/fpga_depayloader/gstfpgadepayloader.h
+@@ -1,6 +1,9 @@
++/*****************************************************************
++ * Copyright 2024 NTT Corporation, FUJITSU LIMITED
++ *****************************************************************/
++
+ /* GStreamer
+- * Copyright (C) <1999> Erik Walthinsen <omega@cse.ogi.edu>
+- * Copyright (C) <2004> Thomas Vander Stichele <thomas at apestaart dot org>
++ * Copyright (C) 2024 FIXME <fixme@example.com>
+  *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Library General Public
+@@ -18,29 +21,32 @@
+  * Boston, MA 02110-1301, USA.
+  */
+ 
+-
+-#ifndef __GST_TCP_SERVER_SRC_H__
+-#define __GST_TCP_SERVER_SRC_H__
++#ifndef _GST_FPGA_DEPAYLOADER_H_
++#define _GST_FPGA_DEPAYLOADER_H_
+ 
+ #include <gst/gst.h>
+ #include <gst/base/gstpushsrc.h>
+ #include <gio/gio.h>
++#include <stdint.h>
++#include <assert.h>
+ 
+-G_END_DECLS
++G_BEGIN_DECLS
++
++#include "frameheader.h"
+ 
+-#define GST_TYPE_TCP_SERVER_SRC \
+-  (gst_tcp_server_src_get_type())
+-#define GST_TCP_SERVER_SRC(obj) \
+-  (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_TCP_SERVER_SRC,GstTCPServerSrc))
+-#define GST_TCP_SERVER_SRC_CLASS(klass) \
+-  (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_TCP_SERVER_SRC,GstTCPServerSrcClass))
+-#define GST_IS_TCP_SERVER_SRC(obj) \
+-  (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_TCP_SERVER_SRC))
+-#define GST_IS_TCP_SERVER_SRC_CLASS(klass) \
+-  (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_TCP_SERVER_SRC))
++#define MAX_READ_SIZE 4096
++#define TCP_HIGHEST_PORT        65535
++#define TCP_DEFAULT_HOST        "localhost"
++#define TCP_DEFAULT_PORT        4953
+ 
+-typedef struct _GstTCPServerSrc GstTCPServerSrc;
+-typedef struct _GstTCPServerSrcClass GstTCPServerSrcClass;
++#define GST_TYPE_FPGA_DEPAYLOADER   (gst_fpga_depayloader_get_type())
++#define GST_FPGA_DEPAYLOADER(obj)   (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_FPGA_DEPAYLOADER,GstFpgaDepayloader))
++#define GST_FPGA_DEPAYLOADER_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_FPGA_DEPAYLOADER,GstFpgaDepayloaderClass))
++#define GST_IS_FPGA_DEPAYLOADER(obj)   (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_FPGA_DEPAYLOADER))
++#define GST_IS_FPGA_DEPAYLOADER_CLASS(obj)   (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_FPGA_DEPAYLOADER))
++
++typedef struct _GstFpgaDepayloader GstFpgaDepayloader;
++typedef struct _GstFpgaDepayloaderClass GstFpgaDepayloaderClass;
+ 
+ typedef enum {
+   GST_TCP_SERVER_SRC_OPEN       = (GST_BASE_SRC_FLAG_LAST << 0),
+@@ -48,7 +54,8 @@ typedef enum {
+   GST_TCP_SERVER_SRC_FLAG_LAST  = (GST_BASE_SRC_FLAG_LAST << 2)
+ } GstTCPServerSrcFlags;
+ 
+-struct _GstTCPServerSrc {
++struct _GstFpgaDepayloader
++{
+   GstPushSrc element;
+ 
+   /* server information */
+@@ -60,16 +67,20 @@ struct _GstTCPServerSrc {
+   GSocket *server_socket;
+   GSocket *client_socket;
+ 
+-  guint64 bytes_received;
+-  GstStructure *stats;
++  uint32_t width;
++  uint32_t height;
++  void *receive_data;
++  gsize receive_size;
++
+ };
+ 
+-struct _GstTCPServerSrcClass {
++struct _GstFpgaDepayloaderClass
++{
+   GstPushSrcClass parent_class;
+ };
+ 
+-GType gst_tcp_server_src_get_type (void);
++GType gst_fpga_depayloader_get_type (void);
+ 
+-G_BEGIN_DECLS
++G_END_DECLS
+ 
+-#endif /* __GST_TCP_SERVER_SRC_H__ */
++#endif

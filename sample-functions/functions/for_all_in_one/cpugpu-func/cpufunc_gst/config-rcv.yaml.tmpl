@@ -1,0 +1,4 @@
+command:
+- /bin/bash
+- -c
+- gst-launch-1.0 -e -v udpsrc buffer-size=21299100 port=5678 ! application/x-rtp, media=video, encoding-name=H264, clock-rate=90000, payload=96 ! rtph264depay ! h264parse ! mp4mux ! filesink location=rcv_video.mp4 sync=false

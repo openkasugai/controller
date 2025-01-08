@@ -1,0 +1,113 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "sample-flow"
+  namespace: "default"
+spec:
+  functionChainRef:
+    name: "sample-chain"
+    namespace: "default"
+  startPoint:
+    ip: "10.10.10.10"
+    port: 80
+    protocol: "TCP"
+  endPoint:
+    ip: "10.10.10.20"
+    port: 8080
+    protocol: "UDP"
+  requirements:
+    all:
+      capacity: 15
+  userRequirement: "user-requirement"
+status:
+  functionChain:
+    metadata:
+      creationTimestamp: null
+    spec:
+      functionTypeNamespace: ""
+      connectionTypeNamespace: ""
+      functions: 
+        decode-main:
+          functionName: "decode"
+          version: "1.0.0"
+          customParameter: null
+        filter-resize-main:
+          functionName: "filter-resize"
+          version: "1.0.0"
+          customParameter: null
+        high-infer-main:
+          functionName: "high-infer"
+          version: "1.0.0"
+          customParameter: null
+      connections:
+      - from:
+          functionKey: "wb-start-of-chain"
+          port: 0
+        to:
+          functionKey: "decode-main"
+          port: 0
+        connectionTypeName: "auto"
+        customParameter: null
+      - from:
+          functionKey: "decode-main"
+          port: 0
+        to:
+          functionKey: "filter-resize-main"
+          port: 0
+        connectionTypeName: "auto"
+        customParameter: null
+      - from:
+          functionKey: "filter-resize-main"
+          port: 0
+        to:
+          functionKey: "high-infer-main"
+          port: 0
+        connectionTypeName: "auto"
+        customParameter: null
+      - from:
+          functionKey: "high-infer-main"
+          port: 0
+        to:
+          functionKey: "wb-end-of-chain"
+          port: 0
+        connectionTypeName: "auto"
+        customParameter: null
+    status:
+      status: ""
+  functionType:
+  - metadata:
+      creationTimestamp: null
+    spec:
+      functionName: "decode"
+      functionInfoCMRef:
+        name: "funcinfo-decode"
+        namespace: "default"
+      version: "1.0.0"
+    status:
+      status: "Ready"
+      regionTypeCandidates: ["alveo"]
+  - metadata:
+      creationTimestamp: null
+    spec:
+      functionName: "filter-resize"
+      functionInfoCMRef:
+        name: "funcinfo-filter-resize"
+        namespace: "default"
+      version: "1.0.0"
+    status:
+      status: "Ready"
+      regionTypeCandidates: ["alveo"]
+  - metadata:
+      creationTimestamp: null
+    spec:
+      functionName: "high-infer"
+      functionInfoCMRef:
+        name: "funcinfo-high-infer"
+        namespace: "default"
+      version: "1.0.0"
+    status:
+      status: "Ready"
+      regionTypeCandidates: ["a100"]
+  startPoint: ""
+  endPoint: ""
+  status: "Scheduling in progress"

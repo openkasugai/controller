@@ -1,0 +1,67 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "test"
+  namespace: "default"
+spec:
+  functionChainRef:
+    name: "decode-filter-resize-chain"
+    namespace: "chain-imgproc"
+  requirements:
+    all:
+      capacity: 15
+  userRequirement: "user-requirement2"
+status:
+  status: "Scheduling in progress"
+  functionChain:
+    spec:
+      functionTypeNamespace: "default"
+      connectionTypeNamespace: "default"
+      functions: 
+        decode-main:
+          functionName: "cpu-decode"
+          version: "1.0.0"
+        filter-resize-main:
+          functionName: "filter-resize"
+          version: "1.0.0"
+      connections:
+      - from:
+          functionKey: "wb-start-of-chain"
+          port: 0
+        to:
+          functionKey: "decode-main"
+          port: 0
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "decode-main"
+          port: 0
+        to:
+          functionKey: "filter-resize-main"
+          port: 0
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "filter-resize-main"
+          port: 0
+        to:
+          functionKey: "wb-end-of-chain"
+          port: 0
+        connectionTypeName: "auto"
+  functionType:
+  - spec:
+      functionName: "cpu-decode"
+      functionInfoCMRef:
+        name: "funcinfo-cpu-decode"
+        namespace: "wbfunc-imgproc"
+      version: "1.0.0"
+    status:
+      status: "Ready"
+      regionTypeCandidates: ["cpu"]
+  - spec:
+      functionName:  "filter-resize"
+      functionInfoCMRef:
+        name: "funcinfo-cpu-filter-resize-input-inner"
+        namespace: "wbfunc-imgproc"
+      version: "1.0.0"
+    status:
+      status: "Ready"
+      regionTypeCandidates: ["cpu"]

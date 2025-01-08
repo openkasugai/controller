@@ -1,0 +1,6 @@
+[{
+  "functionID" : 0,
+  "functionName" : "filter-resize",
+  "maxDataFlows": 8,
+  "maxCapacity": 40
+}]

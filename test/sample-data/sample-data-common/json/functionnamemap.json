@@ -1,0 +1,11 @@
+{
+  "sizeList":[{
+    "height": 1280,
+    "width": 1280,
+    "functionName":"-high-infer"
+  },{
+    "height": 416,
+    "width": 416,
+    "functionName":"-low-infer"
+  }]
+}

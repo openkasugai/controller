@@ -1,0 +1,11 @@
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: ft-high-infer
+  namespace: wbfunc-imgproc
+spec:
+  functionName: high-infer
+  functionInfoCMRef:
+    name: funcinfo-high-infer
+    namespace: wbfunc-imgproc
+  version: 1.0.0

@@ -1,0 +1,20 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: funcinfo-test7
+    namespace: wbfunc-imgproc
+  data:
+    spec: '[
+      {
+        "name": "spec1",
+        "minCore": 1,
+        "maxCore": 1,
+        "maxDataFlowsBase": 1,
+        "maxCapacityBase": 20,
+        "maxInputNum": 1,
+        "maxOutputNum":1
+      }
+    ]'
+kind: List

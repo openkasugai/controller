@@ -1,0 +1,75 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "test"
+  namespace: "default"
+spec:
+  functionChainRef:
+    name: "high-infer-copy-branch-chain"
+    namespace: "chain-imgproc"
+  requirements:
+    all:
+      capacity: 15
+  userRequirement: "user-requirement99"
+status:
+  status: "Scheduling in progress"
+  functionChain:
+    spec:
+      functionTypeNamespace: "wbfunc-imgproc"
+      connectionTypeNamespace: "default"
+      functions: 
+        high-infer-main:
+          functionName: "high-infer"
+          version:      "1.0.0"
+        copy-branch-main:
+          functionName: "copy-branch"
+          version:      "1.0.0"
+      connections:
+      - from:
+          functionKey: "wb-start-of-chain"
+          port: 0
+        to:
+          functionKey:   "high-infer-main"
+          port: 0
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "high-infer-main"
+          port: 0
+        to:
+          functionKey:   "copy-branch-main"
+          port: 0
+        connectionTypeName: "auto"
+      - from:
+          functionKey: "copy-branch-main"
+          port: 0
+        to:
+          functionKey:   "wb-end-of-chain"
+          port: 0
+        connectionTypeName: "auto"
+  functionType:
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-copy-branch
+        namespace: wbfunc-imgproc
+      functionName:  copy-branch
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - cpu
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-high-infer
+        namespace: wbfunc-imgproc
+      functionName: high-infer
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - a100
+      status: Ready

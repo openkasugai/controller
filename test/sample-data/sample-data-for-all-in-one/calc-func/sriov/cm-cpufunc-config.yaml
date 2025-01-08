@@ -1,0 +1,616 @@
+---
+apiVersion: v1
+data:
+  cpufunc-config-calcapp-sriov-send.json: |
+    [
+      {
+        "rxProtocol": "RTP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/cpufunc_calcapp:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "/calcapp"
+        },
+        "additionalNetwork": true,
+        "virtualNetworkDeviceDriverType": "sriov",
+        "ipam": ["sriov-ipam-config"],
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_calcapp:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config.yaml.tmpl /config/config.yaml.tmpl; tail -F /dev/null"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "securityContext": {
+                  "capabilities": {
+                    "add": [
+                      "SYS_PTRACE"
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-calcapp-sriov-send
+  namespace: default
+---
+apiVersion: v1
+data:
+  cpufunc-config-calcapp-sriov-plus.json: |
+    [
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/cpufunc_calcapp:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "/calcapp"
+        },
+        "additionalNetwork": true,
+        "virtualNetworkDeviceDriverType": "sriov",
+        "ipam": ["sriov-ipam-config"],
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_calcapp:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config.yaml.tmpl /config/config.yaml.tmpl; /calcapp -server -port 8080 -operator plus"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "securityContext": {
+                  "capabilities": {
+                    "add": [
+                      "SYS_PTRACE"
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-calcapp-sriov-plus
+  namespace: default
+---
+apiVersion: v1
+data:
+  cpufunc-config-calcapp-sriov-minus.json: |
+    [
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/cpufunc_calcapp:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "/calcapp"
+        },
+        "additionalNetwork": true,
+        "virtualNetworkDeviceDriverType": "sriov",
+        "ipam": ["sriov-ipam-config"],
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_calcapp:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config.yaml.tmpl /config/config.yaml.tmpl; /calcapp -server -port 8080 -operator minus"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "securityContext": {
+                  "capabilities": {
+                    "add": [
+                      "SYS_PTRACE"
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-calcapp-sriov-minus
+  namespace: default
+---
+apiVersion: v1
+data:
+  cpufunc-config-calcapp-sriov-multiply.json: |
+    [
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/cpufunc_calcapp:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "/calcapp"
+        },
+        "additionalNetwork": true,
+        "virtualNetworkDeviceDriverType": "sriov",
+        "ipam": ["sriov-ipam-config"],
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_calcapp:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config.yaml.tmpl /config/config.yaml.tmpl; /calcapp -server -port 8080 -operator multiply"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "securityContext": {
+                  "capabilities": {
+                    "add": [
+                      "SYS_PTRACE"
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-calcapp-sriov-multiply
+  namespace: default
+---
+apiVersion: v1
+data:
+  cpufunc-config-calcapp-sriov-divide.json: |
+    [
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/cpufunc_calcapp:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "/calcapp"
+        },
+        "additionalNetwork": true,
+        "virtualNetworkDeviceDriverType": "sriov",
+        "ipam": ["sriov-ipam-config"],
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_calcapp:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config.yaml.tmpl /config/config.yaml.tmpl; /calcapp -server -port 8080 -operator divide"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "securityContext": {
+                  "capabilities": {
+                    "add": [
+                      "SYS_PTRACE"
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-calcapp-sriov-divide
+  namespace: default
+---
+apiVersion: v1
+data:
+  cpufunc-config-calcapp-sriov-average-results.json: |
+    [
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "TCP",
+        "imageURI": "localhost/cpufunc_calcapp:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "/calcapp"
+        },
+        "additionalNetwork": true,
+        "virtualNetworkDeviceDriverType": "sriov",
+        "ipam": ["sriov-ipam-config"],
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_calcapp:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config.yaml.tmpl /config/config.yaml.tmpl; /calcapp -server -port 8080 -operator average_results"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "securityContext": {
+                  "capabilities": {
+                    "add": [
+                      "SYS_PTRACE"
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-calcapp-sriov-average-results
+  namespace: default
+---
+apiVersion: v1
+data:
+  cpufunc-config-calc-rcv.json: |
+    [
+      {
+        "rxProtocol": "TCP",
+        "txProtocol": "RTP",
+        "imageURI": "localhost/cpufunc_calcapp:latest",
+        "envs": {
+          "SIDECAR_MNG_PROSESS_NAME": "/calcapp"
+        },
+        "additionalNetwork": true,
+        "virtualNetworkDeviceDriverType": "sriov",
+        "ipam": ["sriov-ipam-config"],
+        "template": {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "spec": {
+            "containers": [
+              {
+                "name": "app",
+                "image": "localhost/cpufunc_calcapp:latest",
+                "command": [
+                  "bash",
+                  "-c",
+                  "cp /config.yaml.tmpl /config/config.yaml.tmpl; /calcapp -server -port 8080 -operator receiver"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "1Gi"
+                  }
+                },
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ]
+              },
+              {
+                "name": "sidecar",
+                "image": "localhost/cpufunc_sidecar:latest",
+                "command": [
+                  "/sidecar"
+                ],
+                "securityContext": {
+                  "capabilities": {
+                    "add": [
+                      "SYS_PTRACE"
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "config-dir",
+                    "mountPath": "/config"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "memory": "128Mi"
+                  }
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config-dir",
+                "emptyDir": {}
+              }
+            ],
+            "restartPolicy": "Always",
+            "shareProcessNamespace": true
+          }
+        }
+      }
+    ]
+kind: ConfigMap
+metadata:
+  name: cpufunc-config-calcapp-sriov-rcv
+  namespace: default

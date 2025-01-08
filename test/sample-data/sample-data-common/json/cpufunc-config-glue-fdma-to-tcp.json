@@ -1,0 +1,53 @@
+[{
+  "rxProtocol":"DMA",
+  "txProtocol":"TCP",
+  "sharedMemoryMiB": 256,
+  "imageURI": "localhost/cpu_glue_dma_tcp:1.0.0",
+  "additionalNetwork": true,
+  "virtualNetworkDeviceDriverType": "sriov",
+  "template":{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "spec":{
+      "containers":[{
+        "name": "cfunc-glue-fdma-to-tcp-1",
+        "workingDir": "/opt/openkasugai-controller/sample-functions/functions-ext/cpu_glue_dma_tcp",
+        "command": ["sh","-c"],
+        "args":["./build/glue",
+           "%FORWARDING%",
+           "%WIDTH%",
+           "%HEIGHT%"],
+        "securityContext":{
+          "privileged": true
+        },
+        "volumeMounts":[{
+          "name": "hugepage-1gi",
+          "mountPath": "/dev/hugepages"
+        },{
+          "name": "dpdk",
+          "mountPath": "/var/run/dpdk"
+        }],
+        "resources":{
+          "requests":{
+            "memory": "8Gi"
+          },
+          "limits":{
+            "hugepages-1Gi": "1Gi"
+          }
+        }
+      }],
+      "volumes":[{
+        "name": "hugepage-1gi",
+        "hostPath":
+         {"path": "/dev/hugepages"}
+      },{
+        "name": "dpdk",
+        "hostPath":
+         {"path": "/var/run/dpdk"}
+      }],
+      "hostNetwork": false,
+      "hostIPC": true,
+      "restartPolicy": "Always"
+    }
+  }
+}]

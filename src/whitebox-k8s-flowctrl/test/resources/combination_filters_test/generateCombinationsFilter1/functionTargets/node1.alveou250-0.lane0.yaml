@@ -1,0 +1,34 @@
+apiVersion: example.com/v1
+kind: FunctionTarget
+metadata:
+  creationTimestamp: null
+  name: node1.alveou250-0.lane0
+  namespace: default
+spec:
+status:
+  status: Ready
+  available: true
+  maxCapacity: 100
+  currentCapacity: 16
+  deviceIndex: 0
+  deviceType: alveou250
+  nodeName: node1
+  regionName: lane0
+  regionType: alveo
+  maxFunctions: 2
+  currentFunctions: 2
+  functions:
+  - functionIndex: 1
+    functionName: "filter-resize"
+    available: true
+    maxDataFlows: 8
+    currentDataFlows: 8
+    maxCapacity: 30
+    currentCapacity: 8
+  - functionIndex: 2
+    functionName: "filter-resize"
+    available: true
+    maxDataFlows: 8
+    currentDataFlows: 1
+    maxCapacity: 30
+    currentCapacity: 8

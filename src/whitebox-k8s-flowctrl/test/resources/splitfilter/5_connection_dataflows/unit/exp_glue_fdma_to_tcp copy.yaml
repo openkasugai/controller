@@ -1,0 +1,822 @@
+apiVersion: example.com/v1
+kind: SchedulingData
+metadata:
+  name: sample-flow
+  namespace: default
+spec:
+  filterPipeline:
+  - GenerateCombinations
+  - TargetResourceFit
+  - TargetResourceFitScore
+  - GenerateRoute
+  - ConnectionResourceFit
+  - RouteScore
+status:
+  status: Finish
+  currentFilterIndex: 6
+  typeCombinations: null
+  targetCombinations:
+  - scheduledConnections:
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node0
+        usedType: ""
+      - entityID: node0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      from:
+        functionKey: wb-start-of-chain
+        interfaceType: host100gether
+        port: 0
+      to:
+        functionKey: decode-main
+        interfaceType: host100gether
+        port: 0
+    - connectionMethod: host-mem
+      connectionPath:
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.alveou250-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.alveou250-0.lane1
+        usedType: ""
+      from:
+        functionKey: decode-main
+        interfaceType: mem
+        port: 0
+      to:
+        functionKey: filter-resize-main
+        interfaceType: mem
+        port: 0
+    - connectionMethod: host-mem
+      connectionPath:
+      - entityID: node1.alveou250-0.lane1
+        usedType: ""
+      - entityID: node1.alveou250-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      from:
+        functionKey: filter-resize-main
+        port: 0
+        interfaceType: mem
+      to:
+        functionKey: glue-main
+        port: 0
+        interfaceType: mem
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-1
+        usedType: Outgoing
+      - entityID: node1.pcie-network-1
+        usedType: IncomingAndOutgoing
+      - entityID: node1.a100-1.pcie-0
+        usedType: Incoming
+      - entityID: node1.a100-1
+        usedType: ""
+      from:
+        functionKey: glue-main
+        port: 0
+        interfaceType: host100gether
+      to:
+        functionKey: high-infer-main
+        port: 0
+        interfaceType: host100gether
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.a100-1
+        usedType: ""
+      - entityID: node1.a100-1.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-1
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-1
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node0.host100gether-0
+        usedType: Incoming
+      - entityID: node0
+        usedType: ""
+      from:
+        functionKey: high-infer-main
+        port: 0
+        interfaceType: host100gether
+      to:
+        functionKey: wb-end-of-chain
+        port: 0
+        interfaceType: host100gether
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      glue-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      high-infer-main:
+        deviceIndex: 1
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+    score: 15030076400883320
+  - scheduledConnections:
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node0
+        usedType: ""
+      - entityID: node0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      from:
+        functionKey: wb-start-of-chain
+        interfaceType: host100gether
+        port: 0
+      to:
+        functionKey: decode-main
+        interfaceType: host100gether
+        port: 0
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.alveou250-0.dev25gether-1
+        usedType: Incoming
+      - entityID: node1.alveou250-0.lane1
+        usedType: ""
+      from:
+        functionKey: decode-main
+        interfaceType: host100gether
+        port: 0
+      to:
+        functionKey: filter-resize-main
+        interfaceType: dev25gether
+        port: 0
+    - connectionMethod: host-mem
+      connectionPath:
+      - entityID: node1.alveou250-0.lane1
+        usedType: ""
+      - entityID: node1.alveou250-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      from:
+        functionKey: filter-resize-main
+        port: 0
+        interfaceType: mem
+      to:
+        functionKey: glue-main
+        port: 0
+        interfaceType: mem
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-1
+        usedType: Outgoing
+      - entityID: node1.pcie-network-1
+        usedType: IncomingAndOutgoing
+      - entityID: node1.a100-1.pcie-0
+        usedType: Incoming
+      - entityID: node1.a100-1
+        usedType: ""
+      from:
+        functionKey: glue-main
+        port: 0
+        interfaceType: host100gether
+      to:
+        functionKey: high-infer-main
+        port: 0
+        interfaceType: host100gether
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.a100-1
+        usedType: ""
+      - entityID: node1.a100-1.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-1
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-1
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node0.host100gether-0
+        usedType: Incoming
+      - entityID: node0
+        usedType: ""
+      from:
+        functionKey: high-infer-main
+        port: 0
+        interfaceType: host100gether
+      to:
+        functionKey: wb-end-of-chain
+        port: 0
+        interfaceType: host100gether
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      glue-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      high-infer-main:
+        deviceIndex: 1
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+    score: 15030076400882330
+  - scheduledConnections:
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node0
+        usedType: ""
+      - entityID: node0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      from:
+        functionKey: wb-start-of-chain
+        interfaceType: host100gether
+        port: 0
+      to:
+        functionKey: decode-main
+        interfaceType: host100gether
+        port: 0
+    - connectionMethod: host-mem
+      connectionPath:
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.alveou250-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.alveou250-0.lane1
+        usedType: ""
+      from:
+        functionKey: decode-main
+        interfaceType: mem
+        port: 0
+      to:
+        functionKey: filter-resize-main
+        interfaceType: mem
+        port: 0
+    - connectionMethod: host-mem
+      connectionPath:
+      - entityID: node1.alveou250-0.lane1
+        usedType: ""
+      - entityID: node1.alveou250-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      from:
+        functionKey: filter-resize-main
+        port: 0
+        interfaceType: mem
+      to:
+        functionKey: glue-main
+        port: 0
+        interfaceType: mem
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.a100-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.a100-0
+        usedType: ""
+      from:
+        functionKey: glue-main
+        port: 0
+        interfaceType: host100gether
+      to:
+        functionKey: high-infer-main
+        port: 0
+        interfaceType: host100gether
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.a100-0
+        usedType: ""
+      - entityID: node1.a100-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node0.host100gether-0
+        usedType: Incoming
+      - entityID: node0
+        usedType: ""
+      from:
+        functionKey: high-infer-main
+        port: 0
+        interfaceType: host100gether
+      to:
+        functionKey: wb-end-of-chain
+        port: 0
+        interfaceType: host100gether
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      glue-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      high-infer-main:
+        deviceIndex: 0
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+    score: 15030061400883320
+  - scheduledConnections:
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node0
+        usedType: ""
+      - entityID: node0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      from:
+        functionKey: wb-start-of-chain
+        interfaceType: host100gether
+        port: 0
+      to:
+        functionKey: decode-main
+        interfaceType: host100gether
+        port: 0
+    - connectionMethod: host-mem
+      connectionPath:
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.alveou250-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.alveou250-0.lane1
+        usedType: ""
+      from:
+        functionKey: decode-main
+        interfaceType: mem
+        port: 0
+      to:
+        functionKey: filter-resize-main
+        interfaceType: mem
+        port: 0
+    - connectionMethod: host-mem
+      connectionPath:
+      - entityID: node1.alveou250-0.lane1
+        usedType: ""
+      - entityID: node1.alveou250-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      from:
+        functionKey: filter-resize-main
+        port: 0
+        interfaceType: mem
+      to:
+        functionKey: glue-main
+        port: 0
+        interfaceType: mem
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-1
+        usedType: Outgoing
+      - entityID: node1.pcie-network-1
+        usedType: IncomingAndOutgoing
+      - entityID: node1.a100-2.pcie-0
+        usedType: Incoming
+      - entityID: node1.a100-2
+        usedType: ""
+      from:
+        functionKey: glue-main
+        port: 0
+        interfaceType: host100gether
+      to:
+        functionKey: high-infer-main
+        port: 0
+        interfaceType: host100gether
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.a100-2
+        usedType: ""
+      - entityID: node1.a100-2.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-1
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-1
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node0.host100gether-0
+        usedType: Incoming
+      - entityID: node0
+        usedType: ""
+      from:
+        functionKey: high-infer-main
+        port: 0
+        interfaceType: host100gether
+      to:
+        functionKey: wb-end-of-chain
+        port: 0
+        interfaceType: host100gether
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      glue-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      high-infer-main:
+        deviceIndex: 2
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+    score: 15030061400883320
+  - scheduledConnections:
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node0
+        usedType: ""
+      - entityID: node0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      from:
+        functionKey: wb-start-of-chain
+        interfaceType: host100gether
+        port: 0
+      to:
+        functionKey: decode-main
+        interfaceType: host100gether
+        port: 0
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.alveou250-0.dev25gether-1
+        usedType: Incoming
+      - entityID: node1.alveou250-0.lane1
+        usedType: ""
+      from:
+        functionKey: decode-main
+        interfaceType: host100gether
+        port: 0
+      to:
+        functionKey: filter-resize-main
+        interfaceType: dev25gether
+        port: 0
+    - connectionMethod: host-mem
+      connectionPath:
+      - entityID: node1.alveou250-0.lane1
+        usedType: ""
+      - entityID: node1.alveou250-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.cpu-0
+        usedType: ""
+      from:
+        functionKey: filter-resize-main
+        port: 0
+        interfaceType: mem
+      to:
+        functionKey: glue-main
+        port: 0
+        interfaceType: mem
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.cpu-0
+        usedType: ""
+      - entityID: node1.cpu-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.a100-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.a100-0
+        usedType: ""
+      from:
+        functionKey: glue-main
+        port: 0
+        interfaceType: host100gether
+      to:
+        functionKey: high-infer-main
+        port: 0
+        interfaceType: host100gether
+    - connectionMethod: host-100gether
+      connectionPath:
+      - entityID: node1.a100-0
+        usedType: ""
+      - entityID: node1.a100-0.pcie-0
+        usedType: Outgoing
+      - entityID: node1.pcie-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node1.nic-0.pcie-0
+        usedType: Incoming
+      - entityID: node1.nic-0
+        usedType: ""
+      - entityID: node1.nic-0.host100gether-0
+        usedType: Outgoing
+      - entityID: global.ether-network-0
+        usedType: IncomingAndOutgoing
+      - entityID: node0.host100gether-0
+        usedType: Incoming
+      - entityID: node0
+        usedType: ""
+      from:
+        functionKey: high-infer-main
+        port: 0
+        interfaceType: host100gether
+      to:
+        functionKey: wb-end-of-chain
+        port: 0
+        interfaceType: host100gether
+    scheduledFunctions:
+      decode-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      filter-resize-main:
+        deviceIndex: 0
+        deviceType: alveou250
+        functionIndex: 1
+        nodeName: node1
+        regionName: lane1
+      glue-main:
+        deviceIndex: 0
+        deviceType: cpu
+        nodeName: node1
+        regionName: cpu
+      high-infer-main:
+        deviceIndex: 0
+        deviceType: a100
+        nodeName: node1
+        regionName: gpu
+    score: 15030061400882330

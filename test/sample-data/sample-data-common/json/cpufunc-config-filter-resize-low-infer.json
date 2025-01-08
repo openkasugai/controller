@@ -1,0 +1,39 @@
+[{
+  "rxProtocol":"TCP",
+  "txProtocol":"TCP",
+  "additionalNetwork": true,
+  "virtualNetworkDeviceDriverType": "sriov",
+  "imageURI": "localhost/cpu_filter_resize:1.0.0",
+  "envs":{
+    "FRENV_APPLOG_LEVEL": "DEBUG",
+    "FRENV_INPUT_WIDTH": "3840",
+    "FRENV_INPUT_HEIGHT": "2160",
+    "FRENV_OUTPUT_WIDTH": "416",
+    "FRENV_OUTPUT_HEIGHT": "416"
+  },
+  "template":{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "spec":{
+      "containers":[{
+        "name": "fr",
+        "command": ["python",
+           "fr.py",
+           "--in_port=$(FRENV_INPUT_PORT)",
+           "--out_addr=$(FRENV_OUTPUT_IP)",
+           "--out_port=$(FRENV_OUTPUT_PORT)",
+           "--in_width=$(FRENV_INPUT_WIDTH)",
+           "--in_height=$(FRENV_INPUT_HEIGHT)",
+           "--out_width=$(FRENV_OUTPUT_WIDTH)",
+           "--out_height=$(FRENV_OUTPUT_HEIGHT)",
+           "--loglevel=$(FRENV_APPLOG_LEVEL)"],
+        "securityContext":{
+          "privileged": true
+        }
+      }],
+      "hostNetwork": false,
+      "hostIPC": true,
+      "restartPolicy": "Always"
+    }
+  }
+}]

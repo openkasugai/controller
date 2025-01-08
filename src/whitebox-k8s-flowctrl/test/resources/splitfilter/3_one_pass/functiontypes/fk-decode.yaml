@@ -1,0 +1,10 @@
+apiVersion: example.com/v1
+kind: FunctionKind
+metadata:
+  name: fk-decode
+  namespace: wbfunc-imgproc
+spec:
+  name: decode
+  function_info_name: funcinfo-decode
+  function_info_namespace: wbfunc-imgproc
+  version: 1.0.0

@@ -1,0 +1,109 @@
+/*
+Copyright 2024 NTT Corporation , FUJITSU LIMITED
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+// package v1
+package reference
+
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	// "k8s.io/apimachinery/pkg/runtime/schema"
+	// "sigs.k8s.io/controller-runtime/pkg/scheme"
+)
+
+/*
+var (
+
+	// GroupVersion is group version used to register these objects
+	GroupVersion = schema.GroupVersion{Group: "example.com", Version: "v1"}
+
+	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
+	SchemeBuilder = &scheme.Builder{GroupVersion: GroupVersion}
+
+	// AddToScheme adds the types in this group-version to the given scheme.
+	AddToScheme = SchemeBuilder.AddToScheme
+
+)
+*/
+type FPGAstatus string
+
+const (
+	FPGAStatusNotReady  FPGAstatus = "NotReady"
+	FPGAStatusPreparing FPGAstatus = "Preparing"
+	FPGAStatusReady     FPGAstatus = "Ready"
+	FPGAStatusError     FPGAstatus = "Error"
+)
+
+// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
+// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+
+var FPGACRReqData FPGA
+
+// FPGASpec defines the desired state of FPGA
+type FPGASpec struct {
+	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+
+	ChildBitstreamID  *string `json:"child-bitstream-id,omitempty"`
+	DeviceIndex       int32   `json:"deviceIndex"`
+	DeviceFilePath    string  `json:"deviceFilePath"`
+	DeviceUUID        string  `json:"deviceUUID"`
+	NodeName          string  `json:"nodeName"`
+	ParentBitstreamID string  `json:"parent-bitstream-id"`
+	PCIDomain         int32   `json:"pciDomain"`
+	PCIBus            int32   `json:"pciBus"`
+	PCIDevice         int32   `json:"pciDevice"`
+	PCIFunction       int32   `json:"pciFunction"`
+	Vendor            string  `json:"vendor"`
+}
+
+// FPGAStatus defines the observed state of FPGA
+type FPGAStatus struct {
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+
+	ChildBitStreamID     *string    `json:"child-bitstream-id,omitempty"`
+	ChildBitStreamCRName *string    `json:"childBitStreamCRName,omitempty"`
+	DeviceFilePath       string     `json:"deviceFilePath"`
+	DeviceIndex          int32      `json:"deviceIndex"`
+	DeviceUUID           string     `json:"deviceUUID"`
+	NodeName             string     `json:"nodeName"`
+	ParentBitStreamID    string     `json:"parent-bitstream-id"`
+	PCIDomain            int32      `json:"pciDomain"`
+	PCIBus               int32      `json:"pciBus"`
+	PCIDevice            int32      `json:"pciDevice"`
+	PCIFunction          int32      `json:"pciFunction"`
+	Status               FPGAstatus `json:"status"`
+	Vendor               string     `json:"vendor"`
+}
+
+// FPGA is the Schema for the fpgas API
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+type FPGA struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec   FPGASpec   `json:"spec,omitempty"`
+	Status FPGAStatus `json:"status,omitempty"`
+}
+
+//+kubebuilder:object:root=true
+
+// FPGAList contains a list of FPGA
+type FPGAList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []FPGA `json:"items"`
+}

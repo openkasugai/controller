@@ -1,0 +1,92 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: funcinfo-join
+    namespace: wbfunc-imgproc
+  data:
+    deployableItems: '[
+      {
+        "name": "item1",
+        "regionType": "cpu",
+        "inputInterfaceType": "host100gether",
+        "outputInterfaceType": "host100gether",
+        "configName": "cpufunc-config-join",
+        "specName": "spec1"
+      }
+    ]'
+    spec: '[
+      {
+        "name": "spec1",
+        "minCore": 1,
+        "maxCore": 1,
+        "maxDataFlowsBase": 1,
+        "maxCapacityBase": 20,
+        "maxInputNum": 10,
+        "maxOutputNum":1
+      }
+    ]'
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: funcinfo-cpu-filter-resize
+    namespace: wbfunc-imgproc
+  data:
+    deployableItems: '[
+      {
+        "name": "item1",
+        "regionType": "cpu",
+        "inputInterfaceType": "host100gether",
+        "outputInterfaceType": "host100gether",
+        "configName": "cpufunc-config-filter-resize",
+        "specName": "spec1"
+      }
+    ]'
+    spec: '[
+      {
+        "name": "spec1",
+        "minCore": 1,
+        "maxCore": 1,
+        "maxDataFlowsBase": 1,
+        "maxCapacityBase": 20,
+        "maxInputNum": 1,
+        "maxOutputNum":1
+      }
+    ]'
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: funcinfo-person-infer
+    namespace: wbfunc-imgproc
+  data:
+    deployableItems: '[
+      {
+        "name": "item1",
+        "regionType": "a100",
+        "inputInterfaceType": "host100gether",
+        "outputInterfaceType": "host100gether",
+        "configName": "gpufunc-config-person-infer",
+        "specName": "spec1"
+      },
+      {
+        "name": "item1",
+        "regionType": "a100",
+        "inputInterfaceType": "mem",
+        "outputInterfaceType": "host100gether",
+        "configName": "gpufunc-config-person-infer2",
+        "specName": "spec1"
+      }
+    ]'
+    spec: '[
+      {
+        "name": "spec1",
+        "minCore": 1,
+        "maxCore": 1,
+        "maxDataFlowsBase": 1,
+        "maxCapacityBase": 15,
+        "maxInputNum": 1,
+        "maxOutputNum":1
+      }
+    ]'
+kind: List

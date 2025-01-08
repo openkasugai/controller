@@ -1,0 +1,20 @@
+{
+  "parentBitstream": {
+    "file": "OpenKasugai-fpga-example-design-1.0.0-1.mcs",
+    "id": "0100001c"
+  },
+  "childBitstream": {
+    "file": "OpenKasugai-fpga-example-design-1.0.0-2.bit",
+    "id": "0100001c"
+  },
+  "parameters": {
+    "functions": {
+      "i_width": 3840,
+      "i_height": 2160,
+      "o_width": 1280,
+      "o_height": 1280
+    }
+  },
+  "sharedMemoryMiB": 256,
+  "functionDedicatedInfo": "filter-resize-ch"
+}

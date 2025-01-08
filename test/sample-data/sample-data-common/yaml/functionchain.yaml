@@ -1,0 +1,464 @@
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: cpu-decode-filter-resize-high-infer-chain
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "cpu-decode"
+      version: "1.0.0"
+    filter-resize-high-infer-main:
+      functionName: "filter-resize-high-infer"
+      version: "1.0.0"
+    high-infer-main:
+      functionName: "high-infer"
+      version: "1.0.0"
+  connections:
+  - from:
+      functionKey: "wb-start-of-chain"
+      port: 0
+    to:
+      functionKey: "decode-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "decode-main"
+      port: 0
+    to:
+      functionKey: "filter-resize-high-infer-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "filter-resize-high-infer-main"
+      port: 0
+    to:
+      functionKey: "high-infer-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "high-infer-main"
+      port: 0
+    to:
+      functionKey: "wb-end-of-chain"
+      port: 0
+    connectionTypeName: "auto"
+
+---
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: cpu-decode-filter-resize-low-infer-chain
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "cpu-decode"
+      version: "1.0.0"
+    filter-resize-low-infer-main:
+      functionName: "filter-resize-low-infer"
+      version: "1.0.0"
+    low-infer-main:
+      functionName: "low-infer"
+      version: "1.0.0"
+  connections:
+  - from:
+      functionKey: "wb-start-of-chain"
+      port: 0
+    to:
+      functionKey: "decode-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "decode-main"
+      port: 0
+    to:
+      functionKey: "filter-resize-low-infer-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "filter-resize-low-infer-main"
+      port: 0
+    to:
+      functionKey: "low-infer-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "low-infer-main"
+      port: 0
+    to:
+      functionKey: "wb-end-of-chain"
+      port: 0
+    connectionTypeName: "auto"
+
+---
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: cpu-decode-cpu-filter-resize-high-infer-chain
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "cpu-decode"
+      version: "1.0.0"
+    filter-resize-high-infer-main:
+      functionName: "cpu-filter-resize-high-infer"
+      version: "1.0.0"
+    high-infer-main:
+      functionName: "high-infer"
+      version: "1.0.0"
+  connections:
+  - from:
+      functionKey: "wb-start-of-chain"
+      port: 0
+    to:
+      functionKey: "decode-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "decode-main"
+      port: 0
+    to:
+      functionKey: "filter-resize-high-infer-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "filter-resize-high-infer-main"
+      port: 0
+    to:
+      functionKey: "high-infer-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "high-infer-main"
+      port: 0
+    to:
+      functionKey: "wb-end-of-chain"
+      port: 0
+    connectionTypeName: "auto"
+
+---
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: cpu-decode-cpu-filter-resize-low-infer-chain
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "cpu-decode"
+      version: "1.0.0"
+    filter-resize-low-infer-main:
+      functionName: "cpu-filter-resize-low-infer"
+      version: "1.0.0"
+    low-infer-main:
+      functionName: "low-infer"
+      version: "1.0.0"
+  connections:
+  - from:
+      functionKey: "wb-start-of-chain"
+      port: 0
+    to:
+      functionKey: "decode-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "decode-main"
+      port: 0
+    to:
+      functionKey: "filter-resize-low-infer-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "filter-resize-low-infer-main"
+      port: 0
+    to:
+      functionKey: "low-infer-main"
+      port: 0
+    connectionTypeName: "auto"
+  - from:
+      functionKey: "low-infer-main"
+      port: 0
+    to:
+      functionKey: "wb-end-of-chain"
+      port: 0
+    connectionTypeName: "auto"
+
+---
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: cpu-decode-cpu-filter-resize-2types-high-infer-chain
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "cpu-decode"
+      version: "1.0.0"
+    filter-resize-high-infer-main:
+      functionName: "cpu-filter-resize-high-infer"
+      version: "1.0.0"
+    copy-branch-main:
+      functionName: "copy-branch"
+      version: "1.0.0"
+    infer-1:
+      functionName: "high-infer"
+      version: "1.0.0"
+    infer-2:
+      functionName: "high-infer"
+      version: "1.0.0"
+  connections:
+    - from:
+        functionKey: "wb-start-of-chain"
+        port: 0
+      to:
+        functionKey: "decode-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "decode-main"
+        port: 0
+      to:
+        functionKey: "filter-resize-high-infer-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "filter-resize-high-infer-main"
+        port: 0
+      to:
+        functionKey: "copy-branch-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "copy-branch-main"
+        port: 0
+      to:
+        functionKey: "infer-1"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "copy-branch-main"
+        port: 1
+      to:
+        functionKey: "infer-2"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "infer-1"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain-1"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "infer-2"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain-2"
+        port: 0
+      connectionTypeName: "auto"
+
+---
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: cpu-decode-cpu-filter-resize-2types-low-infer-chain
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "cpu-decode"
+      version: "1.0.0"
+    filter-resize-low-infer-main:
+      functionName: "cpu-filter-resize-low-infer"
+      version: "1.0.0"
+    copy-branch-main:
+      functionName: "copy-branch"
+      version: "1.0.0"
+    infer-1:
+      functionName: "low-infer"
+      version: "1.0.0"
+    infer-2:
+      functionName: "low-infer"
+      version: "1.0.0"
+  connections:
+    - from:
+        functionKey: "wb-start-of-chain"
+        port: 0
+      to:
+        functionKey: "decode-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "decode-main"
+        port: 0
+      to:
+        functionKey: "filter-resize-low-infer-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "filter-resize-low-infer-main"
+        port: 0
+      to:
+        functionKey: "copy-branch-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "copy-branch-main"
+        port: 0
+      to:
+        functionKey: "infer-1"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "copy-branch-main"
+        port: 1
+      to:
+        functionKey: "infer-2"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "infer-1"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain-1"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "infer-2"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain-2"
+        port: 0
+      connectionTypeName: "auto"
+
+---
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: cpu-decode-filter-resize-glue-high-infer-chain
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "cpu-decode"
+      version: "1.0.0"
+    filter-resize-high-infer-main:
+      functionName: "filter-resize-high-infer"
+      version: "1.0.0"
+    glue-fdma-to-tcp-main:
+      functionName: "glue-fdma-to-tcp"
+      version: "1.0.0"
+    high-infer-main:
+      functionName: "high-infer"
+      version: "1.0.0"
+  connections:
+    - from:
+        functionKey: "wb-start-of-chain"
+        port: 0
+      to:
+        functionKey: "decode-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "decode-main"
+        port: 0
+      to:
+        functionKey: "filter-resize-high-infer-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "filter-resize-high-infer-main"
+        port: 0
+      to:
+        functionKey: "glue-fdma-to-tcp-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "glue-fdma-to-tcp-main"
+        port: 0
+      to:
+        functionKey: "high-infer-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "high-infer-main"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain"
+        port: 0
+      connectionTypeName: "auto"
+
+---
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: cpu-decode-filter-resize-glue-low-infer-chain
+  namespace: chain-imgproc
+spec:
+  functionTypeNamespace: "wbfunc-imgproc"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "cpu-decode"
+      version: "1.0.0"
+    filter-resize-low-infer-main:
+      functionName: "filter-resize-low-infer"
+      version: "1.0.0"
+    glue-fdma-to-tcp-main:
+      functionName: "glue-fdma-to-tcp"
+      version: "1.0.0"
+    low-infer-main:
+      functionName: "low-infer"
+      version: "1.0.0"
+  connections:
+    - from:
+        functionKey: "wb-start-of-chain"
+        port: 0
+      to:
+        functionKey: "decode-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "decode-main"
+        port: 0
+      to:
+        functionKey: "filter-resize-low-infer-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "filter-resize-low-infer-main"
+        port: 0
+      to:
+        functionKey: "glue-fdma-to-tcp-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "glue-fdma-to-tcp-main"
+        port: 0
+      to:
+        functionKey: "low-infer-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "low-infer-main"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain"
+        port: 0
+      connectionTypeName: "auto"

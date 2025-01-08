@@ -1,0 +1,83 @@
+{
+  "entities": [
+    { "id":"global.ether-network-0",      "type":"network" },
+
+    { "id":"node0",                       "type":"node" },
+    { "id":"node0.host100gether-0",       "type":"interface" },
+
+    { "id":"node1.pcie-network-0",        "type":"network" },
+    { "id":"node1.pcie-network-1",        "type":"network" },
+
+    { "id":"node1.cpu-0",                 "type":"device" },
+    { "id":"node1.cpu-0.pcie-0",          "type":"interface" },
+    { "id":"node1.cpu-0.pcie-1",          "type":"interface" },
+    { "id":"node1.memory-0",              "type":"device" },
+    { "id":"node1.memory-0.mem-0",        "type":"interface" },
+
+    { "id":"node1.alveou250-0.lane0",        "type":"device" },
+    { "id":"node1.alveou250-0.lane1",        "type":"device" },
+    { "id":"node1.alveou250-0.pcie-0",        "type":"interface" },
+    { "id":"node1.alveou250-0.dev25gether-0", "type":"interface" },
+    { "id":"node1.alveou250-0.dev25gether-1", "type":"interface" },
+
+    { "id":"node1.a100-0",                  "type":"device" },
+    { "id":"node1.a100-0.pcie-0",           "type":"interface" },
+
+    { "id":"node1.nic-0",                 "type":"device" },
+    { "id":"node1.nic-0.host100gether-0", "type":"interface" },
+    { "id":"node1.nic-0.pcie-0",          "type":"interface" },
+
+    { "id":"node1.alveou250-1.lane0",        "type":"device" },
+    { "id":"node1.alveou250-1.lane1",        "type":"device" },
+    { "id":"node1.alveou250-1.pcie-0",        "type":"interface" },
+    { "id":"node1.alveou250-1.dev25gether-0", "type":"interface" },
+    { "id":"node1.alveou250-1.dev25gether-1", "type":"interface" },
+
+    { "id":"node1.a100-1",                "type":"device" },
+    { "id":"node1.a100-1.pcie-0",         "type":"interface" },
+
+    { "id":"node1.a100-2",                "type":"device" },
+    { "id":"node1.a100-2.pcie-0",         "type":"interface" }
+  ],
+
+  "relations": [
+    { "type":"direct",  "from":"node0",                       "to":"node0.host100gether-0" },
+
+    { "type":"ether",   "from":"node0.host100gether-0",       "to":"global.ether-network-0" },
+    { "type":"ether",   "from":"node1.alveou250-0.dev25gether-0", "to":"global.ether-network-0" },
+    { "type":"ether",   "from":"node1.alveou250-0.dev25gether-1", "to":"global.ether-network-0" },
+    { "type":"ether",   "from":"node1.alveou250-1.dev25gether-0", "to":"global.ether-network-0" },
+    { "type":"ether",   "from":"node1.alveou250-1.dev25gether-1", "to":"global.ether-network-0" },
+    { "type":"ether",   "from":"node1.nic-0.host100gether-0", "to":"global.ether-network-0" },
+
+    { "type":"direct",  "from":"node1.cpu-0",                 "to":"node1.cpu-0.pcie-0" },
+    { "type":"direct",  "from":"node1.alveou250-0.lane0",        "to":"node1.alveou250-0.pcie-0" },
+    { "type":"direct",  "from":"node1.alveou250-0.lane0",        "to":"node1.alveou250-0.dev25gether-0" },
+    { "type":"direct",  "from":"node1.alveou250-0.lane1",        "to":"node1.alveou250-0.pcie-0" },
+    { "type":"direct",  "from":"node1.alveou250-0.lane1",        "to":"node1.alveou250-0.dev25gether-1" },
+    { "type":"direct",  "from":"node1.a100-0",                  "to":"node1.a100-0.pcie-0" },
+    { "type":"direct",  "from":"node1.nic-0",                 "to":"node1.nic-0.pcie-0" },
+    { "type":"direct",  "from":"node1.nic-0",                 "to":"node1.nic-0.host100gether-0" },
+
+    { "type":"pcie",    "from":"node1.cpu-0.pcie-0",          "to":"node1.pcie-network-0" },
+    { "type":"pcie",    "from":"node1.alveou250-0.pcie-0",        "to":"node1.pcie-network-0" },
+    { "type":"pcie",    "from":"node1.a100-0.pcie-0",           "to":"node1.pcie-network-0" },
+    { "type":"pcie",    "from":"node1.nic-0.pcie-0",          "to":"node1.pcie-network-0" },
+
+    { "type":"direct",  "from":"node1.cpu-0",                 "to":"node1.cpu-0.pcie-1" },
+    { "type":"direct",  "from":"node1.alveou250-1.lane0",        "to":"node1.alveou250-1.pcie-0" },
+    { "type":"direct",  "from":"node1.alveou250-1.lane0",        "to":"node1.alveou250-1.dev25gether-0" },
+    { "type":"direct",  "from":"node1.alveou250-1.lane1",        "to":"node1.alveou250-1.pcie-0" },
+    { "type":"direct",  "from":"node1.alveou250-1.lane1",        "to":"node1.alveou250-1.dev25gether-1" },
+    { "type":"direct",  "from":"node1.a100-1",                "to":"node1.a100-1.pcie-0" },
+    { "type":"direct",  "from":"node1.a100-2",                "to":"node1.a100-2.pcie-0" },
+
+    { "type":"pcie",    "from":"node1.cpu-0.pcie-1",          "to":"node1.pcie-network-1" },
+    { "type":"pcie",    "from":"node1.alveou250-1.pcie-0",        "to":"node1.pcie-network-1" },
+    { "type":"pcie",    "from":"node1.a100-1.pcie-0",         "to":"node1.pcie-network-1" },
+    { "type":"pcie",    "from":"node1.a100-2.pcie-0",         "to":"node1.pcie-network-1" },     
+
+    { "type":"direct",  "from":"node1.cpu-0",                 "to":"node1.memory-0.mem-0" },
+    { "type":"direct",  "from":"node1.memory-0",              "to":"node1.memory-0.mem-0" }
+  ]
+}

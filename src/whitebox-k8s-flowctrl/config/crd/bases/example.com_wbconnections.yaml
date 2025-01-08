@@ -1,0 +1,314 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  name: wbconnections.example.com
+spec:
+  group: example.com
+  names:
+    kind: WBConnection
+    listKind: WBConnectionList
+    plural: wbconnections
+    singular: wbconnection
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.connectionMethod
+      name: ConnectionMethod
+      type: string
+    - jsonPath: .status.from.wbFunctionRef.name
+      name: From
+      type: string
+    - jsonPath: .status.to.wbFunctionRef.name
+      name: To
+      type: string
+    - jsonPath: .status.status
+      name: Status
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: WBConnection is the Schema for the wbconnections API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: WBConnectionSpec defines the desired state of WBConnection
+            properties:
+              connectionMethod:
+                type: string
+              connectionPath:
+                items:
+                  properties:
+                    entityID:
+                      type: string
+                    usedType:
+                      type: string
+                  required:
+                  - entityID
+                  - usedType
+                  type: object
+                type: array
+              dataFlowRef:
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+              from:
+                properties:
+                  port:
+                    format: int32
+                    type: integer
+                  wbFunctionRef:
+                    properties:
+                      name:
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - name
+                    - namespace
+                    type: object
+                required:
+                - port
+                - wbFunctionRef
+                type: object
+              params:
+                additionalProperties:
+                  anyOf:
+                  - type: integer
+                  - type: string
+                  x-kubernetes-int-or-string: true
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              requirements:
+                properties:
+                  capacity:
+                    format: int32
+                    type: integer
+                required:
+                - capacity
+                type: object
+              to:
+                properties:
+                  port:
+                    format: int32
+                    type: integer
+                  wbFunctionRef:
+                    properties:
+                      name:
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - name
+                    - namespace
+                    type: object
+                required:
+                - port
+                - wbFunctionRef
+                type: object
+            required:
+            - connectionMethod
+            - dataFlowRef
+            - from
+            - to
+            type: object
+          status:
+            description: WBConnectionStatus defines the observed state of WBConnection
+            properties:
+              connectionMethod:
+                type: string
+              connectionPath:
+                items:
+                  properties:
+                    entityID:
+                      type: string
+                    usedType:
+                      type: string
+                  required:
+                  - entityID
+                  - usedType
+                  type: object
+                type: array
+              connections:
+                items:
+                  properties:
+                    from:
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                      required:
+                      - name
+                      - namespace
+                      type: object
+                    intParams:
+                      additionalProperties:
+                        type: integer
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                    status:
+                      type: string
+                    strParams:
+                      additionalProperties:
+                        type: string
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                    to:
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                      required:
+                      - name
+                      - namespace
+                      type: object
+                  required:
+                  - from
+                  - status
+                  - to
+                  type: object
+                type: array
+              dataFlowRef:
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+              from:
+                properties:
+                  port:
+                    format: int32
+                    type: integer
+                  wbFunctionRef:
+                    properties:
+                      name:
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - name
+                    - namespace
+                    type: object
+                required:
+                - port
+                - wbFunctionRef
+                type: object
+              ios:
+                additionalProperties:
+                  properties:
+                    deviceIndex:
+                      type: integer
+                    deviceType:
+                      type: string
+                    intParams:
+                      additionalProperties:
+                        type: integer
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                    ioName:
+                      type: string
+                    ioType:
+                      type: string
+                    node:
+                      type: string
+                    port:
+                      type: integer
+                    status:
+                      type: string
+                    strParams:
+                      additionalProperties:
+                        type: string
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                  required:
+                  - deviceIndex
+                  - deviceType
+                  - ioName
+                  - ioType
+                  - node
+                  - port
+                  - status
+                  type: object
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              params:
+                additionalProperties:
+                  anyOf:
+                  - type: integer
+                  - type: string
+                  x-kubernetes-int-or-string: true
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              satisfiedRequirements:
+                properties:
+                  capacity:
+                    format: int32
+                    type: integer
+                required:
+                - capacity
+                type: object
+              status:
+                type: string
+              to:
+                properties:
+                  port:
+                    format: int32
+                    type: integer
+                  wbFunctionRef:
+                    properties:
+                      name:
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - name
+                    - namespace
+                    type: object
+                required:
+                - port
+                - wbFunctionRef
+                type: object
+            required:
+            - connectionMethod
+            - dataFlowRef
+            - from
+            - status
+            - to
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources: {}

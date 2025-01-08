@@ -1,0 +1,827 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: topologydata
+  namespace: topologyinfo
+data:
+  entities: |-
+    [
+      {
+        "id": "global.ether-network-0",
+        "type": "network",
+        "networkInfo": {
+          "networkType": "ether",
+          "networkIndex": 0,
+          "networkSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 1000,
+          "maxOutgoingCapacity": 1000
+        },
+        "available": true
+      },
+      {
+        "id": "node0",
+        "type": "node",
+        "nodeInfo": {
+          "nodeName": "node0"
+        },
+        "available": true
+      },
+      {
+        "id": "node0.host100gether-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "node0",
+          "interfaceType": "host100gether",
+          "interfaceIndex": 0,
+          "interfaceSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.pcie-network-0",
+        "type": "network",
+        "networkInfo": {
+          "networkType": "pcie",
+          "networkIndex": 0,
+          "nodeName": "swb-sm7",
+          "networkSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 1000,
+          "maxOutgoingCapacity": 1000
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.pcie-network-1",
+        "type": "network",
+        "networkInfo": {
+          "networkType": "pcie",
+          "networkIndex": 1,
+          "nodeName": "swb-sm7",
+          "networkSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 1000,
+          "maxOutgoingCapacity": 1000
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.cpu-0",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "cpu",
+          "deviceIndex": 0
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.cpu-0.pcie-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "pcie",
+          "interfaceIndex": 0,
+          "deviceType": "cpu",
+          "deviceIndex": 0,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.cpu-0.pcie-1",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "pcie",
+          "interfaceIndex": 1,
+          "deviceType": "cpu",
+          "deviceIndex": 0,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.cpu-0.mem-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "mem",
+          "interfaceIndex": 0,
+          "deviceType": "cpu",
+          "deviceIndex": 0,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.memory-0",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "memory",
+          "deviceIndex": 0
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.memory-0.mem-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "mem",
+          "interfaceIndex": 0,
+          "deviceType": "memory",
+          "deviceIndex": 0,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.nic-0",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "nic",
+          "deviceIndex": 0
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.nic-0.host100gether-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "host100gether",
+          "interfaceIndex": 0,
+          "deviceType": "nic",
+          "deviceIndex": 0,
+          "interfaceSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.nic-0.pcie-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "pcie",
+          "interfaceIndex": 0,
+          "deviceType": "nic",
+          "deviceIndex": 0,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-3.lane0",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "alveo",
+          "deviceIndex": 3,
+          "regionName": "lane0"
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-3.pcie-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "pcie",
+          "interfaceIndex": 0,
+          "deviceType": "alveo",
+          "deviceIndex": 3,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-3.dev25gether-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "dev25gether",
+          "interfaceIndex": 0,
+          "deviceType": "alveo",
+          "deviceIndex": 3,
+          "interfaceSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-3.lane1",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "alveo",
+          "deviceIndex": 3,
+          "regionName": "lane1"
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-3.dev25gether-1",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "dev25gether",
+          "interfaceIndex": 1,
+          "deviceType": "alveo",
+          "deviceIndex": 3,
+          "interfaceSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-2.lane0",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "alveo",
+          "deviceIndex": 2,
+          "regionName": "lane0"
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-2.pcie-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "pcie",
+          "interfaceIndex": 0,
+          "deviceType": "alveo",
+          "deviceIndex": 2,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-2.dev25gether-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "dev25gether",
+          "interfaceIndex": 0,
+          "deviceType": "alveo",
+          "deviceIndex": 2,
+          "interfaceSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-2.lane1",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "alveo",
+          "deviceIndex": 2,
+          "regionName": "lane1"
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-2.dev25gether-1",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "dev25gether",
+          "interfaceIndex": 1,
+          "deviceType": "alveo",
+          "deviceIndex": 2,
+          "interfaceSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-1.lane0",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "alveo",
+          "deviceIndex": 1,
+          "regionName": "lane0"
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-1.pcie-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "pcie",
+          "interfaceIndex": 0,
+          "deviceType": "alveo",
+          "deviceIndex": 1,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-1.dev25gether-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "dev25gether",
+          "interfaceIndex": 0,
+          "deviceType": "alveo",
+          "deviceIndex": 1,
+          "interfaceSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-1.lane1",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "alveo",
+          "deviceIndex": 1,
+          "regionName": "lane1"
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-1.dev25gether-1",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "dev25gether",
+          "interfaceIndex": 1,
+          "deviceType": "alveo",
+          "deviceIndex": 1,
+          "interfaceSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-0.lane0",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "alveo",
+          "deviceIndex": 0,
+          "regionName": "lane0"
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-0.pcie-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "pcie",
+          "interfaceIndex": 0,
+          "deviceType": "alveo",
+          "deviceIndex": 0,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-0.dev25gether-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "dev25gether",
+          "interfaceIndex": 0,
+          "deviceType": "alveo",
+          "deviceIndex": 0,
+          "interfaceSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-0.lane1",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "alveo",
+          "deviceIndex": 0,
+          "regionName": "lane1"
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.alveo-0.dev25gether-1",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "dev25gether",
+          "interfaceIndex": 1,
+          "deviceType": "alveo",
+          "deviceIndex": 0,
+          "interfaceSideType": "outside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.t4-0",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "t4",
+          "deviceIndex": 0
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.t4-0.pcie-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "pcie",
+          "interfaceIndex": 0,
+          "deviceType": "t4",
+          "deviceIndex": 0,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.a100-1",
+        "type": "device",
+        "deviceInfo": {
+          "nodeName": "swb-sm7",
+          "deviceType": "a100",
+          "deviceIndex": 1
+        },
+        "available": true
+      },
+      {
+        "id": "swb-sm7.a100-1.pcie-0",
+        "type": "interface",
+        "interfaceInfo": {
+          "nodeName": "swb-sm7",
+          "interfaceType": "pcie",
+          "interfaceIndex": 0,
+          "deviceType": "a100",
+          "deviceIndex": 1,
+          "interfaceSideType": "inside"
+        },
+        "capacityInfo": {
+          "maxIncomingCapacity": 100,
+          "maxOutgoingCapacity": 100
+        },
+        "available": true
+      }
+    ]
+  relations: |-
+    [
+      {
+        "type": "direct",
+        "from": "node0",
+        "to": "node0.host100gether-0",
+        "available": true
+      },
+      {
+        "type": "ether",
+        "from": "node0.host100gether-0",
+        "to": "global.ether-network-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.cpu-0",
+        "to": "swb-sm7.cpu-0.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.cpu-0",
+        "to": "swb-sm7.cpu-0.pcie-1",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.cpu-0",
+        "to": "swb-sm7.cpu-0.mem-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.cpu-0.mem-0",
+        "to": "swb-sm7.memory-0.mem-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.memory-0",
+        "to": "swb-sm7.memory-0.mem-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.nic-0",
+        "to": "swb-sm7.nic-0.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.nic-0",
+        "to": "swb-sm7.nic-0.host100gether-0",
+        "available": true
+      },
+      {
+        "type": "ether",
+        "from": "swb-sm7.nic-0.host100gether-0",
+        "to": "global.ether-network-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-3.lane0",
+        "to": "swb-sm7.alveo-3.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-3.lane0",
+        "to": "swb-sm7.alveo-3.dev25gether-0",
+        "available": true
+      },
+      {
+        "type": "ether",
+        "from": "swb-sm7.alveo-3.dev25gether-0",
+        "to": "global.ether-network-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-3.lane1",
+        "to": "swb-sm7.alveo-3.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-3.lane1",
+        "to": "swb-sm7.alveo-3.dev25gether-1",
+        "available": true
+      },
+      {
+        "type": "ether",
+        "from": "swb-sm7.alveo-3.dev25gether-1",
+        "to": "global.ether-network-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-2.lane0",
+        "to": "swb-sm7.alveo-2.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-2.lane0",
+        "to": "swb-sm7.alveo-2.dev25gether-0",
+        "available": true
+      },
+      {
+        "type": "ether",
+        "from": "swb-sm7.alveo-2.dev25gether-0",
+        "to": "global.ether-network-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-2.lane1",
+        "to": "swb-sm7.alveo-2.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-2.lane1",
+        "to": "swb-sm7.alveo-2.dev25gether-1",
+        "available": true
+      },
+      {
+        "type": "ether",
+        "from": "swb-sm7.alveo-2.dev25gether-1",
+        "to": "global.ether-network-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-1.lane0",
+        "to": "swb-sm7.alveo-1.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-1.lane0",
+        "to": "swb-sm7.alveo-1.dev25gether-0",
+        "available": true
+      },
+      {
+        "type": "ether",
+        "from": "swb-sm7.alveo-1.dev25gether-0",
+        "to": "global.ether-network-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-1.lane1",
+        "to": "swb-sm7.alveo-1.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-1.lane1",
+        "to": "swb-sm7.alveo-1.dev25gether-1",
+        "available": true
+      },
+      {
+        "type": "ether",
+        "from": "swb-sm7.alveo-1.dev25gether-1",
+        "to": "global.ether-network-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-0.lane0",
+        "to": "swb-sm7.alveo-0.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-0.lane0",
+        "to": "swb-sm7.alveo-0.dev25gether-0",
+        "available": true
+      },
+      {
+        "type": "ether",
+        "from": "swb-sm7.alveo-0.dev25gether-0",
+        "to": "global.ether-network-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-0.lane1",
+        "to": "swb-sm7.alveo-0.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.alveo-0.lane1",
+        "to": "swb-sm7.alveo-0.dev25gether-1",
+        "available": true
+      },
+      {
+        "type": "ether",
+        "from": "swb-sm7.alveo-0.dev25gether-1",
+        "to": "global.ether-network-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.t4-0",
+        "to": "swb-sm7.t4-0.pcie-0",
+        "available": true
+      },
+      {
+        "type": "direct",
+        "from": "swb-sm7.a100-1",
+        "to": "swb-sm7.a100-1.pcie-0",
+        "available": true
+      },
+      {
+        "type": "pcie",
+        "from": "swb-sm7.cpu-0.pcie-0",
+        "to": "swb-sm7.pcie-network-0",
+        "available": true
+      },
+      {
+        "type": "pcie",
+        "from": "swb-sm7.cpu-0.pcie-1",
+        "to": "swb-sm7.pcie-network-1",
+        "available": true
+      },
+      {
+        "type": "pcie",
+        "from": "swb-sm7.nic-0.pcie-0",
+        "to": "swb-sm7.pcie-network-0",
+        "available": true
+      },
+      {
+        "type": "pcie",
+        "from": "swb-sm7.alveo-3.pcie-0",
+        "to": "swb-sm7.pcie-network-1",
+        "available": true
+      },
+      {
+        "type": "pcie",
+        "from": "swb-sm7.alveo-2.pcie-0",
+        "to": "swb-sm7.pcie-network-1",
+        "available": true
+      },
+      {
+        "type": "pcie",
+        "from": "swb-sm7.alveo-1.pcie-0",
+        "to": "swb-sm7.pcie-network-0",
+        "available": true
+      },
+      {
+        "type": "pcie",
+        "from": "swb-sm7.alveo-0.pcie-0",
+        "to": "swb-sm7.pcie-network-0",
+        "available": true
+      },
+      {
+        "type": "pcie",
+        "from": "swb-sm7.t4-0.pcie-0",
+        "to": "swb-sm7.pcie-network-0",
+        "available": true
+      },
+      {
+        "type": "pcie",
+        "from": "swb-sm7.a100-1.pcie-0",
+        "to": "swb-sm7.pcie-network-0",
+        "available": true
+      }
+    ]

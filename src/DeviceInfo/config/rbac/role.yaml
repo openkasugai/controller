@@ -1,0 +1,98 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - example.com
+  resources:
+  - childbs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - childbs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - childbs/status
+  verbs:
+  - get
+- apiGroups:
+  - example.com
+  resources:
+  - computeresources
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - computeresources/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - computeresources/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - deviceinfos
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - deviceinfos/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - deviceinfos/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - fpgas
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - fpgas/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - fpgas/status
+  verbs:
+  - get
