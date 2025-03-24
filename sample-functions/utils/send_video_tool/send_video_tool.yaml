@@ -22,7 +22,7 @@ spec:
       shareProcessNamespace: true      
       containers:
       - name: send-video-tool
-        image: localhost/send_video_tool:1.0.0
+        image: localhost/send_video_tool:1.1.0
         imagePullPolicy: IfNotPresent
         command: ["tail", "-f", "/dev/null"]
         securityContext:
