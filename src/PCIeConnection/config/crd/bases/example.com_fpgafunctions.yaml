@@ -55,7 +55,6 @@ spec:
                       type: string
                   required:
                   - id
-                  - partitionName
                   type: object
                 type: array
               configName:
@@ -111,8 +110,50 @@ spec:
                 type: integer
               functionName:
                 type: string
+              nextFunctions:
+                additionalProperties:
+                  properties:
+                    port:
+                      format: int32
+                      type: integer
+                    wbFunctionRef:
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                      required:
+                      - name
+                      - namespace
+                      type: object
+                  required:
+                  - port
+                  - wbFunctionRef
+                  type: object
+                type: object
               nodeName:
                 type: string
+              previousFunctions:
+                additionalProperties:
+                  properties:
+                    port:
+                      format: int32
+                      type: integer
+                    wbFunctionRef:
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                      required:
+                      - name
+                      - namespace
+                      type: object
+                  required:
+                  - port
+                  - wbFunctionRef
+                  type: object
+                type: object
               ptuKernelID:
                 format: int32
                 type: integer
@@ -123,13 +164,13 @@ spec:
                   dmaChannelID:
                     format: int32
                     type: integer
-                  fdmaConnectorID:
-                    format: int32
-                    type: integer
                   gatewayAddress:
                     type: string
                   ipAddress:
                     type: string
+                  lldmaConnectorID:
+                    format: int32
+                    type: integer
                   port:
                     format: int32
                     type: integer
@@ -159,13 +200,13 @@ spec:
                   dmaChannelID:
                     format: int32
                     type: integer
-                  fdmaConnectorID:
-                    format: int32
-                    type: integer
                   gatewayAddress:
                     type: string
                   ipAddress:
                     type: string
+                  lldmaConnectorID:
+                    format: int32
+                    type: integer
                   port:
                     format: int32
                     type: integer
@@ -181,15 +222,9 @@ spec:
             - configName
             - dataFlowRef
             - deviceType
-            - frameworkKernelID
-            - functionChannelID
-            - functionKernelID
             - functionName
             - nodeName
-            - ptuKernelID
             - regionName
-            - rx
-            - tx
             type: object
           status:
             description: FPGAFunctionStatus defines the observed state of FPGAFunction
@@ -228,6 +263,9 @@ spec:
               functionChannelID:
                 format: int32
                 type: integer
+              functionIndex:
+                format: int32
+                type: integer
               functionKernelID:
                 format: int32
                 type: integer
@@ -243,13 +281,13 @@ spec:
                   dmaChannelID:
                     format: int32
                     type: integer
-                  fdmaConnectorID:
-                    format: int32
-                    type: integer
                   gatewayAddress:
                     type: string
                   ipAddress:
                     type: string
+                  lldmaConnectorID:
+                    format: int32
+                    type: integer
                   port:
                     format: int32
                     type: integer
@@ -288,13 +326,13 @@ spec:
                   dmaChannelID:
                     format: int32
                     type: integer
-                  fdmaConnectorID:
-                    format: int32
-                    type: integer
                   gatewayAddress:
                     type: string
                   ipAddress:
                     type: string
+                  lldmaConnectorID:
+                    format: int32
+                    type: integer
                   port:
                     format: int32
                     type: integer
@@ -310,6 +348,7 @@ spec:
             - dataFlowRef
             - frameworkKernelID
             - functionChannelID
+            - functionIndex
             - functionKernelID
             - functionName
             - parentBitstreamName

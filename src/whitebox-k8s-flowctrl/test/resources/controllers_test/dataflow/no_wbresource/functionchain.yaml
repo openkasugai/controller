@@ -1,0 +1,76 @@
+apiVersion: example.com/v1
+kind: FunctionChain
+metadata:
+  name: sample-chain1
+  namespace: default
+spec:
+  functionTypeNamespace: "default"
+  connectionTypeNamespace: "default"
+  functions:
+    decode-main:
+      functionName: "cpu-decode"
+      version: "1.0.0"
+    filter-resize-main:
+      functionName: "cpu-filter-resize-high-infer"
+      version: "1.0.0"
+    copy-branch-main:
+      functionName: "copy-branch"
+      version: "1.0.0"
+    high-infer-main-1:
+      functionName: "high-infer"
+      version: "1.0.0"
+    high-infer-main-2:
+      functionName: "high-infer"
+      version: "1.0.0"
+  connections:
+    - from:
+        functionKey: "wb-start-of-chain"
+        port: 0
+      to:
+        functionKey: "decode-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "decode-main"
+        port: 0
+      to:
+        functionKey: "filter-resize-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "filter-resize-main"
+        port: 0
+      to:
+        functionKey: "copy-branch-main"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "copy-branch-main"
+        port: 0
+      to:
+        functionKey: "high-infer-main-1"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "copy-branch-main"
+        port: 1
+      to:
+        functionKey: "high-infer-main-2"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "high-infer-main-1"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain-1"
+        port: 0
+      connectionTypeName: "auto"
+    - from:
+        functionKey: "high-infer-main-2"
+        port: 0
+      to:
+        functionKey: "wb-end-of-chain-2"
+        port: 0
+      connectionTypeName: "auto"
+status:
+  status: Ready

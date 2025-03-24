@@ -63,9 +63,9 @@ vet: ## Run go vet against code.
 .PHONY: test
 test: manifests generate fmt vet envtest ## Run tests.
 	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -coverprofile cover.out.tmp
-	cat cover.out.tmp | grep -v "**_test_data.go" > cover.out
+	cat cover.out.tmp | grep -v "**_test_data.go" | grep -v "**types.go" | grep -v "**deepcopy.go" | grep -v "**main.go" >  cover.out
 	rm cover.out.tmp
-	go tool cover -html=cover.out -o cover_GPUFunction.html
+	go tool cover -html=cover.out -o cover_gpufunction.html
 
 ##@ Build
 

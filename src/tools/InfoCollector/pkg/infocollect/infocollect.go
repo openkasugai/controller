@@ -765,8 +765,6 @@ func MakeInfrastructureInfo(
 	var err error
 	err = nil
 
-	// logger := ctxzap.Extract(ctx)
-
 	// Repeat for the number of devices in the node and device information
 	for deviceIndex := 0; deviceIndex < len(*pNodeAndDevices); deviceIndex++ {
 
@@ -1115,8 +1113,6 @@ func MakeFPGACatalogInfo(
 	var err error
 	err = nil
 
-	// logger := ctxzap.Extract(ctx)
-
 	// Repeat for the number of devices in the device deployment information
 	for deviceIndex := 0; deviceIndex < len(*pInDeviceDeploys); deviceIndex++ {
 
@@ -1251,8 +1247,6 @@ func MakeDecodeInfo(
 	var err error
 	err = nil
 
-	// logger := ctxzap.Extract(ctx)
-
 	// Repeat for the number of FunctionKernels of Function-specific information-decode-only information
 	for functionDedicatedIndex := 0; functionDedicatedIndex < len(functionDedicatedInfos); functionDedicatedIndex++ {
 
@@ -1334,8 +1328,6 @@ func MakeFilterResizeInfo(
 	functionDedicatedInfos := (*pFunctionDedicatedResizeInfo)["functionKernels"]
 	var err error
 	err = nil
-
-	// logger := ctxzap.Extract(ctx)
 
 	// Function-specific information - Repeat for the number of FunctionKernels for filter/resize-specific information
 	for functionDedicatedIndex := 0; functionDedicatedIndex < len(functionDedicatedInfos); functionDedicatedIndex++ {

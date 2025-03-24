@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,12 +24,17 @@ import (
 type ChildBitstreamState string
 
 const (
-	ChildBsWritingBsfile      ChildBitstreamState = "WritingBitstreamFile"
-	ChildBsConfiguringParam   ChildBitstreamState = "ConfiguringParameters"
-	ChildBsNoConfigureNetwork ChildBitstreamState = "NoConfigureNetwork"
-	ChildBsConfiguringNetwork ChildBitstreamState = "ConfiguringNetwork"
-	ChildBsReady              ChildBitstreamState = "Ready"
-	ChildBsError              ChildBitstreamState = "Error"
+	ChildBsStoppingModule        ChildBitstreamState = "StoppingModule"
+	ChildBsNotStopNetworkModule  ChildBitstreamState = "NotStopNetworkModule"
+	ChildBsStoppingNetworkModule ChildBitstreamState = "StoppingNetworkModule"
+	ChildBsNotWriteBsfile        ChildBitstreamState = "NotWriteBitstreamFile"
+	ChildBsReconfiguring         ChildBitstreamState = "Reconfiguring"
+	ChildBsWritingBsfile         ChildBitstreamState = "WritingBitstreamFile"
+	ChildBsConfiguringParam      ChildBitstreamState = "ConfiguringParameters"
+	ChildBsNoConfigureNetwork    ChildBitstreamState = "NoConfigureNetwork"
+	ChildBsConfiguringNetwork    ChildBitstreamState = "ConfiguringNetwork"
+	ChildBsReady                 ChildBitstreamState = "Ready"
+	ChildBsError                 ChildBitstreamState = "Error"
 )
 
 type ChildBitstreamStatus string
@@ -43,14 +48,14 @@ const (
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-type Details struct {
+type ChildBsDetails struct {
 	Port             *int32 `json:"port,omitempty"`
 	DMAChannelID     *int32 `json:"dmaChannelID,omitempty"`
 	LLDMAConnectorID *int32 `json:"lldmaConnectorID,omitempty"`
 }
 
 type RxTxSpec struct {
-	Protocol *map[string]Details `json:"protocol,omitempty"`
+	Protocol *map[string]ChildBsDetails `json:"protocol,omitempty"`
 }
 
 type FunctionsDeploySpec struct {
@@ -66,7 +71,7 @@ type FunctionsIntraResourceMgmtMap struct {
 }
 
 type FunctionsModule struct {
-	FunctionChannelIDs *string `json:"functionChannelIDs,omitempty"`
+	FunctionChannelIDs *string `json:"function-channel-ids,omitempty"`
 	Identifier         *string `json:"identifier,omitempty"`
 	Type               *string `json:"type,omitempty"`
 	Version            *string `json:"version,omitempty"`
@@ -74,33 +79,34 @@ type FunctionsModule struct {
 
 type ChildBsFunctions struct {
 	ID                   *int32                                    `json:"id,omitempty"`
-	Module               *FunctionsModule                          `json:"module,omitempty"`
+	FunctionName         *string                                   `json:"functionname,omitempty"`
+	Module               *[]FunctionsModule                        `json:"module,omitempty"`
 	Parameters           *map[string]intstr.IntOrString            `json:"parameters,omitempty"`
 	IntraResourceMgmtMap *map[string]FunctionsIntraResourceMgmtMap `json:"intraResourceMgmtMap,omitempty"`
 	DeploySpec           FunctionsDeploySpec                       `json:"deploySpec"`
 }
 
 type ConversionModule struct {
-	Identifier *string `json:"identifire,omitempty"`
+	Identifier *string `json:"identifier,omitempty"`
 	Type       *string `json:"type,omitempty"`
 	Version    *string `json:"version,omitempty"`
 }
 
 type ChildBsConversion struct {
-	ID     *int32            `json:"id,omitempty"`
-	Module *ConversionModule `json:"module,omitempty"`
+	ID     *int32              `json:"id,omitempty"`
+	Module *[]ConversionModule `json:"module,omitempty"`
 }
 
 type ChildBsDirecttrans struct {
 	ID         *int32  `json:"id,omitempty"`
-	Identifier *string `json:"identifire,omitempty"`
+	Identifier *string `json:"identifier,omitempty"`
 	Type       *string `json:"type,omitempty"`
 	Version    *string `json:"version,omitempty"`
 }
 
 type ChildBsChain struct {
 	ID         *int32  `json:"id,omitempty"`
-	Identifier *string `json:"identifire,omitempty"`
+	Identifier *string `json:"identifier,omitempty"`
 	Type       *string `json:"type,omitempty"`
 	Version    *string `json:"version,omitempty"`
 }
@@ -134,22 +140,29 @@ type ChildBsRegion struct {
 	Name         *string        `json:"name,omitempty"`
 }
 
+type BsConfigInfo struct {
+	ChildBitstreamIDs []ChildBsSpec `json:"child-bitstream-ids"`
+	ParentBitstreamID string        `json:"parent-bitstream-id"`
+}
+
 // ChildBitstreamSpec defines the desired state of ChildBitstream
 type ChildBsSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	Regions          []ChildBsRegion `json:"regions"`
-	ChildBitstreamID *string         `json:"childBitstreamID,omitempty"`
+	Regions            []ChildBsRegion `json:"regions"`
+	ChildBitstreamID   *string         `json:"child-bitstream-id,omitempty"`
+	ChildBitstreamFile *string         `json:"child-bitstream-file,omitempty"`
 }
 
 // ChildBitstreamStatus defines the observed state of ChildBitstream
 type ChildBsStatus struct {
 	Regions []ChildBsRegion `json:"regions"`
 	//+kubebuilder:default=NotReady
-	Status           ChildBitstreamStatus `json:"status"`
-	State            ChildBitstreamState  `json:"state"`
-	ChildBitstreamID *string              `json:"childBitstreamID,omitempty"`
+	Status             ChildBitstreamStatus `json:"status"`
+	State              ChildBitstreamState  `json:"state"`
+	ChildBitstreamID   *string              `json:"child-bitstream-id,omitempty"`
+	ChildBitstreamFile *string              `json:"child-bitstream-file,omitempty"`
 }
 
 //+kubebuilder:object:root=true

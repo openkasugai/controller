@@ -39,7 +39,7 @@ spec:
           spec:
             description: FPGASpec defines the desired state of FPGA
             properties:
-              childBitstreamID:
+              child-bitstream-id:
                 type: string
               deviceFilePath:
                 type: string
@@ -50,7 +50,7 @@ spec:
                 type: string
               nodeName:
                 type: string
-              parentBitstreamID:
+              parent-bitstream-id:
                 type: string
               pciBus:
                 format: int32
@@ -71,7 +71,7 @@ spec:
             - deviceIndex
             - deviceUUID
             - nodeName
-            - parentBitstreamID
+            - parent-bitstream-id
             - pciBus
             - pciDevice
             - pciDomain
@@ -81,9 +81,9 @@ spec:
           status:
             description: FPGAStatus defines the observed state of FPGA
             properties:
-              childBitstreamCRName:
+              child-bitstream-id:
                 type: string
-              childBitstreamID:
+              childBitstreamCRName:
                 type: string
               deviceFilePath:
                 type: string
@@ -94,7 +94,7 @@ spec:
                 type: string
               nodeName:
                 type: string
-              parentBitstreamID:
+              parent-bitstream-id:
                 type: string
               pciBus:
                 format: int32
@@ -117,7 +117,7 @@ spec:
             - deviceIndex
             - deviceUUID
             - nodeName
-            - parentBitstreamID
+            - parent-bitstream-id
             - pciBus
             - pciDevice
             - pciDomain

@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ type TopologyInfoReconciler struct {
 
 // Controller Name
 const (
-	ControllerName = "topologyinfo"
+	controllerName = "topologyinfo"
 )
 
 // Logger Setting
@@ -64,7 +64,7 @@ const (
 
 // Resource Kind
 const (
-	TopologyinfoKind = "TopologyInfo"
+	topologyinfoKind = "TopologyInfo"
 	WbconnKind       = "WBConnection"
 )
 
@@ -75,52 +75,58 @@ const (
 
 // TopologyData ConfigMap KEY
 const (
-	TopologyCmEntitiesKey  = "entities"
-	TopologyCmRelationsKey = "relations"
+	topologyCmEntitiesKey  = "entities"
+	topologyCmRelationsKey = "relations"
 )
 
 // EntityType
 const (
-	EntityTypeNode      = "node"
-	EntityTypeDevice    = "device"
-	EntityTypeInterface = "interface"
-	EntityTypeNetwork   = "network"
+	entityTypeNode      = "node"
+	entityTypeDevice    = "device"
+	entityTypeInterface = "interface"
+	entityTypeNetwork   = "network"
 )
 
 // Info for each EntityType
 const (
-	EntityInfoNode      = "nodeInfo"
-	EntityInfoDevice    = "deviceInfo"
-	EntityInfoInterface = "interfaceInfo"
-	EntityInfoNetwork   = "networkInfo"
+	entityInfoNode      = "nodeInfo"
+	entityInfoDevice    = "deviceInfo"
+	entityInfoInterface = "interfaceInfo"
+	entityInfoNetwork   = "networkInfo"
 )
 
 // UsedType
 const (
-	UsedTypeIn    = "Incoming"
-	UsedTypeOut   = "Outgoing"
-	UsedTypeInout = "IncomingAndOutgoing"
+	usedTypeIn    = "Incoming"
+	usedTypeOut   = "Outgoing"
+	usedTypeInout = "IncomingAndOutgoing"
 )
 
 // WBConnection Status
 const (
-	WbconnStatusDeployed = "Deployed"
+	wbconnStatusDeployed = "Deployed"
 )
 
 // Finalizer Name
 const (
-	DomainName    = "example.com"
-	FinalizerName = "topologyinfo-finalizer"
+	topoFinalizerName   = "example.com.v1/topologyinfo.finalizers"
+	wbConnFinalizerName = "topologyinfo.finalizers.example.com.v1"
+)
+
+// Calulate Type
+const (
+	calcTypeAdd       = "add"
+	calcTypeSubstract = "substract"
 )
 
 //+kubebuilder:rbac:groups=example.com,resources=topologyinfos,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=example.com,resources=topologyinfos/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=example.com,resources=topologyinfos/finalizers,verbs=update
 //+kubebuilder:rbac:groups=core,resources=configmaps,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=core,resources=configmaps,verbs=get;list;watch
 //+kubebuilder:rbac:groups=core,resources=configmaps/finalizers,verbs=update
 //+kubebuilder:rbac:groups=example.com,resources=wbconnections,verbs=get;list;watch
 //+kubebuilder:rbac:groups=example.com,resources=wbconnections/status,verbs=get
+//+kubebuilder:rbac:groups=example.com,resources=wbconnections/finalizers,verbs=update
 
 func (r *TopologyInfoReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	// assign log entry
@@ -133,9 +139,9 @@ func (r *TopologyInfoReconciler) Reconcile(ctx context.Context, req ctrl.Request
 		l.Info("execute checkTopologyDataEvent function")
 		return r.checkTopologyDataEvent(ctx, req)
 	} else if strings.Contains(req.NamespacedName.Name, WbconnName) {
-		// update TopologyData resource status CapacityUsed
-		l.Info("execute updateCapacityUsed function")
-		return r.updateCapacityUsed(ctx, req)
+		// check event triggerd by WBConnection
+		l.Info("execute checkWbConnEvent function")
+		return r.checkWbConnEvent(ctx, req)
 	} else {
 		return ctrl.Result{}, nil
 	}
@@ -155,7 +161,7 @@ func (r *TopologyInfoReconciler) checkTopologyDataEvent(ctx context.Context, req
 	}
 
 	// get finalizer name for topologyData ConfigMap
-	finalizerName := getFinalizerName(&topologyDataCm)
+	finalizerName := getTopoFinalizerName(&topologyDataCm)
 	// set flag which explain TopologyData resource is already exists or not
 	isNewTopologyInfo := false
 
@@ -184,6 +190,55 @@ func (r *TopologyInfoReconciler) checkTopologyDataEvent(ctx context.Context, req
 	return ctrl.Result{}, nil
 }
 
+func (r *TopologyInfoReconciler) checkWbConnEvent(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	// assign log entry
+	l := log.FromContext(ctx)
+
+	var wbConnection ntthpcv1.WBConnection
+	var calcType string
+
+	// fetch WBConnection resource
+	l.Info("fetching WBConnection")
+	if err := r.Get(ctx, req.NamespacedName, &wbConnection); err != nil {
+		l.Error(err, "unable to fetch WBConnection")
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	// get finalizer name for WBConnection
+	wbConnFinalizerName := getWbConnFinalizerName(&wbConnection)
+
+	// check deletion timestamp
+	if !wbConnection.ObjectMeta.DeletionTimestamp.IsZero() {
+		// check if WBConnection has finalizer or not
+		if controllerutil.ContainsFinalizer(&wbConnection, wbConnFinalizerName) {
+			// execute substract capacity
+			l.Info("WBConnection is now deleting, substract TopologyInfo capacity used")
+			calcType = calcTypeSubstract
+			return r.updateCapacityUsed(ctx, req, &wbConnection, calcType)
+		}
+	} else {
+		// add capacity process has already been completed
+		if controllerutil.ContainsFinalizer(&wbConnection, wbConnFinalizerName) {
+			l.Info("WBConnection capacity has already added to TopologyInfo, abort Reconcile")
+			return ctrl.Result{}, nil
+			// new request
+		} else {
+			// status check
+			l.Info("check WBConnection Status")
+			if wbConnection.Status.Status != wbconnStatusDeployed {
+				l.Info("WBConnection is not yet in the Deployed state, abort Reconcile")
+				return ctrl.Result{}, nil
+			} else if wbConnection.Status.Status == wbconnStatusDeployed {
+				// execute add capacity
+				l.Info("WBConnection is now in the Deployed state, add TopologyInfo capacity used")
+				calcType = calcTypeAdd
+				return r.updateCapacityUsed(ctx, req, &wbConnection, calcType)
+			}
+		}
+	}
+	return ctrl.Result{}, nil
+}
+
 func (r *TopologyInfoReconciler) createOrUpdateTopologyInfo(ctx context.Context, req ctrl.Request,
 	topologyDataCm *corev1.ConfigMap, isNewTopologyInfo bool, finalizerName string) (ctrl.Result, error) {
 
@@ -195,7 +250,7 @@ func (r *TopologyInfoReconciler) createOrUpdateTopologyInfo(ctx context.Context,
 	// convert TopologyData ConfigMap JSON data to struct
 	l.Info("converting TopologyData ConfigMap entities JSON data to struct")
 	var topologyDataCmEntities []ntthpcv1.EntityInfo
-	if entitiesData, keyExists := topologyDataCm.Data[TopologyCmEntitiesKey]; keyExists {
+	if entitiesData, keyExists := topologyDataCm.Data[topologyCmEntitiesKey]; keyExists {
 		if len(entitiesData) == 0 {
 			l.Error(err, "TopologyData ConfigMap entities data is empty")
 			return ctrl.Result{Requeue: false}, nil
@@ -217,13 +272,13 @@ func (r *TopologyInfoReconciler) createOrUpdateTopologyInfo(ctx context.Context,
 
 	l.Info("converting TopologyData ConfigMap relations data to struct")
 	var topologyDataCmRelations []ntthpcv1.RelationInfo
-	if relationsData, keyExists := topologyDataCm.Data[TopologyCmRelationsKey]; keyExists {
+	if relationsData, keyExists := topologyDataCm.Data[topologyCmRelationsKey]; keyExists {
 		if len(relationsData) == 0 {
 			l.Error(err, "TopologyData ConfigMap relations data is empty")
 			return ctrl.Result{Requeue: false}, nil
 		}
 		if err := json.Unmarshal([]byte(relationsData), &topologyDataCmRelations); err != nil {
-			l.Error(err, "JSON parsing failed for entities")
+			l.Error(err, "JSON parsing failed for relations")
 			return ctrl.Result{Requeue: false}, nil
 		}
 	} else {
@@ -393,7 +448,9 @@ func (r *TopologyInfoReconciler) deleteTopologyInfo(ctx context.Context, req ctr
 }
 
 // update TopologyInfo resource CapacityUsed
-func (r *TopologyInfoReconciler) updateCapacityUsed(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *TopologyInfoReconciler) updateCapacityUsed(ctx context.Context, req ctrl.Request,
+	wbConnection *ntthpcv1.WBConnection, calcType string) (ctrl.Result, error) {
+
 	// assign log entry
 	l := log.FromContext(ctx)
 
@@ -407,76 +464,111 @@ func (r *TopologyInfoReconciler) updateCapacityUsed(ctx context.Context, req ctr
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	// fetch WBConnection resource
-	var wbConnection ntthpcv1.WBConnection
-	l.Info("fetching WBConnection resource")
-	if err := r.Get(ctx, req.NamespacedName, &wbConnection); err != nil {
-		l.Error(err, "unable to fetch WBConnction resource")
-		return ctrl.Result{}, client.IgnoreNotFound(err)
+	// make map for calculation
+	crEntitiesIndexMap := make(map[string]int)
+	for idx, topologyEntity := range topologyInfoCr.Status.Entities {
+		crEntitiesIndexMap[topologyEntity.ID] = idx
 	}
 
-	// status check
-	l.Info("check WBConnection Status")
-	if wbConnection.Status.Status != WbconnStatusDeployed {
+	// get WBConnection connectionPath
+	if wbConnection.Spec.ConnectionPath != nil {
+		l.Info("get WBConnection ConnectionPath")
+		for _, wbConnPathValue := range wbConnection.Spec.ConnectionPath {
+			if idx, exists := crEntitiesIndexMap[wbConnPathValue.EntityID]; exists {
+				topologyEntity := &topologyInfoCr.Status.Entities[idx]
 
-		l.Info("WBConnection is not yet in the Deployed state, abort Reconcile")
-		return ctrl.Result{}, nil
-
-	} else if wbConnection.Status.Status == WbconnStatusDeployed {
-
-		l.Info("WBConnection is now in the Deployed state, updating TopologyInfo Status")
-		crEntitiesIndexMap := make(map[string]int)
-		for idx, topologyEntity := range topologyInfoCr.Status.Entities {
-			crEntitiesIndexMap[topologyEntity.ID] = idx
-		}
-
-		// get WBConnection connectionPath
-		if wbConnection.Spec.ConnectionPath != nil {
-			l.Info("get WBConnection ConnectionPath")
-			for _, wbConnPathValue := range wbConnection.Spec.ConnectionPath {
-				if idx, exists := crEntitiesIndexMap[wbConnPathValue.EntityID]; exists {
-					topologyEntity := &topologyInfoCr.Status.Entities[idx]
-
-					// set CapacityUsed
-					l.Info("update CapacityUsed")
-					switch wbConnPathValue.UsedType {
-					case UsedTypeIn:
-						if topologyEntity.CapacityInfo == nil {
-							topologyEntity.CapacityInfo = &ntthpcv1.CapacityInfo{}
-						}
-						topologyEntity.CapacityInfo.CurrentIncomingCapacity += wbConnection.Spec.Requirements.Capacity
-					case UsedTypeOut:
-						if topologyEntity.CapacityInfo == nil {
-							topologyEntity.CapacityInfo = &ntthpcv1.CapacityInfo{}
-						}
-						topologyEntity.CapacityInfo.CurrentOutgoingCapacity += wbConnection.Spec.Requirements.Capacity
-					case UsedTypeInout:
-						if topologyEntity.CapacityInfo == nil {
-							topologyEntity.CapacityInfo = &ntthpcv1.CapacityInfo{}
-						}
-						topologyEntity.CapacityInfo.CurrentIncomingCapacity += wbConnection.Spec.Requirements.Capacity
-						topologyEntity.CapacityInfo.CurrentOutgoingCapacity += wbConnection.Spec.Requirements.Capacity
+				// set CapacityUsed
+				l.Info("update CapacityUsed")
+				switch wbConnPathValue.UsedType {
+				case usedTypeIn:
+					if topologyEntity.CapacityInfo == nil {
+						topologyEntity.CapacityInfo = &ntthpcv1.CapacityInfo{}
 					}
+					topologyEntity.CapacityInfo.CurrentIncomingCapacity = calculateCapacity(
+						topologyEntity.CapacityInfo.CurrentIncomingCapacity,
+						wbConnection.Spec.Requirements.Capacity,
+						calcType,
+					)
+				case usedTypeOut:
+					if topologyEntity.CapacityInfo == nil {
+						topologyEntity.CapacityInfo = &ntthpcv1.CapacityInfo{}
+					}
+					topologyEntity.CapacityInfo.CurrentOutgoingCapacity = calculateCapacity(
+						topologyEntity.CapacityInfo.CurrentOutgoingCapacity,
+						wbConnection.Spec.Requirements.Capacity,
+						calcType,
+					)
+				case usedTypeInout:
+					if topologyEntity.CapacityInfo == nil {
+						topologyEntity.CapacityInfo = &ntthpcv1.CapacityInfo{}
+					}
+					topologyEntity.CapacityInfo.CurrentIncomingCapacity = calculateCapacity(
+						topologyEntity.CapacityInfo.CurrentIncomingCapacity,
+						wbConnection.Spec.Requirements.Capacity,
+						calcType,
+					)
+					topologyEntity.CapacityInfo.CurrentOutgoingCapacity = calculateCapacity(
+						topologyEntity.CapacityInfo.CurrentOutgoingCapacity,
+						wbConnection.Spec.Requirements.Capacity,
+						calcType,
+					)
 				}
 			}
-			// update TopologyInfo Resource status
-			l.Info("update TopologyInfo resource status")
-			if err := r.Status().Update(ctx, &topologyInfoCr); err != nil {
-				l.Error(err, "unable to update TopologyInfo status")
+		}
+
+		// update TopologyInfo Resource status
+		l.Info("update TopologyInfo resource status")
+		if err := r.Status().Update(ctx, &topologyInfoCr); err != nil {
+			l.Error(err, "unable to update TopologyInfo status")
+			return ctrl.Result{}, err
+		}
+
+		// update finalizer for WBConnection
+		return r.wbConnFinalizerUpdate(ctx, wbConnection, calcType)
+
+	} else {
+		l.Info("WBConnection has no connectionpath information, abort reconcile")
+		return ctrl.Result{}, nil
+	}
+}
+
+func (r *TopologyInfoReconciler) wbConnFinalizerUpdate(ctx context.Context,
+	wbConnection *ntthpcv1.WBConnection, calcType string) (ctrl.Result, error) {
+
+	l := log.FromContext(ctx)
+
+	wbConnFinalizerName := getWbConnFinalizerName(wbConnection)
+
+	if calcType == calcTypeAdd {
+		if !controllerutil.ContainsFinalizer(wbConnection, wbConnFinalizerName) {
+			// add finalizer to WBConnection
+			controllerutil.AddFinalizer(wbConnection, wbConnFinalizerName)
+			l.Info("update WBConnection to add Finalizer")
+			if err := r.Update(ctx, wbConnection); err != nil {
+				l.Error(err, "unable to update WBConnection")
 				return ctrl.Result{}, err
 			}
-		} else {
-			l.Info("WBConnection has no connectionpath information, abort reconcile")
-			return ctrl.Result{}, nil
 		}
-		return ctrl.Result{}, nil
+	} else if calcType == calcTypeSubstract {
+		// delete finalizer from WBConnection
+		controllerutil.RemoveFinalizer(wbConnection, wbConnFinalizerName)
+		l.Info("update WBConnection to remove Finalizer")
+		if err := r.Update(ctx, wbConnection); err != nil {
+			l.Error(err, "unable to update WBConnection")
+			return ctrl.Result{}, err
+		}
 	}
 	return ctrl.Result{}, nil
 }
 
-func getFinalizerName(topologyDataCm *corev1.ConfigMap) string {
+func getTopoFinalizerName(topologyDataCm *corev1.ConfigMap) string {
 	// string for finalizer
-	return strings.ToLower(DomainName) + "/" + strings.ToLower(FinalizerName)
+	return topoFinalizerName
+}
+
+func getWbConnFinalizerName(wbConnection *ntthpcv1.WBConnection) string {
+	// string for finalizer
+	return wbConnFinalizerName
 }
 
 // generate a unique key for an entity
@@ -560,37 +652,37 @@ func (r *TopologyInfoReconciler) validateEntitiesData(topologyDataCmEntities []n
 // validate EntityType Data
 func validateEntityTypeData(cmEntity ntthpcv1.EntityInfo, l logr.Logger) error {
 	switch cmEntity.Type {
-	case EntityTypeNode:
+	case entityTypeNode:
 		if cmEntity.NodeInfo == nil {
-			return fmt.Errorf("EntityType is %s but corresponding field %s is nil", cmEntity.Type, EntityInfoNode)
+			return fmt.Errorf("EntityType is %s but corresponding field %s is nil", cmEntity.Type, entityInfoNode)
 		}
 		if cmEntity.DeviceInfo != nil || cmEntity.InterfaceInfo != nil || cmEntity.NetworkInfo != nil {
 			return fmt.Errorf("EntityType is %s but unnecessary field is set", cmEntity.Type)
 		}
-	case EntityTypeDevice:
+	case entityTypeDevice:
 		if cmEntity.DeviceInfo == nil {
-			return fmt.Errorf("EntityType is %s but corresponding field %s is nil", cmEntity.Type, EntityInfoDevice)
+			return fmt.Errorf("EntityType is %s but corresponding field %s is nil", cmEntity.Type, entityInfoDevice)
 		}
 		if cmEntity.NodeInfo != nil || cmEntity.InterfaceInfo != nil || cmEntity.NetworkInfo != nil {
 			return fmt.Errorf("EntityType is %s but unnecessary field is set", cmEntity.Type)
 		}
-	case EntityTypeInterface:
+	case entityTypeInterface:
 		if cmEntity.InterfaceInfo == nil {
-			return fmt.Errorf("EntityType is %s but corresponding field %s is nil", cmEntity.Type, EntityInfoInterface)
+			return fmt.Errorf("EntityType is %s but corresponding field %s is nil", cmEntity.Type, entityInfoInterface)
 		}
 		if cmEntity.NodeInfo != nil || cmEntity.DeviceInfo != nil || cmEntity.NetworkInfo != nil {
 			return fmt.Errorf("EntityType is %s but unnecessary field is set", cmEntity.Type)
 		}
-	case EntityTypeNetwork:
+	case entityTypeNetwork:
 		if cmEntity.NetworkInfo == nil {
-			return fmt.Errorf("EntityType is %s but corresponding field %s is nil", cmEntity.Type, EntityInfoNetwork)
+			return fmt.Errorf("EntityType is %s but corresponding field %s is nil", cmEntity.Type, entityInfoNetwork)
 		}
 		if cmEntity.NodeInfo != nil || cmEntity.DeviceInfo != nil || cmEntity.InterfaceInfo != nil {
 			return fmt.Errorf("EntityType is %s but unnecessary field is set", cmEntity.Type)
 		}
 	default:
 		return fmt.Errorf("EntityType %s is not one of the expected values (%s, %s, %s, %s)",
-			cmEntity.Type, EntityTypeNode, EntityTypeDevice, EntityInfoInterface, EntityInfoNetwork)
+			cmEntity.Type, entityTypeNode, entityTypeDevice, entityInfoInterface, entityInfoNetwork)
 	}
 	return nil
 }
@@ -616,19 +708,19 @@ func (r *TopologyInfoReconciler) validateRelationsData(topologyDataCmRelations [
 func updateEntityProperties(crEntity, cmEntity *ntthpcv1.EntityInfo, ctx context.Context) {
 	var crCurrentIncomingCapacity, crCurrentOutgoingCapacity int32
 	switch cmEntity.Type {
-	case EntityTypeNode:
+	case entityTypeNode:
 		if cmEntity.NodeInfo != nil {
 			crEntity.NodeInfo = cmEntity.NodeInfo
 		}
-	case EntityTypeDevice:
+	case entityTypeDevice:
 		if cmEntity.DeviceInfo != nil {
 			crEntity.DeviceInfo = cmEntity.DeviceInfo
 		}
-	case EntityTypeInterface:
+	case entityTypeInterface:
 		if cmEntity.InterfaceInfo != nil {
 			crEntity.InterfaceInfo = cmEntity.InterfaceInfo
 		}
-	case EntityTypeNetwork:
+	case entityTypeNetwork:
 		if cmEntity.NetworkInfo != nil {
 			crEntity.NetworkInfo = cmEntity.NetworkInfo
 		}
@@ -661,6 +753,18 @@ func updateEntityProperties(crEntity, cmEntity *ntthpcv1.EntityInfo, ctx context
 	crEntity.Available = cmEntity.Available
 }
 
+// calculate capacity
+func calculateCapacity(currentValue, requestCapacity int32, calcType string) int32 {
+	switch calcType {
+	case calcTypeAdd:
+		return currentValue + requestCapacity
+	case calcTypeSubstract:
+		return currentValue - requestCapacity
+	default:
+		return currentValue
+	}
+}
+
 // ignore finalizer update conducted by TopologyInfo Controller
 func ignoreFinelizerUpdate(r client.Client) predicate.Predicate {
 	return predicate.Funcs{
@@ -687,7 +791,7 @@ func ignoreFinelizerUpdate(r client.Client) predicate.Predicate {
 // SetupWithManager sets up the controller with the Manager.
 func (r *TopologyInfoReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		Named(ControllerName).
+		Named(controllerName).
 		For(&corev1.ConfigMap{}).WithEventFilter(ignoreFinelizerUpdate(r.Client)).
 		WithLogConstructor(func(req *reconcile.Request) logr.Logger {
 			return mgr.GetLogger().WithValues("controller", loggerKeyControllerTi, "controllerGroup",

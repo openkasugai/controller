@@ -24,12 +24,17 @@ import (
 type ChildBitstreamState string
 
 const (
-	ChildBsWritingBsfile      ChildBitstreamState = "WritingBitstreamFile"
-	ChildBsConfiguringParam   ChildBitstreamState = "ConfiguringParameters"
-	ChildBsNoConfigureNetwork ChildBitstreamState = "NoConfigureNetwork"
-	ChildBsConfiguringNetwork ChildBitstreamState = "ConfiguringNetwork"
-	ChildBsReady              ChildBitstreamState = "Ready"
-	ChildBsError              ChildBitstreamState = "Error"
+	ChildBsStoppingModule        ChildBitstreamState = "StoppingModule"
+	ChildBsNotStopNetworkModule  ChildBitstreamState = "NotStopNetworkModule"
+	ChildBsStoppingNetworkModule ChildBitstreamState = "StoppingNetworkModule"
+	ChildBsNotWriteBsfile        ChildBitstreamState = "NotWriteBitstreamFile"
+	ChildBsReconfiguring         ChildBitstreamState = "Reconfiguring"
+	ChildBsWritingBsfile         ChildBitstreamState = "WritingBitstreamFile"
+	ChildBsConfiguringParam      ChildBitstreamState = "ConfiguringParameters"
+	ChildBsNoConfigureNetwork    ChildBitstreamState = "NoConfigureNetwork"
+	ChildBsConfiguringNetwork    ChildBitstreamState = "ConfiguringNetwork"
+	ChildBsReady                 ChildBitstreamState = "Ready"
+	ChildBsError                 ChildBitstreamState = "Error"
 )
 
 type ChildBitstreamStatus string
@@ -43,14 +48,14 @@ const (
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-type Details struct {
+type ChildBsDetails struct {
 	Port             *int32 `json:"port,omitempty"`
 	DMAChannelID     *int32 `json:"dmaChannelID,omitempty"`
 	LLDMAConnectorID *int32 `json:"lldmaConnectorID,omitempty"`
 }
 
 type RxTxSpec struct {
-	Protocol *map[string]Details `json:"protocol,omitempty"`
+	Protocol *map[string]ChildBsDetails `json:"protocol,omitempty"`
 }
 
 type FunctionsDeploySpec struct {
@@ -74,6 +79,7 @@ type FunctionsModule struct {
 
 type ChildBsFunctions struct {
 	ID                   *int32                                    `json:"id,omitempty"`
+	FunctionName         *string                                   `json:"functionname,omitempty"`
 	Module               *[]FunctionsModule                        `json:"module,omitempty"`
 	Parameters           *map[string]intstr.IntOrString            `json:"parameters,omitempty"`
 	IntraResourceMgmtMap *map[string]FunctionsIntraResourceMgmtMap `json:"intraResourceMgmtMap,omitempty"`
@@ -144,17 +150,19 @@ type ChildBsSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	Regions          []ChildBsRegion `json:"regions"`
-	ChildBitstreamID *string         `json:"child-bitstream-id,omitempty"`
+	Regions            []ChildBsRegion `json:"regions"`
+	ChildBitstreamID   *string         `json:"child-bitstream-id,omitempty"`
+	ChildBitstreamFile *string         `json:"child-bitstream-file,omitempty"`
 }
 
 // ChildBitstreamStatus defines the observed state of ChildBitstream
 type ChildBsStatus struct {
 	Regions []ChildBsRegion `json:"regions"`
 	//+kubebuilder:default=NotReady
-	Status           ChildBitstreamStatus `json:"status"`
-	State            ChildBitstreamState  `json:"state"`
-	ChildBitstreamID *string              `json:"child-bitstream-id,omitempty"`
+	Status             ChildBitstreamStatus `json:"status"`
+	State              ChildBitstreamState  `json:"state"`
+	ChildBitstreamID   *string              `json:"child-bitstream-id,omitempty"`
+	ChildBitstreamFile *string              `json:"child-bitstream-file,omitempty"`
 }
 
 //+kubebuilder:object:root=true

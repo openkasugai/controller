@@ -1,9 +1,14 @@
+/*
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
+*/
+
 package controller
 
 import (
 	examplecomv1 "FPGAFunction/api/v1"
 	controllertestethernet "FPGAFunction/internal/controller/test/type/Ethernet"
 	controllertestpcie "FPGAFunction/internal/controller/test/type/PCIe"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -86,7 +91,7 @@ var EthernetConnection5 = controllertestethernet.EthernetConnection{
 		Kind:       "EthernetConnection",
 	},
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "df-night02-wbconnection-decode-main-filter-resize-high-infer-main",
+		Name:      "df-night05-wbconnection-decode-main-filter-resize-high-infer-main",
 		Namespace: "default",
 	},
 	Spec: controllertestethernet.EthernetConnectionSpec{
@@ -138,7 +143,7 @@ var EthernetConnection6 = controllertestethernet.EthernetConnection{
 		Kind:       "EthernetConnection",
 	},
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "df-night02-wbconnection-filter-resize-high-infer-main-high-infer-main",
+		Name:      "df-night05-wbconnection-filter-resize-high-infer-main-high-infer-main",
 		Namespace: "default",
 	},
 	Spec: controllertestethernet.EthernetConnectionSpec{

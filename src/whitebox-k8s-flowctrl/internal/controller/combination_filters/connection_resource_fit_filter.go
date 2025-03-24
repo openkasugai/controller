@@ -17,8 +17,6 @@ func (r *CombinationFilters) connectionResourceFitFilter(
 
 	l := log.FromContext(ctx)
 
-	l.Info("ABC")
-
 	// Get TargetCombinations from SchedulingData
 	combs := sd.Status.TargetCombinations
 

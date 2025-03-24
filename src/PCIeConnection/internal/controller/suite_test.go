@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -58,7 +58,6 @@ const (
 )
 
 var _ = BeforeSuite(func() {
-	// logf.SetLogger(zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true)))
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
@@ -77,29 +76,12 @@ var _ = BeforeSuite(func() {
 			fmt.Sprintf("1.28.0-%s-%s", runtime.GOOS, runtime.GOARCH)),
 	}
 
-	// b := true
-	// testEnv = &envtest.Environment{
-	// 	UseExistingCluster: &b,
-	// }
-
 	var err error
 
 	// cfg is defined in this file globally.
 	cfg, err = testEnv.Start()
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
-
-	// err = examplecomv1.AddToScheme(scheme.Scheme)
-	// Expect(err).NotTo(HaveOccurred())
-
-	// err = controllertestfpga.AddToSchemeFPGA(scheme.Scheme)
-	// Expect(err).NotTo(HaveOccurred())
-
-	// err = controllertestgpu.AddToScheme(scheme.Scheme)
-	// Expect(err).NotTo(HaveOccurred())
-
-	// err = controllertestgpu.AddToScheme(scheme.Scheme)
-	// Expect(err).NotTo(HaveOccurred())
 
 	testScheme = pkgruntime.NewScheme()
 
@@ -119,16 +101,6 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	//+kubebuilder:scaffold:scheme
 
-	// if you do tests in k8s-cluster, please uncomment following lines to disable
-	// homedir := os.Getenv("HOME")
-	// os.Setenv("KUBECONFIG", filepath.Join(homedir, ".kube", "config"))
-	// kubeconfig := os.Getenv("KUBECONFIG")
-	// cfg, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
 	k8sClient, err = client.New(cfg, client.Options{
 		Scheme: testScheme,
 		Cache:  &client.CacheOptions{},

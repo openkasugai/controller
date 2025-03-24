@@ -35,6 +35,9 @@ type GPUFuncConfig struct {
 	ImageURI                       string            `json:"imageURI"`
 	Envs                           map[string]string `json:"envs"`
 	Template                       PodTemplate       `json:"template"`
+	Annotations                    map[string]string `json:"annotations,omitempty"`
+	Labels                         map[string]string `json:"labels,omitempty"`
+	IPAM                           []string          `json:"ipam,omitempty"`
 }
 
 type PodTemplate struct {
@@ -44,11 +47,12 @@ type PodTemplate struct {
 }
 
 type GPUPodSpec struct {
-	Volumes       []corev1.Volume      `json:"volumes,omitempty" `
-	Containers    []GPUContainer       `json:"containers"`
-	RestartPolicy corev1.RestartPolicy `json:"restartPolicy,omitempty"`
-	HostNetwork   bool                 `json:"hostNetwork,omitempty"`
-	HostIPC       bool                 `json:"hostIPC,omitempty"`
+	Volumes               []corev1.Volume      `json:"volumes,omitempty" `
+	Containers            []GPUContainer       `json:"containers"`
+	RestartPolicy         corev1.RestartPolicy `json:"restartPolicy,omitempty"`
+	HostNetwork           bool                 `json:"hostNetwork,omitempty"`
+	HostIPC               bool                 `json:"hostIPC,omitempty"`
+	ShareProcessNamespace bool                 `json:"shareProcessNamespace,omitempty"`
 }
 
 type GPUContainer struct {
@@ -59,4 +63,6 @@ type GPUContainer struct {
 	SecurityContext *corev1.SecurityContext     `json:"securityContext,omitempty" protobuf:"bytes,15,opt,name=securityContext"`
 	VolumeMounts    []corev1.VolumeMount        `json:"volumeMounts,omitempty" patchStrategy:"merge" patchMergeKey:"mountPath" protobuf:"bytes,9,rep,name=volumeMounts"`
 	Resources       corev1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,8,opt,name=resources"`
+	Image           string                      `json:"image,omitempty" protobuf:"bytes,2,opt,name=image"`
+	Ports           []corev1.ContainerPort      `json:"ports,omitempty" patchStrategy:"merge" patchMergeKey:"containerPort" protobuf:"bytes,6,rep,name=ports"`
 }

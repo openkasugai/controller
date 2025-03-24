@@ -128,13 +128,11 @@ type ChildBsModule struct {
 type ChildBsPtu struct {
 	Cids *string `json:"cids,omitempty"`
 	ID   *int32  `json:"id,omitempty"`
-	// ExtIfID *int32  `json:"extIfId,omitempty"`
 }
 
 type ChildBsLLDMA struct {
 	Cids *string `json:"cids,omitempty"`
 	ID   *int32  `json:"id,omitempty"`
-	// ExtIfID *int32  `json:"extIfId,omitempty"`
 }
 
 type ChildBsChain struct {

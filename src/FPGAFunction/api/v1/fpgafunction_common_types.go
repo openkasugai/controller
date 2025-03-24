@@ -52,11 +52,12 @@ const (
 )
 
 const (
-	CMServicerMgmtInfo   = "servicer-mgmt-info"
-	CMDeployInfo         = "deployinfo"
-	CMRegionUniqueInfo   = "region-unique-info"
-	CMFunctionUniqueInfo = "function-unique-info"
-	CMFilterResizeInfo   = "filter-resize-ch"
+	CMServicerMgmtInfo        = "servicer-mgmt-info"
+	CMDeployInfo              = "deployinfo"
+	CMRegionUniqueInfo        = "region-unique-info"
+	CMFunctionUniqueInfo      = "function-unique-info"
+	CMPreDeterminedRegionInfo = "predetermined-region-info"
+	CMFilterResizeInfo        = "filter-resize-ch"
 )
 
 const (
@@ -72,6 +73,7 @@ type FPGAFuncConfig struct {
 	Args                  []string          `json:"args,omitempty"`
 	Parameters            AnyData           `json:"parameters,omitempty"`
 	FunctionDedicatedInfo string            `json:"functionDedicatedInfo,omitempty"`
+	FunctionName          string            `json:"functionName,omitempty"`
 }
 
 type BitstreamData struct {
@@ -194,10 +196,16 @@ type FPGACatalogmapRxTx struct {
 	Protocol *map[string]Details `json:"protocol"`
 }
 
-/*
+// PreDeterminedRegionInfos
+type PreDeterminedRegionInfo struct {
+	NodeName         string `json:"nodeName"`
+	DeviceUUID       string `json:"deviceUUID"`
+	SubDeviceSpecRef string `json:"subDeviceSpecRef"`
+	RegionType       string `json:"regionType"`
+}
+
 type Details struct {
 	Port             *int32 `json:"port,omitempty"`
 	DMAChannelID     *int32 `json:"dmaChannelID,omitempty"`
 	LLDMAConnectorID *int32 `json:"lldmaConnectorID,omitempty"`
 }
-*/

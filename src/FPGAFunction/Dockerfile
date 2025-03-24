@@ -15,7 +15,9 @@ RUN go mod download
 COPY FPGAFunction/cmd/main.go cmd/main.go
 COPY FPGAFunction/api/ api/
 COPY FPGAFunction/internal/controller/ internal/controller/
+#COPY DeviceInfo/api/v1/deviceinfo_types.go api/v1/
 COPY whitebox-k8s-flowctrl/api/v1/common_types.go api/v1/
+COPY whitebox-k8s-flowctrl/api/v1/computeresource_types.go api/v1/
 
 # Copy fpgadb
 COPY FPGAFunction/fpgadb/ fpgadb/

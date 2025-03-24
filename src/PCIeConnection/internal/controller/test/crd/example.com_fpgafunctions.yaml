@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.13.0
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: fpgafunctions.example.com
 spec:
   group: example.com
@@ -27,14 +27,19 @@ spec:
         description: FPGAFunction is the Schema for the fpgafunctions API
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
             type: string
           metadata:
             type: object
@@ -50,14 +55,14 @@ spec:
                       type: string
                   required:
                   - id
-                  - partitionName
                   type: object
                 type: array
               configName:
                 type: string
               dataFlowRef:
-                description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-                  Important: Run "make" to regenerate code after modifying this file'
+                description: |-
+                  INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                  Important: Run "make" to regenerate code after modifying this file
                 properties:
                   name:
                     type: string
@@ -105,8 +110,50 @@ spec:
                 type: integer
               functionName:
                 type: string
+              nextFunctions:
+                additionalProperties:
+                  properties:
+                    port:
+                      format: int32
+                      type: integer
+                    wbFunctionRef:
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                      required:
+                      - name
+                      - namespace
+                      type: object
+                  required:
+                  - port
+                  - wbFunctionRef
+                  type: object
+                type: object
               nodeName:
                 type: string
+              previousFunctions:
+                additionalProperties:
+                  properties:
+                    port:
+                      format: int32
+                      type: integer
+                    wbFunctionRef:
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                      required:
+                      - name
+                      - namespace
+                      type: object
+                  required:
+                  - port
+                  - wbFunctionRef
+                  type: object
+                type: object
               ptuKernelID:
                 format: int32
                 type: integer
@@ -117,13 +164,13 @@ spec:
                   dmaChannelID:
                     format: int32
                     type: integer
-                  fdmaConnectorID:
-                    format: int32
-                    type: integer
                   gatewayAddress:
                     type: string
                   ipAddress:
                     type: string
+                  lldmaConnectorID:
+                    format: int32
+                    type: integer
                   port:
                     format: int32
                     type: integer
@@ -153,13 +200,13 @@ spec:
                   dmaChannelID:
                     format: int32
                     type: integer
-                  fdmaConnectorID:
-                    format: int32
-                    type: integer
                   gatewayAddress:
                     type: string
                   ipAddress:
                     type: string
+                  lldmaConnectorID:
+                    format: int32
+                    type: integer
                   port:
                     format: int32
                     type: integer
@@ -175,15 +222,9 @@ spec:
             - configName
             - dataFlowRef
             - deviceType
-            - frameworkKernelID
-            - functionChannelID
-            - functionKernelID
             - functionName
             - nodeName
-            - ptuKernelID
             - regionName
-            - rx
-            - tx
             type: object
           status:
             description: FPGAFunctionStatus defines the observed state of FPGAFunction
@@ -222,6 +263,9 @@ spec:
               functionChannelID:
                 format: int32
                 type: integer
+              functionIndex:
+                format: int32
+                type: integer
               functionKernelID:
                 format: int32
                 type: integer
@@ -237,13 +281,13 @@ spec:
                   dmaChannelID:
                     format: int32
                     type: integer
-                  fdmaConnectorID:
-                    format: int32
-                    type: integer
                   gatewayAddress:
                     type: string
                   ipAddress:
                     type: string
+                  lldmaConnectorID:
+                    format: int32
+                    type: integer
                   port:
                     format: int32
                     type: integer
@@ -269,9 +313,9 @@ spec:
                 - sharedMemoryMiB
                 type: object
               startTime:
-                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
-                  of cluster Important: Run "make" to regenerate code after modifying
-                  this file'
+                description: |-
+                  INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+                  Important: Run "make" to regenerate code after modifying this file
                 format: date-time
                 type: string
               status:
@@ -282,13 +326,13 @@ spec:
                   dmaChannelID:
                     format: int32
                     type: integer
-                  fdmaConnectorID:
-                    format: int32
-                    type: integer
                   gatewayAddress:
                     type: string
                   ipAddress:
                     type: string
+                  lldmaConnectorID:
+                    format: int32
+                    type: integer
                   port:
                     format: int32
                     type: integer
@@ -304,6 +348,7 @@ spec:
             - dataFlowRef
             - frameworkKernelID
             - functionChannelID
+            - functionIndex
             - functionKernelID
             - functionName
             - parentBitstreamName

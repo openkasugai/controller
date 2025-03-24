@@ -1,0 +1,14 @@
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-copy-branch
+  namespace: default
+spec:
+  functionName: copy-branch
+  functionInfoCMRef:
+    name: funcinfo-copy-branch
+    namespace: default
+  version: 1.0.0
+status:
+  regionTypeCandidates: ["cpu"]
+  status: Ready

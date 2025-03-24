@@ -501,6 +501,9 @@ func (r *CPUFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 				tempContainer.SecurityContext = cfgData.SecurityContext
 				tempContainer.VolumeMounts =
 					append(tempContainer.VolumeMounts, cfgData.VolumeMounts...)
+				if nil != cfgData.Lifecycle {
+					tempContainer.Lifecycle = cfgData.Lifecycle
+				}
 				if "sriov" == configData.VirtualNetworkDeviceDriverType {
 					if nil == cfgData.Resources.Requests {
 						cfgData.Resources.Requests = make(corev1.ResourceList)
@@ -636,6 +639,7 @@ func (r *CPUFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 			logger.Error(err, "Failed to create Pod.")
 		} else {
 			logger.Info("Success to create Pod.")
+			crData.Status.PodName = &podData.Name
 			r.UpdCustomResource(ctx, &crData,
 				RUNNING, podCRData.Containers,
 				*configData.RxProtocol, *configData.TxProtocol,
@@ -972,8 +976,6 @@ func MakeConnectionCRName(
 	toCRName string,
 	connectionCRName *string) {
 
-	// logger := log.FromContext(ctx)
-
 	var concatenationFlag bool = false
 	var fromFunctionName string
 	var toFunctionName string
@@ -1016,8 +1018,6 @@ func MakeForwardingInfo(ctx context.Context,
 	branchIP intstr.IntOrString,
 	branchPort intstr.IntOrString,
 	forwarding *string) {
-
-	// logger := log.FromContext(ctx)
 
 	var ip string
 	var port string
@@ -1064,7 +1064,6 @@ func (r *CPUFunctionReconciler) GetNetworkAttachmentDefinitionData(
 	networkAttachmentDeviceDriverType string,
 	pCNIResourceName *string) error {
 
-	// logger := log.FromContext(ctx)
 	var err error
 	var strmapMetadata map[string]interface{}
 	var strmapAnnotations map[string]string

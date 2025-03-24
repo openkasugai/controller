@@ -27,6 +27,12 @@ RESULT_WBFunction=$?
 echo -e "\n\n==== whitebox-k8w-flowctrl ===="
 golangci-lint run ./whitebox-k8s-flowctrl/...
 RESULT_WBCTRL=$?
+echo -e "\n\n==== tools/FPGAReconfigurationTool ===="
+golangci-lint run ./tools/FPGAReconfigurationTool/...
+RESULT_tools_FPGAReconfigurationTool=$?
+echo -e "\n\n==== tools/FPGAClearCheckTool/FPGACheckPerDF ===="
+golangci-lint run ./tools/FPGAClearCheckTool/FPGACheckPerDF/...
+RESULT_tools_FPGAClearCheckTool_FPGACheckPerDF=$?
 echo -e "\n\n==== tools/gpu_info ===="
 golangci-lint run ./tools/gpu_info/...
 RESULT_tools_gpu_info=$?
@@ -43,6 +49,8 @@ ERR=$(($RESULT_CPUFunction + \
     $RESULT_WBConnection + \
     $RESULT_WBFunction + \
     $RESULT_WBCTRL + \
+    $RESULT_tools_FPGAReconfigurationTool + \
+    $RESULT_tools_FPGAClearCheckTool_FPGACheckPerDF + \
     $RESULT_tools_gpu_info + \
     $RESULT_tools_InfoCollector
 ))

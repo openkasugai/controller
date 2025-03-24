@@ -46,7 +46,6 @@ type CPUFuncConfig struct {
 type PodTemplate struct {
 	metav1.TypeMeta `json:",inline"`
 	Spec            CPUPodSpec `json:"spec"`
-	// Spec corev1.PodSpec `json:"spec,omitempty"` // TODO
 }
 
 type CPUPodSpec struct {
@@ -68,4 +67,5 @@ type CPUContainer struct {
 	Resources       corev1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,8,opt,name=resources"`
 	Image           string                      `json:"image,omitempty" protobuf:"bytes,2,opt,name=image"`
 	Ports           []corev1.ContainerPort      `json:"ports,omitempty" patchStrategy:"merge" patchMergeKey:"containerPort" protobuf:"bytes,6,rep,name=ports"`
+	Lifecycle       *corev1.Lifecycle           `json:"lifecycle,omitempty" protobuf:"bytes,12,opt,name=lifecycle"`
 }

@@ -1,0 +1,14 @@
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-filter-resize-low-infer
+  namespace: default
+spec:
+  functionName: filter-resize-low-infer
+  functionInfoCMRef:
+    name: funcinfo-filter-resize-low-infer
+    namespace: default
+  version: 1.0.0
+status:
+  regionTypeCandidates: ["alveo"]
+  status: Ready

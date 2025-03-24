@@ -1,0 +1,157 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: sample-flow1
+  namespace: default
+  uid: 9110baed-3757-4750-af2f-481676fea8d5
+  finalizers:
+  - dataflow.finalizers.example.com.v1
+spec:
+  functionChainRef:
+    name: sample-chain1
+    namespace: default
+  requirements:
+    all:
+      capacity: 15
+status:
+  functionChain:
+    metadata: {}
+    spec:
+      functionTypeNamespace: "default"
+      connectionTypeNamespace: "default"
+      functions:
+        decode-main:
+          functionName: cpu-decode
+          version: 1.0.0
+        filter-resize-main:
+          functionName: cpu-filter-resize-high-infer
+          version: 1.0.0
+        copy-branch-main:
+          functionName: copy-branch
+          version: 1.0.0
+        high-infer-main-1:
+          functionName: high-infer
+          version: 1.0.0
+        high-infer-main-2:
+          functionName: high-infer
+          version: 1.0.0
+      connections:
+      - connectionTypeName: auto
+        from:
+          functionKey: wb-start-of-chain
+          port: 0
+        to:
+          functionKey: decode-main
+          port: 0
+      - connectionTypeName: auto
+        from:
+          functionKey: decode-main
+          port: 0
+        to:
+          functionKey: filter-resize-main
+          port: 0
+      - connectionTypeName: auto
+        from:
+          functionKey: filter-resize-main
+          port: 0
+        to:
+          functionKey: copy-branch-main
+          port: 0
+      - connectionTypeName: auto
+        from:
+          functionKey: copy-branch-main
+          port: 0
+        to:
+          functionKey: high-infer-main-1
+          port: 0
+      - connectionTypeName: auto
+        from:
+          functionKey: copy-branch-main
+          port: 1
+        to:
+          functionKey: high-infer-main-2
+          port: 0
+      - connectionTypeName: auto
+        from:
+          functionKey: high-infer-main-1
+          port: 0
+        to:
+          functionKey: wb-end-of-chain-1
+          port: 0
+      - connectionTypeName: auto
+        from:
+          functionKey: high-infer-main-2
+          port: 0
+        to:
+          functionKey: wb-end-of-chain-2
+          port: 0
+    status:
+      status: "Ready"
+  functionType:
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-cpu-decode
+        namespace: default
+      functionName: cpu-decode
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - cpu
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-cpu-filter-resize-high-infer
+        namespace: default
+      functionName: cpu-filter-resize-high-infer
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - cpu
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-copy-branch
+        namespace: default
+      functionName: copy-branch
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - cpu
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-high-infer
+        namespace: default
+      functionName: high-infer
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - a100
+      status: Ready
+  - apiVersion: example.com/v1
+    kind: FunctionType
+    metadata: {}
+    spec:
+      functionInfoCMRef:
+        name: funcinfo-high-infer
+        namespace: default
+      functionName: high-infer
+      version: 1.0.0
+    status:
+      regionTypeCandidates:
+      - a100
+      status: Ready
+  connectionType: []
+  status: "Scheduling in progress"

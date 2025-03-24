@@ -1,0 +1,14 @@
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-high-infer
+  namespace: default
+spec:
+  functionName: high-infer
+  functionInfoCMRef:
+    name: funcinfo-high-infer
+    namespace: default
+  version: 1.0.0
+status:
+  regionTypeCandidates: ["a100"]
+  status: Ready

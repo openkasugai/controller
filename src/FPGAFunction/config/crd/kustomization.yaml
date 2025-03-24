@@ -5,6 +5,7 @@ resources:
 - bases/example.com_fpgafunctions.yaml
 - bases/example.com_fpgas.yaml
 - bases/example.com_childbs.yaml
+- bases/example.com_fpgareconfigurations.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 patches:

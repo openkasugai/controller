@@ -59,6 +59,32 @@ rules:
 - apiGroups:
   - example.com
   resources:
+  - fpgareconfigurations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - fpgareconfigurations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - example.com
+  resources:
+  - fpgareconfigurations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - example.com
+  resources:
   - fpgas
   verbs:
   - create

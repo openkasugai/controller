@@ -13,13 +13,15 @@ spec:
     spec:
       containers:
       - name: fpgafunction-container0
-        image: localhost/fpgafunction:1.0.0
+        image: localhost/fpgafunction:1.1.0
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
         args:
         - "--kubeconfig=/kube/config"
         env:
+        - name: K8S_CLUSTERNAME
+          value: default
         - name: K8S_NODENAME
           valueFrom:
             fieldRef:
@@ -30,5 +32,5 @@ spec:
       volumes:
       - name: crc-fpgafunction-daemon
         hostPath:
-          path: /etc/k8s_worker/config
+          path: /etc/k8s_node/config
           type: File

@@ -1,3 +1,7 @@
+/*
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
+*/
+
 package controller
 
 import (
@@ -5,11 +9,11 @@ import (
 	controllertestcpu "FPGAFunction/internal/controller/test/type/CPU"
 	controllertestethernet "FPGAFunction/internal/controller/test/type/Ethernet"
 	controllertestgpu "FPGAFunction/internal/controller/test/type/GPU"
+	"time"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	//	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"time"
 )
 
 var t = metav1.Time{
@@ -22,7 +26,6 @@ var testTime = metav1.Time{
 var frameworkKernelID1 int32 = 0
 var functionChannelID1 int32 = 0
 
-// var functionIndex1 int32 = 0
 var functionKernelID1 int32 = 0
 var ptuKernelID1 int32 = 0
 var partitionName1 string = "0"
@@ -69,12 +72,11 @@ var FPGAFunction1 = examplecomv1.FPGAFunction{
 		},
 		FrameworkKernelID: &frameworkKernelID1,
 		FunctionChannelID: &functionChannelID1,
-		// FunctionIndex:     &functionIndex,
-		FunctionKernelID: &functionKernelID1,
-		FunctionName:     "filter-resize-high-infer",
-		NodeName:         "test01",
-		PtuKernelID:      &ptuKernelID1,
-		RegionName:       "lane0",
+		FunctionKernelID:  &functionKernelID1,
+		FunctionName:      "filter-resize-high-infer",
+		NodeName:          "test01",
+		PtuKernelID:       &ptuKernelID1,
+		RegionName:        "lane0",
 	},
 	Status: examplecomv1.FPGAFunctionStatus{
 		StartTime: metav1.Now(),
@@ -228,252 +230,9 @@ var GPUFunction1 = controllertestgpu.GPUFunction{
 	},
 }
 
-var childbsid1 string = "111111111"
+var childbsid1 string = "00000001"
 
-/*
-var maxFunctions int32 = 1
-var maxCapacity int32 = 2
-*/
 var name1 string = "child1"
-
-/*
-var cids string = "111"
-var id int32 = 3
-var identifier string = "child1_identifier"
-var typ string = "childbs_chaintype"
-var varsion string = "childbs_varsion1.1.3"
-var maxDataflows int32 = 4
-var available bool = true
-var funcCRName string = "funcCRName"
-var port5 int32 = 5
-var dmaChannel int32 = 6
-var lldmaConnector int32 = 7
-var port6 int32 = 8
-var dmaChannel2 int32 = 9
-var lldmaConnector2 int32 = 10
-var uid types.UID = "aaaaaaa"
-
-var ChildBitstream1 = examplecomv1.ChildBs{
-	TypeMeta: metav1.TypeMeta{
-		APIVersion: "example.com/v1",
-		Kind:       "Childbs",
-	},
-	ObjectMeta: metav1.ObjectMeta{
-		Name:      "fpga-21320621v00dtest01111111111",
-		Namespace: "default",
-		OwnerReferences: []metav1.OwnerReference{
-			{
-				APIVersion: "example.com/v1",
-				Kind:       "FPGA",
-				Name:       "fpga3",
-				UID:        uid,
-			},
-		},
-	},
-	Spec: examplecomv1.ChildBsSpec{
-		Regions: []examplecomv1.ChildBsRegion{
-			{
-				Modules: &examplecomv1.ChildBsModule{
-					Ptu: &examplecomv1.ChildBsPtu{
-						Cids: &cids,
-						ID:   &id,
-						Parameters: &map[string]intstr.IntOrString{
-							"IPAddress": {
-								StrVal: "111.111.111",
-								Type:   1,
-							},
-							"SubnetAddress": {
-								StrVal: "222.222.222",
-								Type:   1,
-							},
-							"GatewayAddress": {
-								StrVal: "333.333.333",
-								Type:   1,
-							},
-							"MacAddress": {
-								StrVal: "444.444.444",
-								Type:   1,
-							},
-						},
-					},
-					LLDMA: &examplecomv1.ChildBsLLDMA{
-						Cids: &cids,
-						ID:   &id,
-					},
-					Chain: &examplecomv1.ChildBsChain{
-						ID:         &id,
-						Identifier: &identifier,
-						Type:       &typ,
-						Version:    &varsion,
-					},
-					Directtrans: &examplecomv1.ChildBsDirecttrans{
-						ID:         &id,
-						Identifier: &identifier,
-						Type:       &typ,
-						Version:    &varsion,
-					},
-					Conversion: &examplecomv1.ChildBsConversion{
-						ID: &id,
-						Module: &examplecomv1.ConversionModule{
-							Identifier: &identifier,
-							Type:       &typ,
-							Version:    &varsion,
-						},
-					},
-					Functions: &[]examplecomv1.ChildBsFunctions{
-						{
-							ID: &id,
-							Module: &examplecomv1.FunctionsModule{
-								Identifier: &identifier,
-								Type:       &typ,
-								Version:    &varsion,
-							},
-							IntraResourceMgmtMap: &map[string]examplecomv1.FunctionsIntraResourceMgmtMap{
-								"1": {
-									Available:      &available,
-									FunctionCRName: &funcCRName,
-									Rx: &examplecomv1.RxTxSpec{
-
-										Protocol: &map[string]examplecomv1.Details{
-											"RTP": {
-												Port:             &port5,
-												DMAChannelID:     &dmaChannel,
-												LLDMAConnectorID: &lldmaConnector,
-											},
-										},
-									},
-									Tx: &examplecomv1.RxTxSpec{
-										Protocol: &map[string]examplecomv1.Details{
-											"DMA": {
-												Port:             &port6,
-												DMAChannelID:     &dmaChannel2,
-												LLDMAConnectorID: &lldmaConnector2,
-											},
-										},
-									},
-								},
-							},
-							DeploySpec: examplecomv1.FunctionsDeploySpec{
-								MaxCapacity:  &maxCapacity,
-								MaxDataFlows: &maxDataflows,
-							},
-						},
-					},
-				},
-				MaxFunctions: &maxFunctions,
-				MaxCapacity:  &maxCapacity,
-				Name:         &name,
-			},
-		},
-		ChildBitstreamID: &childbsid,
-	},
-	Status: examplecomv1.ChildBsStatus{
-		Regions: []examplecomv1.ChildBsRegion{
-			{
-				Modules: &examplecomv1.ChildBsModule{
-					Ptu: &examplecomv1.ChildBsPtu{
-						Cids: &cids,
-						ID:   &id,
-						Parameters: &map[string]intstr.IntOrString{
-							"IPAddress": {
-								StrVal: "555.555.555",
-								Type:   1,
-							},
-							"SubnetAddress": {
-								StrVal: "666.666.666",
-								Type:   1,
-							},
-							"GatewayAddress": {
-								StrVal: "777.777.777",
-								Type:   1,
-							},
-							"MacAddress": {
-								StrVal: "777.777.777",
-								Type:   1,
-							},
-						},
-					},
-					LLDMA: &examplecomv1.ChildBsLLDMA{
-						Cids: &cids,
-						ID:   &id,
-					},
-					Chain: &examplecomv1.ChildBsChain{
-						ID:         &id,
-						Identifier: &identifier,
-						Type:       &typ,
-						Version:    &varsion,
-					},
-					Directtrans: &examplecomv1.ChildBsDirecttrans{
-						ID:         &id,
-						Identifier: &identifier,
-						Type:       &typ,
-						Version:    &varsion,
-					},
-					Conversion: &examplecomv1.ChildBsConversion{
-						ID: &id,
-						Module: &examplecomv1.ConversionModule{
-							Identifier: &identifier,
-							Type:       &typ,
-							Version:    &varsion,
-						},
-					},
-					Functions: &[]examplecomv1.ChildBsFunctions{
-						{
-							ID: &id,
-							Module: &examplecomv1.FunctionsModule{
-								Identifier: &identifier,
-								Type:       &typ,
-								Version:    &varsion,
-							},
-							Parameters: &map[string]intstr.IntOrString{
-								"5": {
-									StrVal: "param01",
-									IntVal: 12345,
-									Type:   1,
-								},
-							},
-							IntraResourceMgmtMap: &map[string]examplecomv1.FunctionsIntraResourceMgmtMap{
-								"1": {
-									Available:      &available,
-									FunctionCRName: &funcCRName,
-									Rx: &examplecomv1.RxTxSpec{
-										Protocol: &map[string]examplecomv1.Details{
-											"RTP": {
-												Port:             &port5,
-												DMAChannelID:     &dmaChannel,
-												LLDMAConnectorID: &lldmaConnector,
-											},
-										},
-									},
-									Tx: &examplecomv1.RxTxSpec{
-										Protocol: &map[string]examplecomv1.Details{
-											"DMA": {
-												Port:             &port6,
-												DMAChannelID:     &dmaChannel2,
-												LLDMAConnectorID: &lldmaConnector2,
-											},
-										},
-									},
-								},
-							},
-							DeploySpec: examplecomv1.FunctionsDeploySpec{
-								MaxCapacity:  &maxCapacity,
-								MaxDataFlows: &maxDataflows,
-							},
-						},
-					},
-				},
-				MaxFunctions: &maxFunctions,
-				MaxCapacity:  &maxCapacity,
-				Name:         &name,
-			},
-		},
-		Status:           examplecomv1.ChildBsStatusReady,
-		State:            examplecomv1.ChildBsReady,
-		ChildBitstreamID: &childbsid,
-	},
-}
-*/
 
 var FPGA1 = []examplecomv1.FPGA{
 	{
@@ -482,7 +241,7 @@ var FPGA1 = []examplecomv1.FPGA{
 			Kind:       "FPGA",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "fpga-21320621v00dtest01",
+			Name:      "fpga-21320621v00d-test01",
 			Namespace: "default",
 		},
 		Spec: examplecomv1.FPGASpec{
@@ -583,7 +342,8 @@ var fpgafuncconfig_fr_high_infer_1 = corev1.ConfigMap{
                 }
             },
             "sharedMemoryMiB": 256,
-            "functionDedicatedInfo": "filter-resize-ch"
+            "functionDedicatedInfo": "filter-resize-ch",
+            "functionName": "filter-resize-high-infer"
         }`,
 	},
 }
@@ -634,6 +394,22 @@ var servicerMgmtConfig1 = corev1.ConfigMap{
 					"macAddress":"00:12:34:00:5C:A2"
 				},
 				{
+					"deviceFilePath": "/dev/xethernet_21330621T01J",
+					"laneIndex":0,
+					"ipAddress":"192.174.90.81",
+					"subnetAddress":"255.255.255.0",
+					"gatewayAddress":"192.174.90.1",
+					"macAddress":"00:12:34:00:5C:A1"
+				},
+				{
+					"deviceFilePath": "/dev/xethernet_21330621T01J",
+					"laneIndex":1,
+					"ipAddress":"192.174.90.82",
+					"subnetAddress":"255.255.255.0",
+					"gatewayAddress":"192.174.90.1",
+					"macAddress":"00:12:34:00:5C:A2"
+				},
+				{
 					"deviceFilePath": "/dev/xpcie_21330621T00Y",
 					"laneIndex":0,
 					"ipAddress":"192.174.90.83",
@@ -659,6 +435,22 @@ var servicerMgmtConfig1 = corev1.ConfigMap{
 				},
 				{
 					"deviceFilePath": "/dev/ xpcie_21330621T00D",
+					"laneIndex":1,
+					"ipAddress":"192.174.90.94",
+					"subnetAddress":"255.255.255.0",
+					"gatewayAddress":"192.174.90.1",
+					"macAddress":"00:12:34:00:5A:A2"
+				},
+				{
+					"deviceFilePath": "/dev/xpcie_21320621V00D",
+					"laneIndex":0,
+					"ipAddress":"192.174.90.93",
+					"subnetAddress":"255.255.255.0",
+					"gatewayAddress":"192.174.90.1",
+					"macAddress":"00:12:34:00:5A:A1"
+				},
+				{
+					"deviceFilePath": "/dev/xpcie_21320621V00D",
 					"laneIndex":1,
 					"ipAddress":"192.174.90.94",
 					"subnetAddress":"255.255.255.0",
@@ -709,6 +501,36 @@ var deployinfo_configdata1 = corev1.ConfigMap{
 				"regionName": "lane1",
 				"maxFunctions": 8,
 				"maxCapacity": 40
+			}]
+		},{
+			"nodeName": "test01",
+			"deviceFilePath": "/dev/xpcie_21320621V00D",
+			"deviceUUID": "21320621V00D",
+			"functionTargets": [{
+				"regionType": "alveou250-0100001c-2lanes-1nics",
+				"regionName": "lane0",
+				"maxFunctions": 4,
+				"maxCapacity": 20
+				},{
+				"regionType": "alveou250-0100001c-2lanes-1nics",
+				"regionName": "lane1",
+				"maxFunctions": 3,
+				"maxCapacity": 30
+			}]
+		},{
+			"nodeName": "test01",
+			"deviceFilePath": "/dev/xpcie_21320621V01D",
+			"deviceUUID": "21320621V01D",
+			"functionTargets": [{
+				"regionType": "alveou250-0100001c-2lanes-1nics",
+				"regionName": "lane0",
+				"maxFunctions": 4,
+				"maxCapacity": 20
+				},{
+				"regionType": "alveou250-0100001c-2lanes-1nics",
+				"regionName": "lane1",
+				"maxFunctions": 3,
+				"maxCapacity": 30
 			}]
 		},{
 			"nodeName": "test01",
@@ -1379,6 +1201,335 @@ var EthernetConnection2 = controllertestethernet.EthernetConnection{
 				Namespace: "",
 			},
 			Status: "",
+		},
+	},
+}
+
+var CurrentCapacity int32 = 0
+var CurrentCapacity2 int32 = 0
+var CurrentCapacity3 int32 = 0
+var CurrentCapacity4 int32 = 0
+var CurrentFunctions int32 = 2
+var CurrentFunctions2 int32 = 1
+var CurrentFunctions3 int32 = 0
+var CurrentFunctions4 int32 = 8
+var CurrentDataFlows int32 = 1
+var CurrentDataFlows2 int32 = 2
+var MaxCapacity int32 = 40
+var MaxCapacity2 int32 = 40
+var MaxCapacity3 int32 = 120
+var MaxCapacity4 int32 = 240
+var MaxDataFlows1 int32 = 6
+var MaxDataFlows2 int32 = 8
+var DeviceUUID string = "21320621V00D"
+var DeviceUUID2 string = "21330621T04L"
+var DeviceUUID3 string = "GPU-b8b4f1f5-bf51-eaa3-6ec4-97190b7f6c98"
+var DeviceUUID4 string = "GPU-5b771964-ab74-a674-15d7-8f0d2cee4ef8"
+var DeviceUUID5 string = "swb-sm7-cpu0"
+var MaxFunctions int32 = 2
+var MaxFunctions2 int32 = 1
+var MaxFunctions3 int32 = 110
+var MaxFunctions4 int32 = 220
+
+var comres1 = examplecomv1.ComputeResource{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "compute-test01",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.ComputeResourceSpec{
+		NodeName: "test01",
+		Regions: []examplecomv1.RegionInfo{
+			{
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity,
+				CurrentFunctions: &CurrentFunctions,
+				DeviceFilePath:   "/dev/xpcie_21330621T01J",
+				DeviceIndex:      1,
+				DeviceType:       "alveo",
+				DeviceUUID:       &DeviceUUID,
+				Functions: []examplecomv1.FunctionInfrastruct{{
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity,
+					CurrentDataFlows: &CurrentDataFlows,
+					FunctionIndex:    0,
+					FunctionName:     "decode",
+					MaxCapacity:      &MaxCapacity,
+					MaxDataFlows:     &MaxDataFlows1,
+					PartitionName:    "0",
+				}, {
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity2,
+					CurrentDataFlows: &CurrentDataFlows,
+					FunctionIndex:    1,
+					FunctionName:     "decode",
+					MaxCapacity:      &MaxCapacity,
+					MaxDataFlows:     &MaxDataFlows1,
+					PartitionName:    "1",
+				}},
+				MaxCapacity:  &MaxCapacity2,
+				MaxFunctions: &MaxCapacity2,
+				Name:         "lane0",
+				Type:         "alveo",
+			}, {
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity,
+				CurrentFunctions: &CurrentFunctions,
+				DeviceFilePath:   "/dev/xpcie_21330621T01J",
+				DeviceIndex:      1,
+				DeviceType:       "alveo",
+				DeviceUUID:       &DeviceUUID,
+				Functions: []examplecomv1.FunctionInfrastruct{{
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity2,
+					CurrentDataFlows: &CurrentDataFlows,
+					FunctionIndex:    0,
+					FunctionName:     "decode",
+					MaxCapacity:      &MaxCapacity,
+					MaxDataFlows:     &MaxDataFlows1,
+					PartitionName:    "2",
+				}, {
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity2,
+					CurrentDataFlows: &CurrentDataFlows,
+					FunctionIndex:    1,
+					FunctionName:     "decode",
+					MaxCapacity:      &MaxCapacity,
+					MaxDataFlows:     &MaxDataFlows1,
+					PartitionName:    "3",
+				}},
+				MaxCapacity:  &MaxCapacity2,
+				MaxFunctions: &MaxFunctions,
+				Name:         "lane1",
+				Type:         "alveo",
+			}, {
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity,
+				CurrentFunctions: &CurrentFunctions2,
+				DeviceFilePath:   "/dev/xpcie_21330621T04L",
+				DeviceIndex:      0,
+				DeviceType:       "alveo",
+				DeviceUUID:       &DeviceUUID2,
+				Functions: []examplecomv1.FunctionInfrastruct{{
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity,
+					CurrentDataFlows: &CurrentDataFlows2,
+					FunctionIndex:    0,
+					FunctionName:     "filter-resize-high-infer",
+					MaxCapacity:      &MaxCapacity2,
+					MaxDataFlows:     &MaxDataFlows2,
+					PartitionName:    "0",
+				}},
+				MaxCapacity:  &MaxCapacity2,
+				MaxFunctions: &MaxFunctions2,
+				Name:         "lane0",
+				Type:         "alveo",
+			}, {
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity,
+				CurrentFunctions: &CurrentFunctions2,
+				DeviceFilePath:   "/dev/xpcie_21330621T04L",
+				DeviceIndex:      0,
+				DeviceType:       "alveo",
+				DeviceUUID:       &DeviceUUID2,
+				Functions: []examplecomv1.FunctionInfrastruct{{
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity,
+					CurrentDataFlows: &CurrentDataFlows2,
+					FunctionIndex:    0,
+					FunctionName:     "filter-resize-high-infer",
+					MaxCapacity:      &MaxCapacity2,
+					MaxDataFlows:     &MaxDataFlows2,
+					PartitionName:    "1",
+				}},
+				MaxCapacity:  &MaxCapacity2,
+				MaxFunctions: &MaxDataFlows2,
+				Name:         "lane1",
+				Type:         "alveo",
+			}, {
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity3,
+				CurrentFunctions: &CurrentFunctions3,
+				DeviceFilePath:   "",
+				DeviceIndex:      0,
+				DeviceType:       "t4",
+				DeviceUUID:       &DeviceUUID3,
+				MaxCapacity:      &MaxCapacity2,
+				MaxFunctions:     &MaxFunctions3,
+				Name:             "t4",
+				Type:             "t4",
+			}, {
+				Available:        false,
+				CurrentCapacity:  &CurrentCapacity4,
+				CurrentFunctions: &CurrentFunctions4,
+				DeviceFilePath:   "",
+				DeviceIndex:      1,
+				DeviceType:       "a100",
+				DeviceUUID:       &DeviceUUID4,
+				MaxCapacity:      &MaxCapacity3,
+				MaxFunctions:     &MaxFunctions3,
+				Name:             "a100",
+				Type:             "a100",
+			}, {
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity3,
+				CurrentFunctions: &CurrentFunctions3,
+				DeviceFilePath:   "",
+				DeviceIndex:      0,
+				DeviceType:       "cpu",
+				DeviceUUID:       &DeviceUUID5,
+				MaxCapacity:      &MaxCapacity4,
+				MaxFunctions:     &MaxFunctions4,
+				Name:             "cpu",
+				Type:             "cpu",
+			},
+		},
+	},
+	Status: examplecomv1.ComputeResourceStatus{
+		NodeName: "test01",
+		Regions: []examplecomv1.RegionInfo{
+			{
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity,
+				CurrentFunctions: &CurrentFunctions,
+				DeviceFilePath:   "/dev/xpcie_21330621T01J",
+				DeviceIndex:      1,
+				DeviceType:       "alveo",
+				DeviceUUID:       &DeviceUUID,
+				Functions: []examplecomv1.FunctionInfrastruct{{
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity,
+					CurrentDataFlows: &CurrentDataFlows,
+					FunctionIndex:    0,
+					FunctionName:     "decode",
+					MaxCapacity:      &MaxCapacity,
+					MaxDataFlows:     &MaxDataFlows1,
+					PartitionName:    "0",
+				}, {
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity2,
+					CurrentDataFlows: &CurrentDataFlows,
+					FunctionIndex:    1,
+					FunctionName:     "decode",
+					MaxCapacity:      &MaxCapacity,
+					MaxDataFlows:     &MaxDataFlows1,
+					PartitionName:    "1",
+				}},
+				MaxCapacity:  &MaxCapacity2,
+				MaxFunctions: &MaxCapacity2,
+				Name:         "lane0",
+				Type:         "alveo",
+			}, {
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity,
+				CurrentFunctions: &CurrentFunctions,
+				DeviceFilePath:   "/dev/xpcie_21330621T01J",
+				DeviceIndex:      1,
+				DeviceType:       "alveo",
+				DeviceUUID:       &DeviceUUID,
+				Functions: []examplecomv1.FunctionInfrastruct{{
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity2,
+					CurrentDataFlows: &CurrentDataFlows,
+					FunctionIndex:    0,
+					FunctionName:     "decode",
+					MaxCapacity:      &MaxCapacity,
+					MaxDataFlows:     &MaxDataFlows1,
+					PartitionName:    "2",
+				}, {
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity2,
+					CurrentDataFlows: &CurrentDataFlows,
+					FunctionIndex:    1,
+					FunctionName:     "decode",
+					MaxCapacity:      &MaxCapacity,
+					MaxDataFlows:     &MaxDataFlows1,
+					PartitionName:    "3",
+				}},
+				MaxCapacity:  &MaxCapacity2,
+				MaxFunctions: &MaxFunctions,
+				Name:         "lane1",
+				Type:         "alveo",
+			}, {
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity,
+				CurrentFunctions: &CurrentFunctions2,
+				DeviceFilePath:   "/dev/xpcie_21330621T04L",
+				DeviceIndex:      0,
+				DeviceType:       "alveo",
+				DeviceUUID:       &DeviceUUID2,
+				Functions: []examplecomv1.FunctionInfrastruct{{
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity,
+					CurrentDataFlows: &CurrentDataFlows2,
+					FunctionIndex:    0,
+					FunctionName:     "filter-resize-high-infer",
+					MaxCapacity:      &MaxCapacity2,
+					MaxDataFlows:     &MaxDataFlows2,
+					PartitionName:    "0",
+				}},
+				MaxCapacity:  &MaxCapacity2,
+				MaxFunctions: &MaxFunctions2,
+				Name:         "lane0",
+				Type:         "alveo",
+			}, {
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity,
+				CurrentFunctions: &CurrentFunctions2,
+				DeviceFilePath:   "/dev/xpcie_21330621T04L",
+				DeviceIndex:      0,
+				DeviceType:       "alveo",
+				DeviceUUID:       &DeviceUUID2,
+				Functions: []examplecomv1.FunctionInfrastruct{{
+					Available:        true,
+					CurrentCapacity:  &CurrentCapacity,
+					CurrentDataFlows: &CurrentDataFlows2,
+					FunctionIndex:    0,
+					FunctionName:     "filter-resize-high-infer",
+					MaxCapacity:      &MaxCapacity2,
+					MaxDataFlows:     &MaxDataFlows2,
+					PartitionName:    "1",
+				}},
+				MaxCapacity:  &MaxCapacity2,
+				MaxFunctions: &MaxDataFlows2,
+				Name:         "lane1",
+				Type:         "alveo",
+			}, {
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity3,
+				CurrentFunctions: &CurrentFunctions3,
+				DeviceFilePath:   "",
+				DeviceIndex:      0,
+				DeviceType:       "t4",
+				DeviceUUID:       &DeviceUUID3,
+				MaxCapacity:      &MaxCapacity2,
+				MaxFunctions:     &MaxFunctions3,
+				Name:             "t4",
+				Type:             "t4",
+			}, {
+				Available:        false,
+				CurrentCapacity:  &CurrentCapacity4,
+				CurrentFunctions: &CurrentFunctions4,
+				DeviceFilePath:   "",
+				DeviceIndex:      1,
+				DeviceType:       "a100",
+				DeviceUUID:       &DeviceUUID4,
+				MaxCapacity:      &MaxCapacity3,
+				MaxFunctions:     &MaxFunctions3,
+				Name:             "a100",
+				Type:             "a100",
+			}, {
+				Available:        true,
+				CurrentCapacity:  &CurrentCapacity3,
+				CurrentFunctions: &CurrentFunctions3,
+				DeviceFilePath:   "",
+				DeviceIndex:      0,
+				DeviceType:       "cpu",
+				DeviceUUID:       &DeviceUUID5,
+				MaxCapacity:      &MaxCapacity4,
+				MaxFunctions:     &MaxFunctions4,
+				Name:             "cpu",
+				Type:             "cpu",
+			},
 		},
 	},
 }

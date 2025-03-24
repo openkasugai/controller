@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 */
 
 package v1
@@ -59,7 +59,6 @@ const (
 	WBEndOfDataFlowName = "wb-end-of-data-flow"
 )
 
-// +enum
 type WBIOUsedType string
 
 const (
@@ -67,4 +66,13 @@ const (
 	WBIOUsedTypeIncoming            WBIOUsedType = "Incoming"
 	WBIOUsedTypeOutgoing            WBIOUsedType = "Outgoing"
 	WBIOUsedTypeIncomingAndOutgoing WBIOUsedType = "IncomingAndOutgoing"
+)
+
+type WBRegionStatus string
+
+const (
+	WBRegionStatusNotReady  WBRegionStatus = "NotReady"
+	WBRegionStatusPreparing WBRegionStatus = "Preparing"
+	WBRegionStatusReady     WBRegionStatus = "Ready"
+	WBRegionStatusError     WBRegionStatus = "Error"
 )

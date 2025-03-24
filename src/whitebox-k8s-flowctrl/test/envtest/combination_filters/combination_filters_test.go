@@ -192,6 +192,8 @@ var _ = Describe("CombinationFilter", func() {
 			Expect(buf2.String()).To(ContainSubstring("function MaxCapacity will inevitably result in capacity over. FunctionTarget=node1.alveou250-1.lane0 FunctionIndex=1"))
 			Expect(buf2.String()).NotTo(ContainSubstring("node1.alveou250-1.lane1"))
 			Expect(buf2.String()).NotTo(ContainSubstring("node1.cpu-0.cpu"))
+			Expect(buf2.String()).To(ContainSubstring("function target MaxCapacity will inevitably result in capacity over. FunctionTarget=node1.a100-1.gpu FunctionIndex=1"))
+			Expect(buf2.String()).To(ContainSubstring("function target MaxCapacity will inevitably result in capacity over. FunctionTarget=node1.a100-1.gpu FunctionIndex=2"))
 		})
 	})
 

@@ -102,7 +102,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	controller.StartupProccessing(mgr)
+	if err := controller.StartupProccessing(mgr); err != nil {
+		setupLog.Error(err, "controllers.StartupProccessing() error")
+		os.Exit(1)
+	}
 
 	if err = (&controller.FPGAFunctionReconciler{
 		Client:   mgr.GetClient(),

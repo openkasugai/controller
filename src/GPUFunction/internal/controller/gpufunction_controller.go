@@ -435,6 +435,9 @@ func (r *GPUFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 				tempContainer.SecurityContext = cfgData.SecurityContext
 				tempContainer.VolumeMounts =
 					append(tempContainer.VolumeMounts, cfgData.VolumeMounts...)
+				if nil != cfgData.Lifecycle {
+					tempContainer.Lifecycle = cfgData.Lifecycle
+				}
 				if "sriov" == configData.VirtualNetworkDeviceDriverType {
 					if nil == cfgData.Resources.Requests {
 						cfgData.Resources.Requests = make(corev1.ResourceList)
@@ -574,17 +577,7 @@ func (r *GPUFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		} else {
 			logger.Info("Success to create Pod.")
 
-			// crData.Status.IPAddress = crIP // @TODO to confirm
-
-			/* // @TODO Needs consideration
-			if _, ok := status["0"]; !ok {
-			    status["0"] = make(map[string]string)
-			}
-
-			status["contena_id"][
-			    strconv.Itoa(crData.Spec.FuncCHID)] = STATUS_OK
-			crData.Status.AccStatus = status
-			*/
+			crData.Status.PodName = &podData.Name
 			r.UpdCustomResource(ctx, &crData, RUNNING,
 				podCRData.Containers,
 				*configData.RxProtocol, *configData.TxProtocol,
@@ -880,7 +873,6 @@ func (r *GPUFunctionReconciler) GetConfigData(
 	txProtocol string,
 	pConfigData *examplecomv1.GPUFuncConfig) error {
 
-	// logger := log.FromContext(ctx)
 	var err error
 	var mapData map[string]interface{}
 	var configSliceData []examplecomv1.GPUFuncConfig
@@ -930,8 +922,6 @@ func MakeConnectionCRName(
 	toCRName string,
 	connectionCRName *string) {
 
-	// logger := log.FromContext(ctx)
-
 	var concatenationFlag bool = false
 	var fromFunctionName string
 	var toFunctionName string
@@ -975,7 +965,6 @@ func (r *GPUFunctionReconciler) GetNetworkAttachmentDefinitionData(
 	networkAttachmentDeviceDriverType string,
 	pCNIResourceName *string) error {
 
-	// logger := log.FromContext(ctx)
 	var err error
 	var strmapMetadata map[string]interface{}
 	var strmapAnnotations map[string]string

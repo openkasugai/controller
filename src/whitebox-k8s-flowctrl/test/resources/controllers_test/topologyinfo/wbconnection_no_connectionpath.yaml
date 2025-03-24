@@ -1,0 +1,40 @@
+apiVersion: example.com/v1
+kind: WBConnection
+metadata:
+  name: sample-flow1-wbconnection-decode-main-filter-resize-main
+  namespace: default
+  finalizers:
+    - wbconnection.finalizers.example.com.v1
+spec:
+  connectionMethod: host-100gether
+  dataFlowRef:
+    name: sample-flow1
+    namespace: default
+  from:
+    port: 0
+    wbFunctionRef:
+      name: sample-flow1-wbfunction-decode-main
+      namespace: default
+  requirements:
+    capacity: 15
+  to:
+    port: 0
+    wbFunctionRef:
+      name: sample-flow1-wbfunction-filter-resize-main
+      namespace: default
+status:
+  connectionMethod: ""
+  dataFlowRef:
+    name: ""
+    namespace: ""
+  from:
+    port: 0
+    wbFunctionRef:
+      name: ""
+      namespace: ""
+  status: "Deployed"
+  to:
+    port: 0
+    wbFunctionRef:
+      name: ""
+      namespace: ""

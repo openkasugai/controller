@@ -1,0 +1,12 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: sample-flow1
+  namespace: "default"
+spec:
+  functionChainRef:
+    name: "sample-chain1"
+    namespace: "default"
+  requirements:
+    all:
+      capacity: 15

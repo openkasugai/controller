@@ -11,7 +11,9 @@ use (
 	./PCIeConnection
 	./WBConnection
 	./WBFunction
+	./tools/FPGAReconfigurationTool
 	./tools/InfoCollector
+	./tools/FPGAClearCheckTool/FPGACheckPerDF
 	./tools/gpu_info
 	./whitebox-k8s-flowctrl
 )

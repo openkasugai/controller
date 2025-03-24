@@ -284,7 +284,8 @@ func (r *WBschedulerReconciler) checkAndGetResult(
 
 	// Get the highest Score
 	best := &sd.Status.TargetCombinations[0]
-	for comb_i := range sd.Status.TargetCombinations[1:] {
+	for i := 1; i < len(sd.Status.TargetCombinations); i++ {
+		comb_i := i
 		if *best.Score < *sd.Status.TargetCombinations[comb_i].Score {
 			best = &sd.Status.TargetCombinations[comb_i]
 		}
