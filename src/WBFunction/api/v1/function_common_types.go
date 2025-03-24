@@ -73,6 +73,7 @@ type FunctionStatusData struct {
 	Rx                RxTxData         `json:"rx,omitempty"`
 	Tx                RxTxData         `json:"tx,omitempty"`
 	SharedMemory      SharedMemorySpec `json:"sharedMemory,omitempty"`
+	PodName           *string          `json:"podName,omitempty"`
 }
 
 // FPGADevice Connection Info

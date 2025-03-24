@@ -27,14 +27,10 @@ func main() {
 	var inDeviceDeploys []infocol.DeviceRegionInfo
 	var infrastructureInfo map[string][]cm.DeviceInfo
 	var deployRegionInfo map[string][]cm.DeviceRegionInfo
-	// var fpgaCatalogInfo map[string][]cm.FPGACatalog
-	// var functionDecodeInfo map[string][]cm.FunctionDedicatedInfo
 	var functionResizeInfo map[string][]cm.FunctionDedicatedInfo
 
 	infrastructureInfo = make(map[string][]cm.DeviceInfo)
 	deployRegionInfo = make(map[string][]cm.DeviceRegionInfo)
-	// fpgaCatalogInfo = make(map[string][]cm.FPGACatalog)
-	// functionDecodeInfo = make(map[string][]cm.FunctionDedicatedInfo)
 	functionResizeInfo = make(map[string][]cm.FunctionDedicatedInfo)
 
 	ctx := context.Background()
@@ -112,18 +108,6 @@ func main() {
 			break
 		}
 
-		// Deployment area information creation function
-		/*
-			err = infocol.MakeDeployInfo(
-				&inDeviceDeploys,
-				&regionSpecifics,
-				&functionSpecifics,
-				&deployRegionInfo)
-			if nil != err {
-				logger.Error("Create or Update deployinfo error")
-				break
-			}
-		*/
 		/* Provisional support (dynamic reconfiguration not supported) */
 		err = infocol.MakeDeployInfoConvFuncName(
 			ctx,
@@ -136,35 +120,6 @@ func main() {
 			logger.Error("Create or Update deployinfo error", zap.Error(err))
 			break
 		}
-
-		// Circuit placement information creation function
-		/*
-			err = infocol.MakeFPGACatalogInfo(
-				ctx,
-				mgr,
-				&inDeviceDeploys,
-				&functionDedicatedDecodeInfo,
-				&functionDedicatedResizeInfo,
-				&servicerMgmtInfo,
-				&fpgaCatalogInfo)
-			if nil != err {
-				logger.Error("Create or Update fpgacatalogmap error", zap.Error(err))
-				break
-			}
-		*/
-
-		// Decode resource information creation function
-		/*
-			err = infocol.MakeDecodeInfo(
-				ctx,
-				mgr,
-				&functionDedicatedDecodeInfo,
-				&functionDecodeInfo)
-			if nil != err {
-				logger.Error("Create or Update decode-ch error", zap.Error(err))
-				break
-			}
-		*/
 
 		// filter/resize resource information creation function
 		err = infocol.MakeFilterResizeInfo(

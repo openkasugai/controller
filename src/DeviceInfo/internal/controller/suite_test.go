@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,11 +31,6 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
-	// logf "sigs.k8s.io/controller-runtime/pkg/log"
-	// "sigs.k8s.io/controller-runtime/pkg/log/zap"
-
-	// "go.uber.org/zap/zapcore"
-	// "sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	examplecomv1 "DeviceInfo/api/v1"
 	//+kubebuilder:scaffold:imports
@@ -56,7 +51,6 @@ func TestControllers(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	// logf.SetLogger(zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true)))
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
@@ -84,8 +78,6 @@ var _ = BeforeSuite(func() {
 
 	err = examplecomv1.AddToScheme(testScheme)
 	Expect(err).NotTo(HaveOccurred())
-	// err = clientgoscheme.AddToScheme(testScheme)
-	// Expect(err).NotTo(HaveOccurred())
 
 	err = examplecomv1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())

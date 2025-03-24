@@ -2,7 +2,7 @@
   "rxProtocol": "DMA",
   "txProtocol":"RTP",
   "sharedMemoryMiB": 256,
-  "imageURI": "localhost/gpu_infer_dma:1.0.0",
+  "imageURI": "localhost/gpu_infer_dma:1.1.0",
   "additionalNetwork": true,
   "virtualNetworkDeviceDriverType": "sriov",
   "envs":{
@@ -35,6 +35,10 @@
         "securityContext":{
           "privileged": true
         },
+        "lifecycle":{
+          "preStop":{
+            "exec":{
+              "command": ["sh","-c", "kill -KILL $(pidof gst-launch-1.0)"]}}},
         "volumeMounts":[{
           "name": "hugepage-1gi",
           "mountPath": "/dev/hugepages"
@@ -69,14 +73,15 @@
       }],
       "hostNetwork": false,
       "hostIPC": true,
-      "restartPolicy": "Always"
+      "restartPolicy": "Always",
+      "shareProcessNamespace": true
     }
   }
 },
 {
   "rxProtocol": "TCP",
   "txProtocol":"RTP",
-  "imageURI": "localhost/gpu_infer_tcp:1.0.0",
+  "imageURI": "localhost/gpu_infer_tcp:1.1.0",
   "additionalNetwork": true,
   "virtualNetworkDeviceDriverType": "sriov",
   "envs":{
@@ -111,6 +116,10 @@
         "securityContext":{
           "privileged": true
         },
+        "lifecycle":{
+          "preStop":{
+            "exec":{
+              "command": ["sh","-c", "kill -KILL $(pidof gst-launch-1.0)"]}}},
         "volumeMounts":[{
           "name": "host-nvidia-mps",
           "mountPath": "/tmp/nvidia-mps"
@@ -123,7 +132,8 @@
       }],
       "hostNetwork": false,
       "hostIPC": true,
-      "restartPolicy": "Always"
+      "restartPolicy": "Always",
+      "shareProcessNamespace": true
     }
   }
 }]

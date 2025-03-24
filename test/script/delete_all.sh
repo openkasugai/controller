@@ -1,5 +1,5 @@
 #!/bin/bash -x
-# Copyright 2024 NTT Corporation , FUJITSU LIMITED
+# Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 YAML_DIR=$HOME/controller/test/sample-data/sample-data-common/yaml
 WBFUNCTION_NAMESPACE=test01
@@ -7,7 +7,6 @@ WBFUNCTION_NAMESPACE=test01
 kubectl get dataflow -A |grep -v NAME | awk '{system ("kubectl delete dataflow " $2 " -n " $1)}'
 sleep 5
 kubectl get computeresource -A |grep -v NAME | awk '{system ("kubectl delete computeresource " $2 " -n " $1)}'
-kubectl get childbs -A |grep -v NAME | awk '{system ("kubectl delete childbs " $2 " -n " $1)}'
 kubectl get fpga -A |grep -v NAME | awk '{system ("kubectl delete fpga " $2 " -n " $1)}'
 
 kubectl delete -f $YAML_DIR/functioninfo.yaml
@@ -34,3 +33,9 @@ kubectl delete -f $K8S_SOFT_DIR/src/CPUFunction/config/samples/crc_cpufunction_d
 cd $K8S_SOFT_DIR/src/WBFunction && make undeploy
 cd $K8S_SOFT_DIR/src/WBConnection && make undeploy
 cd $K8S_SOFT_DIR/src/whitebox-k8s-flowctrl && make undeploy
+
+CHILDBS_NAMES=$(kubectl get childbs -n default --no-headers -o custom-columns=":metadata.name")
+for CHILDBS_NAME in $CHILDBS_NAMES; do
+  kubectl patch childbs $CHILDBS_NAME --type=json -p '[{"op": "remove", "path": "/metadata/finalizers"}]'
+done
+kubectl get childbs -A |grep -v NAME | awk '{system ("kubectl delete childbs " $2 " -n " $1)}'

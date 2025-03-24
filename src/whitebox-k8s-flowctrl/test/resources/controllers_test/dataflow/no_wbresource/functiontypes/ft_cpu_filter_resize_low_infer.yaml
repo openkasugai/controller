@@ -1,0 +1,14 @@
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-cpu-filter-resize-low-infer
+  namespace: default
+spec:
+  functionName: cpu-filter-resize-low-infer
+  functionInfoCMRef:
+    name: funcinfo-cpu-filter-resize-low-infer
+    namespace: default
+  version: 1.0.0
+status:
+  regionTypeCandidates: ["cpu"]
+  status: Ready

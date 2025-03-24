@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -29,14 +29,13 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
-	// logf "sigs.k8s.io/controller-runtime/pkg/log"
-	// "sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	examplecomv1 "FPGAFunction/api/v1"
 	controllertestcpu "FPGAFunction/internal/controller/test/type/CPU"
 	controllertestethernet "FPGAFunction/internal/controller/test/type/Ethernet"
 	controllertestgpu "FPGAFunction/internal/controller/test/type/GPU"
 	controllertestpcie "FPGAFunction/internal/controller/test/type/PCIe"
+
 	corev1 "k8s.io/api/core/v1"
 	//+kubebuilder:scaffold:imports
 )
@@ -65,7 +64,6 @@ const (
 )
 
 var _ = BeforeSuite(func() {
-	// logf.SetLogger(zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true)))
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{

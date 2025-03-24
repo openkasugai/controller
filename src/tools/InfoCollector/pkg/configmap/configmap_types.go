@@ -35,8 +35,6 @@ var GInfrastructureInfo map[string][]DeviceInfo
 var GDeployInfo map[string][]DeviceRegionInfo
 var GFPGACatalogMap map[string][]FPGACatalog
 var GDecodeCH []FunctionDetail
-
-// var GFilterResizeCH []FunctionDetail
 var GFilterResizeCH []FunctionDetail
 
 // Infrastructure information ConfigMap

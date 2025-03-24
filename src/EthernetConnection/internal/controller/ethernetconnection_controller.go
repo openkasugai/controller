@@ -137,6 +137,11 @@ type Function struct {
 var Timeout = timeout_s{3, 0}
 var FpgaDevList = []string{} // Supports multiple FPGAs
 
+const (
+	ETHERNETCONNECTIONAPIVERSION = "example.com/v1"
+	ETHERNETCONNECTIONKIND       = "EthernetConnection"
+)
+
 //+kubebuilder:rbac:groups=example.com,resources=childbs,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=example.com,resources=childbs/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=example.com,resources=childbs/finalizers,verbs=update
@@ -222,6 +227,9 @@ func (r *EthernetConnectionReconciler) Reconcile(ctx context.Context, req ctrl.R
 			// In case of creation
 			r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
 				"Create", "Create Start")
+			saveFromStatus := crData.Status.From.Status
+			saveToStatus := crData.Status.To.Status
+			saveStatus := crData.Status.Status
 
 			// Check whether to process on the current node
 			if (myNodeName == srcFunctionData.Spec.NodeName) ||
@@ -398,17 +406,21 @@ func (r *EthernetConnectionReconciler) Reconcile(ctx context.Context, req ctrl.R
 					srcLLDMAret == true && dstLLDMAret == true {
 					crStatus = RUNNING
 				}
-				r.UpdCustomResource(ctx, &crData, crStatus)
 
-				r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
-					"Create", "Create End")
-
-				if crStatus != RUNNING {
-					// Requeue
-					logger.Error(nil, "CR Status is not Running.")
+				if saveFromStatus == crData.Status.From.Status &&
+					saveToStatus == crData.Status.To.Status &&
+					saveStatus == crData.Status.Status {
+					logger.Info("CR Status is not Changed.")
 					return ctrl.Result{Requeue: true}, nil
+				} else {
+					r.UpdCustomResource(ctx, &crData, crStatus)
+					if RUNNING == crStatus {
+						r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
+							"Create", "Create End")
+					}
 				}
 			}
+
 		} else if eventKind == UPDATE {
 			// In case of update
 			r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
@@ -431,11 +443,6 @@ func (r *EthernetConnectionReconciler) Reconcile(ctx context.Context, req ctrl.R
 		}
 	} else {
 		_ = r.ChildBSCR(ctx, req, myNodeName)
-		/*
-			if nil != err {
-				requeueFlag = true
-			}
-		*/
 	}
 	return ctrl.Result{}, nil
 }
@@ -533,46 +540,45 @@ func (r *EthernetConnectionReconciler) ChildBSCR(ctx context.Context,
 			break
 		}
 
-		if crChildBs.Status.State != examplecomv1.ChildBsNoConfigureNetwork {
-			break
-		}
+		childBsEventKind := getChildBsEventKind(&crChildBs)
+		if CREATE == childBsEventKind {
+			if crChildBs.Status.State != examplecomv1.ChildBsNoConfigureNetwork {
+				break
+			}
 
-		crChildBs.Status.State = examplecomv1.ChildBsConfiguringNetwork
-		err = r.Update(ctx, &crChildBs)
-		if nil != err {
-			logger.Error(err, "ChildBsCR Update Error")
-			break
-		} else {
-			logger.Info("ChildBsCR Update Success")
-		}
+			crChildBs.Status.State = examplecomv1.ChildBsConfiguringNetwork
+			err = r.Update(ctx, &crChildBs)
+			if nil != err {
+				logger.Error(err, "ChildBsCR Update Error")
+				break
+			} else {
+				logger.Info("ChildBsCR Update Success")
+			}
 
-		for i := 0; i < len(crChildBs.Spec.Regions); i++ {
-			/*
+			for i := 0; i < len(crChildBs.Spec.Regions); i++ {
 				ptuParams := crChildBs.Spec.Regions[i].Modules.Ptu.Parameters
 
-				//			var IPAddress string
-				//			var SubnetAddress string
-				//			var GatewayAddress string
-
+				var IPAddress string
+				var SubnetAddress string
+				var GatewayAddress string
 				var MACAddress string
 
 				if "" != (*ptuParams)["IPAddress"].StrVal &&
 					"" != (*ptuParams)["SubnetAddress"].StrVal &&
 					"" != (*ptuParams)["GatewayAddress"].StrVal &&
 					"" != (*ptuParams)["MacAddress"].StrVal {
-					//				IPAddress = (*ptuParams)["IPAddress"].StrVal
-					//				SubnetAddress = (*ptuParams)["SubnetAddress"].StrVal
-					//				GatewayAddress = (*ptuParams)["GatewayAddress"].StrVal
+					IPAddress = (*ptuParams)["IPAddress"].StrVal
+					SubnetAddress = (*ptuParams)["SubnetAddress"].StrVal
+					GatewayAddress = (*ptuParams)["GatewayAddress"].StrVal
 					MACAddress = (*ptuParams)["MacAddress"].StrVal
 				} else {
 					break
 				}
 
-				//			Name := *crChildBs.Spec.Regions[i].Name
+				Name := *crChildBs.Spec.Regions[i].Name
 
-				//			DeviceIndex := EthernetConnection_AccIdToDevId(crFPGA.Spec.DeviceFilePath)
-				//			LaneIndex, _ := strconv.Atoi(Name[len(Name)-1:])
-
+				DeviceIndex := EthernetConnection_AccIdToDevId(crFPGA.Spec.DeviceFilePath)
+				LaneIndex, _ := strconv.Atoi(Name[len(Name)-1:])
 
 				var macDataPh3 []uint8
 				// MAC address conversion process
@@ -581,52 +587,135 @@ func (r *EthernetConnectionReconciler) ChildBSCR(ctx context.Context,
 					dataHex, _ := strconv.ParseUint(data, 16, 0)
 					macDataPh3 = append(macDataPh3, uint8(dataHex))
 				}
-			*/
-			//			macAddressPh3 := (*C.uchar)(unsafe.Pointer(&macDataPh3[0]))
+				macAddressPh3 := (*C.uchar)(unsafe.Pointer(&macDataPh3[0]))
 
-			// Use Phase3 functions
-			//			ret := C.fpga_ptu_init(
-			//				C.uint(DeviceIndex),
-			//				C.uint(int32(LaneIndex)),
-			//				strconvInetAddressToUint32Swap(IPAddress),
-			//				strconvInetAddressToUint32Swap(SubnetAddress),
-			//				strconvInetAddressToUint32Swap(GatewayAddress),
-			//				macAddressPh3)
-			ret := 0
-			logger.Info("fpga_ptu_init() ret = " + strconv.Itoa(int(ret)))
-			if ret != 0 {
-				result = 0
+				// Use Phase3 functions
+				ret := C.fpga_ptu_init(
+					C.uint(DeviceIndex),
+					C.uint(int32(LaneIndex)),
+					strconvInetAddressToUint32Swap(IPAddress),
+					strconvInetAddressToUint32Swap(SubnetAddress),
+					strconvInetAddressToUint32Swap(GatewayAddress),
+					macAddressPh3)
+				logger.Info("fpga_ptu_init() ret = " + strconv.Itoa(int(ret)))
+				if ret != 0 {
+					result = 0
+					break
+				} else {
+					result = 1
+				}
+			}
+
+			if nil == err {
+				if 1 == result {
+					crChildBs.Status.State = examplecomv1.ChildBsReady
+					controllerutil.AddFinalizer(&crChildBs, getChildBsFinalizerName())
+					err = r.Update(ctx, &crChildBs)
+					if nil != err {
+						logger.Error(err, "ChildBsCR Status Update Error")
+						break
+					} else {
+						logger.Info("ChildBsCR Status Update Success")
+						break
+					}
+				} else if 0 == result {
+					crChildBs.Status.State = examplecomv1.ChildBsError
+					err = r.Update(ctx, &crChildBs)
+					if nil != err {
+						logger.Error(err, "ChildBsCR Update Error")
+						break
+					} else {
+						logger.Info("ChildBsCR Update Success")
+						break
+					}
+				}
+			}
+		} else if UPDATE == childBsEventKind {
+			if crChildBs.Status.State != examplecomv1.ChildBsNotStopNetworkModule {
+				break
+			}
+
+			crChildBs.Status.State = examplecomv1.ChildBsStoppingNetworkModule
+			err = r.Update(ctx, &crChildBs)
+			if nil != err {
+				logger.Error(err, "ChildBsCR Update Error")
 				break
 			} else {
-				result = 1
+				logger.Info("ChildBsCR Update Success")
 			}
-		}
 
-		if nil == err {
-			if 1 == result {
-				crChildBs.Status.State = examplecomv1.ChildBsReady
-				err = r.Update(ctx, &crChildBs)
-				if nil != err {
-					logger.Error(err, "ChildBsCR Update Error")
+			for i := 0; i < len(crChildBs.Spec.Regions); i++ {
+				Name := *crChildBs.Spec.Regions[i].Name
+				DeviceIndex := EthernetConnection_AccIdToDevId(crFPGA.Spec.DeviceFilePath)
+				LaneIndex, _ := strconv.Atoi(Name[len(Name)-1:])
+
+				// Use Phase3 functions
+				ret := C.fpga_ptu_exit(
+					C.uint(DeviceIndex),
+					C.uint(int32(LaneIndex)))
+				logger.Info("fpga_ptu_exit() ret = " + strconv.Itoa(int(ret)))
+				if ret != 0 {
+					result = 0
 					break
 				} else {
-					logger.Info("ChildBsCR Update Success")
-					break
-				}
-			} else if 0 == result {
-				crChildBs.Status.State = examplecomv1.ChildBsError
-				err = r.Update(ctx, &crChildBs)
-				if nil != err {
-					logger.Error(err, "ChildBsCR Update Error")
-					break
-				} else {
-					logger.Info("ChildBsCR Update Success")
-					break
+					result = 1
 				}
 			}
+
+			if nil == err {
+				if 1 == result {
+					crChildBs.Status.State = examplecomv1.ChildBsNotWriteBsfile
+					err = r.Update(ctx, &crChildBs)
+					if nil != err {
+						logger.Error(err, "ChildBsCR Update Error")
+						break
+					} else {
+						logger.Info("ChildBsCR Update Success")
+						break
+					}
+				} else if 0 == result {
+					crChildBs.Status.State = examplecomv1.ChildBsError
+					err = r.Update(ctx, &crChildBs)
+					if nil != err {
+						logger.Error(err, "ChildBsCR Update Error")
+						break
+					} else {
+						logger.Info("ChildBsCR Update Success")
+						break
+					}
+				}
+			}
+		} else if DELETE == childBsEventKind {
+			controllerutil.RemoveFinalizer(&crChildBs, getChildBsFinalizerName())
+			err = r.Update(ctx, &crChildBs)
 		}
 	}
 	return err
+}
+
+// Event type determines
+func getChildBsEventKind(pChildBsCRData *examplecomv1.ChildBs) int {
+
+	var eventKind int
+	eventKind = UPDATE
+
+	// Whether or not there is a deletion timestamp
+	if !pChildBsCRData.ObjectMeta.DeletionTimestamp.IsZero() {
+		eventKind = DELETE
+	} else if !controllerutil.ContainsFinalizer(pChildBsCRData, getChildBsFinalizerName()) {
+		// Whether or not Finalizer is written
+		eventKind = CREATE
+	}
+	return eventKind
+}
+
+// FINALIZER name generation
+func getChildBsFinalizerName() (finalizername string) {
+
+	finalizername = ETHERNETCONNECTIONKIND + ".finalizers." +
+		examplecomv1.GroupVersion.Group + "." +
+		examplecomv1.GroupVersion.Version
+	return finalizername
 }
 
 func strconvInetAddressToUint32Swap(ipAddress string) C.uint32_t {
@@ -820,12 +909,6 @@ func (r *EthernetConnectionReconciler) GetfinalizerName(pCRData *examplecomv1.Et
 	gvks, _, _ := r.Client.Scheme().ObjectKinds(pCRData)
 	return strings.ToLower(gvks[0].Kind) + ".finalizers." +
 		strings.ToLower(gvks[0].Group+"."+gvks[0].Version)
-	/*
-	   // Value to set in the finalizer
-	   return strings.ToLower(pCRData.Kind) + ".finalizers." +
-
-	   	strings.ReplaceAll(pCRData.APIVersion, "/", ".")
-	*/
 }
 
 func (r *EthernetConnectionReconciler) GetEventKind(pCRData *examplecomv1.EthernetConnection) int32 {
@@ -1004,15 +1087,6 @@ func CRCStartPtuInitSet(mng ctrl.Manager) {
 			FpgaDevList = append(FpgaDevList, devPath)
 		}
 	}
-	/* Since the process stops when the controller is stopped, do not call exit for each init.
-	defer C.fpga_finish() // Close FPGA (deferred execution)
-	C.fpga_ptu_exit(
-		C.uint(0),
-		C.uint(cr_data.Spec.DstFunc.PtuKernelId))
-	C.fpga_ptu_exit_ph1(
-		C.uint(0),
-		C.uint(cr_data.Spec.SrcFunc.PtuKernelId)) // End event monitoring thread (deferred execution)
-	*/
 }
 
 // Get FPGACR
@@ -1032,11 +1106,9 @@ func GetFPGACR(ctx context.Context,
 	}
 
 	for i := 0; i < len(fpgaCRData.Items); i++ {
-		//		if myNodeName != fpgaCRData.Items[i].Status.NodeName {
 		if myNodeName != fpgaCRData.Items[i].Status.NodeName {
 			continue
 		}
-		//		fpgaList = append(fpgaList, fpgaCRData.Items[i].Status.DeviceFilePath)
 		fpgaList = append(fpgaList, fpgaCRData.Items[i].Status.DeviceFilePath)
 	}
 	return fpgaList

@@ -51,7 +51,7 @@ type FunctionData struct {
 	DeviceType        string                        `json:"deviceType"`
 	AcceleratorIDs    []AccIDInfo                   `json:"acceleratorIDs"`
 	RegionName        string                        `json:"regionName"`
-	FunctionIndex     int32                         `json:"functionIndex"`
+	FunctionIndex     *int32                        `json:"functionIndex,omitempty"`
 	Envs              []EnvsInfo                    `json:"envs,omitempty"`
 	RequestMemorySize *int32                        `json:"requestMemorySize,omitempty"`
 	SharedMemory      SharedMemorySpec              `json:"sharedMemory,omitempty"`
@@ -73,22 +73,23 @@ type FunctionStatusData struct {
 	Rx                RxTxData         `json:"rx,omitempty"`
 	Tx                RxTxData         `json:"tx,omitempty"`
 	SharedMemory      SharedMemorySpec `json:"sharedMemory,omitempty"`
+	PodName           *string          `json:"podName,omitempty"`
 }
 
 // FPGADevice Connection Info
 type RxTxData struct {
-	Protocol        string  `json:"protocol,omitempty"`
-	IPAddress       *string `json:"ipAddress,omitempty"`
-	Port            *int32  `json:"port,omitempty"`
-	SubnetAddress   *string `json:"subnetAddress,omitempty"`
-	GatewayAddress  *string `json:"gatewayAddress,omitempty"`
-	DMAChannelID    *int32  `json:"dmaChannelID,omitempty"`
-	FDMAConnectorID *int32  `json:"fdmaConnectorID,omitempty"`
+	Protocol         string  `json:"protocol,omitempty"`
+	IPAddress        *string `json:"ipAddress,omitempty"`
+	Port             *int32  `json:"port,omitempty"`
+	SubnetAddress    *string `json:"subnetAddress,omitempty"`
+	GatewayAddress   *string `json:"gatewayAddress,omitempty"`
+	DMAChannelID     *int32  `json:"dmaChannelID,omitempty"`
+	LLDMAConnectorID *int32  `json:"lldmaConnectorID,omitempty"`
 }
 
 type AccIDInfo struct {
-	PartitionName string `json:"partitionName"`
-	ID            string `json:"id"`
+	PartitionName *string `json:"partitionName,omitempty"`
+	ID            string  `json:"id"`
 }
 
 type EnvsInfo struct {
@@ -133,12 +134,34 @@ type FPGARxTx struct {
 	EndPort   int32  `json:"endPort,omitempty"`
 }
 
+type AnyData struct {
+	Functions FrameSizeData `json:"functions,omitempty"`
+}
+
+type FrameSizeData struct {
+	InputWidth   int32 `json:"i_width"`
+	InputHeight  int32 `json:"i_height"`
+	OutputWidth  int32 `json:"o_width"`
+	OutputHeight int32 `json:"o_height"`
+}
+
+type BitstreamData struct {
+	File string `json:"file,omitempty"`
+	ID   string `json:"id,omitempty"`
+}
+
 type FunctionConfigMap struct {
 	RxProtocol      string            `json:"rxProtocol,omitempty"`
 	TxProtocol      string            `json:"txProtocol,omitempty"`
 	SharedMemoryMiB int32             `json:"sharedMemoryMiB,omitempty"`
 	ImageURI        string            `json:"imageURI,omitempty"`
 	Envs            map[string]string `json:"envs,omitempty"`
-	ParentBitStream string            `json:"parentBitStream,omitempty"`
-	ChildBitStream  string            `json:"childBitStream,omitempty"`
+	//	ParentBitstream string            `json:"parentBitstream,omitempty"`
+	//	ChildBitstream  string            `json:"childBitstream,omitempty"`
+	ParentBitstream       BitstreamData `json:"parentBitstream,omitempty"`
+	ChildBitstream        BitstreamData `json:"childBitstream,omitempty"`
+	Commands              []string      `json:"commands,omitempty"`
+	Args                  []string      `json:"args,omitempty"`
+	Parameters            AnyData       `json:"parameters,omitempty"`
+	FunctionDedicatedInfo string        `json:"functionDedicatedInfo,omitempty"`
 }

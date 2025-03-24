@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 */
 
 package controller
@@ -126,7 +126,6 @@ func (r *WBFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 			// If an error occurs in the Get function
 			break
 		}
-
 		// Search for the kind to create a CR for
 		ret := convTypeMeta(ctx, &crData, &functionKind, &functionAPIVersion)
 		if false == ret {
@@ -177,14 +176,14 @@ func (r *WBFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 					// Create a resource
 					err = r.createCustomResource(ctx, req,
 						functionKind, functionAPIVersion, &crData)
-					//						&crDeviceInfoResponse)
 					if nil != err {
 						break
 					}
 					logger.Info("Status Information Change start.")
 					err = r.updCustomResource(ctx,
 						&crData,
-						examplecomv1.WBDeployStatusWaiting)
+						examplecomv1.WBDeployStatusWaiting,
+						eventKind)
 					if nil != err {
 						logger.Error(err,
 							"failed to update WBFunction status.")
@@ -193,7 +192,8 @@ func (r *WBFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 					}
 					logger.Info("Status Information Change end.")
 				}
-				if examplecomv1.WBDeployStatusDeployed != crData.Status.Status {
+				if examplecomv1.WBDeployStatusDeployed != crData.Status.Status &&
+					examplecomv1.WBDeployStatusWaiting != crData.Status.Status {
 					requeueFlag = true
 				}
 
@@ -202,8 +202,6 @@ func (r *WBFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 				break //nolint:staticcheck // SA4004: Intentional break
 			}
 		} else if UPDATE == eventKind {
-			//		} else if UPDATE == eventKind &&
-			//			crDeviceInfoResponse.Status == examplecomv1.ResponceDeployed {
 
 			for doWhile := 0; doWhile < 1; doWhile++ { //nolint:staticcheck // SA4008: This loop is intentionally only a one-time loop
 
@@ -241,7 +239,8 @@ func (r *WBFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 							}
 							if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceError {
 								err = r.updCustomResource(ctx, &crData,
-									examplecomv1.WBDeployStatusFailed)
+									examplecomv1.WBDeployStatusFailed,
+									eventKind)
 								if nil != err {
 									logger.Error(err, "failed to update WBFunction status.")
 									fmt.Printf("%#v\n", crData)
@@ -260,7 +259,8 @@ func (r *WBFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 							// Processing is complete, so update the status
 							logger.Info("Status Running Change start.")
 							err = r.updCustomResource(ctx, &crData,
-								examplecomv1.WBDeployStatusDeployed)
+								examplecomv1.WBDeployStatusDeployed,
+								eventKind)
 							if nil != err {
 								break
 							}
@@ -282,57 +282,230 @@ func (r *WBFunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 			}
 
 		} else if DELETE == eventKind {
-			//		} else if DELETE == eventKind &&
-			//			crDeviceInfoResponse.Status == examplecomv1.ResponceUndeployed {
-			// In case of deletion
-			r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
-				"Delete", "Delete Start")
+			for doWhile := 0; doWhile < 1; doWhile++ { //nolint:staticcheck // SA4008: This loop is intentionally only a one-time loop
 
-			// Get DeviceInfo CR
-			err = r.getDevMngCR(ctx, &crData, &crDeviceInfoData, req)
-			if errors.IsNotFound(err) {
-				reqKind = examplecomv1.RequestUndeploy
-				_ = r.createDevMngCR(ctx, // FIXME: need to handle return value (error)
-					&crData,
-					&crDeviceInfoData,
-					req,
-					reqKind)
-			} else if nil != err {
-				// If an error occurs in the Get function
-				break
-			}
-			if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceError {
-				err = r.updCustomResource(ctx, &crData,
-					examplecomv1.WBDeployStatusFailed)
-				if nil != err {
-					logger.Error(err, "failed to update WBFunction status.")
-					fmt.Printf("%#v\n", crData)
+				r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
+					"Delete", "Delete Start")
+				if crData.Status.Status == examplecomv1.WBDeployStatusDeployed {
+					if eventFunctionKind != CREATE {
+						// Delete FunctionCR
+						if crFunc.DeletionTimestamp.IsZero() {
+							logger.Info("Delete FunctionCR start.")
+							err = r.delFunctionCR(ctx, functionKind, functionAPIVersion, req)
+							if err != nil {
+								logger.Info("Failed to delete FunctionCR.")
+								break
+							}
+						}
+					}
+					logger.Info("Update WBFunction to Terminating.")
+					err = r.updCustomResource(ctx, &crData, examplecomv1.WBDeployStatusTerminating, eventKind)
+					if err != nil {
+						logger.Info("Failed to update WBFunction.")
+						break
+					}
+					logger.Info("Delete FunctionCR was end.")
+					logger.Info("WBFunction change to Terminating was end.")
+					break
+				} else if crData.Status.Status == examplecomv1.WBDeployStatusTerminating {
+					if eventFunctionKind != CREATE {
+						requeueFlag = true
+						break
+					}
+				}
+
+				if crData.Status.Status == examplecomv1.WBDeployStatusTerminating ||
+					crData.Status.Status == examplecomv1.WBDeployStatusReleased {
+					// Get DeviceInfo CR
+					err = r.getDevMngCR(ctx, &crData, &crDeviceInfoData, req)
+					if errors.IsNotFound(err) {
+
+						if crData.Status.Status == examplecomv1.WBDeployStatusTerminating {
+							logger.Info("Create DeviceInfoCR.")
+							reqKind = examplecomv1.RequestUndeploy
+							_ = r.createDevMngCR(ctx,
+								&crData,
+								&crDeviceInfoData,
+								req,
+								reqKind)
+							requeueFlag = true
+
+						} else if crData.Status.Status == examplecomv1.WBDeployStatusReleased {
+							logger.Info("Delete WBFunction.")
+							err = r.delCustomResource(ctx, &crData)
+							if err != nil {
+								logger.Info("Failed to delete WBFunction")
+							} else {
+								logger.Info("Delete WBFunctionCR was end.")
+							}
+
+						}
+						break
+					}
+				}
+
+				if crData.Status.Status == examplecomv1.WBDeployStatusTerminating {
+
+					if crDeviceInfoData.DeletionTimestamp.IsZero() {
+
+						if crDeviceInfoData.Status.Response.Status == "" &&
+							crDeviceInfoData.Spec.Request.RequestType == examplecomv1.RequestDeploy {
+							requeueFlag = true
+							break
+
+						} else if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceError &&
+							crDeviceInfoData.Spec.Request.RequestType == examplecomv1.RequestDeploy {
+							logger.Info("Delete DeviceInfo start.")
+							err = r.deleteDevMngCR(ctx, &crDeviceInfoData)
+							if err != nil {
+								logger.Info("Failed to delete DeviceInfo.")
+							} else {
+								logger.Info("Delete DeviceInfo was end.")
+							}
+							logger.Info("Update WBFunctions to Released.")
+							err = r.updCustomResource(ctx, &crData, examplecomv1.WBDeployStatusReleased, eventKind)
+							if err != nil {
+								logger.Info("Failed to update WBFunction.")
+							} else {
+								logger.Info("WBFunction change to Released was end.")
+							}
+
+						} else if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceDeployed {
+							logger.Info("Delete DeviceInfo start.")
+							err = r.deleteDevMngCR(ctx, &crDeviceInfoData)
+							if err != nil {
+								logger.Info("Failed to delete DeviceInfo.")
+							} else {
+								logger.Info("Delete DeviceInfo was end.")
+							}
+							requeueFlag = true
+
+						} else if crDeviceInfoData.Status.Response.Status == "" &&
+							crDeviceInfoData.Spec.Request.RequestType == examplecomv1.RequestUndeploy {
+							requeueFlag = true
+							break
+
+						} else if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceError &&
+							crDeviceInfoData.Spec.Request.RequestType == examplecomv1.RequestUndeploy {
+							logger.Info("Update WBFunctions to Failed.")
+							err = r.updCustomResource(ctx, &crData, examplecomv1.WBDeployStatusFailed, eventKind)
+							if err != nil {
+								logger.Info("Failed to update WBFunction.")
+							}
+							break
+
+						} else if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceUndeployed {
+							logger.Info("Delete DeviceInfo start.")
+							err = r.deleteDevMngCR(ctx, &crDeviceInfoData)
+							if err != nil {
+								logger.Info("Failed to delete DeviceInfo.")
+							} else {
+								logger.Info("Delete DeviceInfo was end.")
+							}
+							logger.Info("Update WBFunctions to Released.")
+							err = r.updCustomResource(ctx, &crData, examplecomv1.WBDeployStatusReleased, eventKind)
+							if err != nil {
+								logger.Info("Failed to update WBFunction.")
+							} else {
+								logger.Info("WBFunction change to Released was end.")
+							}
+
+						} else {
+							logger.Info("Unexpected route: WBFunctionCRStatus: " +
+								string(crData.Status.Status) +
+								", DeviceInfoCRRequestType: " +
+								string(crDeviceInfoData.Spec.Request.RequestType) +
+								", DeletionTimeStamp: DeletionTimeStamp is nil,  DeviceInfoCRResponceStatus: " +
+								string(crDeviceInfoData.Status.Response.Status))
+							break
+						}
+
+					} else if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceDeployed {
+						requeueFlag = true
+						break
+
+					} else if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceUndeployed {
+						logger.Info("Update WBFunctions to Released.")
+						err = r.updCustomResource(ctx, &crData, examplecomv1.WBDeployStatusReleased, eventKind)
+						if err != nil {
+							logger.Info("Failed to update WBFunction.")
+						} else {
+							logger.Info("WBFunction change to Released was end.")
+						}
+
+					} else if crDeviceInfoData.Status.Response.Status == "" &&
+						crDeviceInfoData.Spec.Request.RequestType == examplecomv1.RequestDeploy {
+						requeueFlag = true
+						break
+
+					} else if crDeviceInfoData.Status.Response.Status == "" &&
+						crDeviceInfoData.Spec.Request.RequestType == examplecomv1.RequestUndeploy {
+						logger.Info("Update WBFunctions to Released.")
+						err = r.updCustomResource(ctx, &crData, examplecomv1.WBDeployStatusReleased, eventKind)
+						if err != nil {
+							logger.Info("Failed to update WBFunction.")
+						} else {
+							logger.Info("WBFunction change to Released was end.")
+						}
+
+					} else if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceError &&
+						crDeviceInfoData.Spec.Request.RequestType == examplecomv1.RequestDeploy {
+						logger.Info("Update WBFunctions to Released.")
+						err = r.updCustomResource(ctx, &crData, examplecomv1.WBDeployStatusReleased, eventKind)
+						if err != nil {
+							logger.Info("Failed to update WBFunction.")
+						} else {
+							logger.Info("WBFunction change to Released was end.")
+						}
+
+					} else if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceError &&
+						crDeviceInfoData.Spec.Request.RequestType == examplecomv1.RequestUndeploy {
+						logger.Info("Update WBFunctions to Failed.")
+						err = r.updCustomResource(ctx, &crData, examplecomv1.WBDeployStatusFailed, eventKind)
+						if err != nil {
+							logger.Info("Failed to update WBFunction.")
+						}
+						break
+					}
+
+				} else if crData.Status.Status == examplecomv1.WBDeployStatusReleased {
+					if crDeviceInfoData.DeletionTimestamp.IsZero() {
+						logger.Info("Unexpected route: WBFunctionCRStatus: " +
+							string(crData.Status.Status) +
+							", DeviceInfoCRRequestType: " +
+							string(crDeviceInfoData.Spec.Request.RequestType) +
+							", DeletionTimeStamp: DeletionTimeStamp is nil,  DeviceInfoCRResponceStatus: " +
+							string(crDeviceInfoData.Status.Response.Status))
+						break
+					} else if crDeviceInfoData.Status.Response.Status == examplecomv1.ResponceUndeployed {
+						requeueFlag = true
+						break
+					} else {
+						logger.Info("Unexpected route: WBFunctionCRStatus: " +
+							string(crData.Status.Status) +
+							", DeletionTimeStamp: " +
+							crDeviceInfoData.DeletionTimestamp.Format("2006-01-02T15:04:05Z07:00") +
+							", DeviceInfoCRRequestType: " +
+							string(crDeviceInfoData.Spec.Request.RequestType) +
+							", DeviceInfoCRResponceStatus: " +
+							string(crDeviceInfoData.Status.Response.Status))
+						break
+					}
+				} else {
+					logger.Info("Unexpected route: WBFunctionCRStatus: " +
+						string(crData.Status.Status) +
+						", DeletionTimeStamp: " +
+						crDeviceInfoData.DeletionTimestamp.Format("2006-01-02T15:04:05Z07:00") +
+						", DeviceInfoCRRequestType: " +
+						string(crDeviceInfoData.Spec.Request.RequestType) +
+						", DeviceInfoCRResponceStatus: " +
+						string(crDeviceInfoData.Status.Response.Status))
 					break
 				}
-				logger.Error(fmt.Errorf("DeviceInfo process Status error."),
-					"Reconcile process abnormal end.")
-				break
+				r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
+					"Delete", "Delete End")
 			}
-			if crDeviceInfoData.Status.Response.Status != examplecomv1.ResponceUndeployed {
-				requeueFlag = true
-				break
-			}
-
-			err = r.deleteDevMngCR(ctx, &crDeviceInfoData)
-			if nil != err {
-				break
-			}
-			// Delete the Finalizer statement.
-			err = r.delCustomResource(ctx, &crData)
-			if nil != err {
-				break
-			}
-
-			r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
-				"Delete", "Delete End")
-
 		}
-		break //nolint:staticcheck // SA4004: Intentional break
 	}
 	if requeueFlag == true {
 		return ctrl.Result{Requeue: requeueFlag}, nil
@@ -449,12 +622,10 @@ func (r *WBFunctionReconciler) createCustomResource(
 	functionKind string,
 	functionAPIVersion string,
 	pCRData *examplecomv1.WBFunction) error {
-	//	pCRDeviceInfoResponse *examplecomv1.WBFuncResponse) error {
 
 	logger := log.FromContext(ctx)
 
 	var err error = nil // To determine the return value
-	// var cfgdata []byte
 	var funccfg examplecomv1.FunctionConfigMap
 	var configname string
 	var cfgdata []byte
@@ -609,7 +780,6 @@ func getEventKind(ctx context.Context,
 		// Whether or not Finalizer is written
 		eventKind = CREATE
 	}
-	//	fmt.Printf("getEventKind %#v\n", pCRData)
 	return eventKind
 }
 
@@ -737,7 +907,7 @@ func (r *WBFunctionReconciler) createDevMngCR(ctx context.Context,
 	return err
 }
 
-// Create a DeviceInfo CR
+// Delete DeviceInfo CR
 func (r *WBFunctionReconciler) deleteDevMngCR(ctx context.Context,
 	pCRDeviceInfoData *examplecomv1.DeviceInfo) error {
 
@@ -819,24 +989,41 @@ func (r *WBFunctionReconciler) getFunctionCR(ctx context.Context,
 			logger.Error(err, DEVICEINFOCRKIND+" unable to Unmarshal.")
 			break
 		}
-		//		fmt.Printf(DEVICEINFOCRKIND + " %#v\n", pCRFunction)
 		break //nolint:staticcheck // SA4004: Intentional break
 	}
 
 	return err
 }
 
+// Delete to FunctionCR
+func (r *WBFunctionReconciler) delFunctionCR(ctx context.Context,
+	functionKind string,
+	functionAPIVersion string,
+	req ctrl.Request) error {
+	var err error
+	tmp := &unstructured.Unstructured{}
+	tmp.SetGroupVersionKind(schema.GroupVersionKind{
+		Version: functionAPIVersion,
+		Kind:    functionKind,
+	})
+	tmp.SetName(req.Name)
+	tmp.SetNamespace(req.Namespace)
+	err = r.Delete(ctx, tmp)
+	return err
+}
+
 // Update a custom resource
 func (r *WBFunctionReconciler) updCustomResource(ctx context.Context,
 	pCRData *examplecomv1.WBFunction,
-	status examplecomv1.WBDeployStatus) error {
+	status examplecomv1.WBDeployStatus,
+	evkind int32) error {
 
 	logger := log.FromContext(ctx)
 
 	var err error
 
 	pCRData.Status.Status = status
-	if status != examplecomv1.WBDeployStatusDeployed {
+	if status != examplecomv1.WBDeployStatusDeployed && evkind != DELETE {
 		// Write a Finalizer
 		controllerutil.AddFinalizer(pCRData, getFinalizerName(ctx, pCRData))
 	}
@@ -864,9 +1051,12 @@ func (r *WBFunctionReconciler) delCustomResource(ctx context.Context,
 		getFinalizerName(ctx, pCRData)) {
 		controllerutil.RemoveFinalizer(pCRData,
 			getFinalizerName(ctx, pCRData))
-		err := r.Update(ctx, pCRData)
+		err = r.Update(ctx, pCRData)
+
 		if nil != err {
 			logger.Error(err, "RemoveFinalizer Update Error.")
+		} else {
+			logger.Info("Finalizer Delete Success.")
 		}
 	}
 	return err
@@ -939,7 +1129,6 @@ func (r *WBFunctionReconciler) getConfigMap(ctx context.Context,
 		logger.Error(err, "ConfigMap unable to fetch. ConfigName="+cfgname)
 	} else {
 		mapdata, _, _ = unstructured.NestedStringMap(tmpData.Object, "data")
-		//		fmt.Printf("NestedMap %#v\n", mapdata)
 		for _, jsonrecord := range mapdata {
 			*cfgdata = []byte(jsonrecord)
 		}

@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	corev1 "k8s.io/api/core/v1" //nolint:stylecheck // ST1019: intentional import as another name
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
@@ -85,6 +86,40 @@ func Deploy(ctx context.Context, k8sClient client.Client, paths ...string) (map[
 	return ret, nil
 }
 
+func DeployWithObjectMeta(ctx context.Context, k8sClient client.Client, paths ...string) (map[string]any, error) {
+
+	ret := make(map[string]any)
+	for _, p := range paths {
+
+		if f, err := os.Stat(p); !os.IsNotExist(err) {
+
+			if f.IsDir() {
+				objs, err := deployFromDirectoryWithObjectMeta(ctx, k8sClient, p)
+				if err != nil {
+					return nil, err
+				}
+				for k, v := range objs {
+					ret[k] = v
+				}
+			} else {
+				obj, err := decodeManifest(p)
+				if err != nil {
+					return nil, err
+				}
+				ret[p] = obj
+				if err := deployWithObjectMeta(ctx, k8sClient, obj); err != nil {
+					return nil, err
+				}
+			}
+		} else {
+			return nil, err
+		}
+
+	}
+
+	return ret, nil
+}
+
 func deployFromDirectory(ctx context.Context, k8sClient client.Client, dirPath string) (map[string]any, error) {
 
 	ret := make(map[string]any)
@@ -103,6 +138,26 @@ func deployFromDirectory(ctx context.Context, k8sClient client.Client, dirPath s
 		}
 	}
 	return Deploy(ctx, k8sClient, paths...)
+}
+
+func deployFromDirectoryWithObjectMeta(ctx context.Context, k8sClient client.Client, dirPath string) (map[string]any, error) {
+
+	ret := make(map[string]any)
+
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		return ret, err
+	}
+
+	paths := make([]string, 0)
+	for _, f := range files {
+		fName := f.Name()
+		ext := filepath.Ext(fName)
+		if ext == ".yaml" {
+			paths = append(paths, filepath.Join(dirPath, fName))
+		}
+	}
+	return DeployWithObjectMeta(ctx, k8sClient, paths...)
 }
 
 func Check(expResource client.Object, actResource client.Object, keys ...string) error {
@@ -563,7 +618,7 @@ func deploy(ctx context.Context, cli client.Client, resource runtime.Object) err
 				continue
 			}
 			dep.Status = r.Status
-			err = cli.Status().Update(ctx, dep)
+			err = cli.Update(ctx, dep)
 			if err == nil {
 				break
 			}
@@ -587,7 +642,252 @@ func deploy(ctx context.Context, cli client.Client, resource runtime.Object) err
 				continue
 			}
 			dep.Status = r.Status
+			err = cli.Update(ctx, dep)
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+		return err
+
+	default:
+		dep := r.(client.Object)
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func deployWithObjectMeta(ctx context.Context, cli client.Client, resource runtime.Object) error {
+
+	const updateChallengeNum = 5
+
+	switch r := resource.(type) {
+	case *ntthpcv1.ComputeResource:
+		dep := &ntthpcv1.ComputeResource{}
+		dep.ObjectMeta = r.ObjectMeta
+		dep.Spec = r.Spec
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+		var err error
+		for i := 0; i < updateChallengeNum; i++ {
+			dep = &ntthpcv1.ComputeResource{}
+			srcInfo := types.NamespacedName{Namespace: r.Namespace, Name: r.Name}
+			if err := cli.Get(ctx, srcInfo, dep); err != nil {
+				continue
+			}
+			dep.Status = r.Status
 			err = cli.Status().Update(ctx, dep)
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+		return err
+
+	case *ntthpcv1.ConnectionTarget:
+		dep := &ntthpcv1.ConnectionTarget{}
+		dep.ObjectMeta = r.ObjectMeta
+		dep.Spec = r.Spec
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+		var err error
+		for i := 0; i < updateChallengeNum; i++ {
+			dep = &ntthpcv1.ConnectionTarget{}
+			srcInfo := types.NamespacedName{Namespace: r.Namespace, Name: r.Name}
+			if err := cli.Get(ctx, srcInfo, dep); err != nil {
+				continue
+			}
+			dep.Status = r.Status
+			err = cli.Status().Update(ctx, dep)
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+		return err
+
+	case *ntthpcv1.DataFlow:
+		dep := &ntthpcv1.DataFlow{}
+		dep.ObjectMeta = r.ObjectMeta
+		dep.Spec = r.Spec
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+		var err error
+		for i := 0; i < updateChallengeNum; i++ {
+			dep = &ntthpcv1.DataFlow{}
+			srcInfo := types.NamespacedName{Namespace: r.Namespace, Name: r.Name}
+			if err := cli.Get(ctx, srcInfo, dep); err != nil {
+				continue
+			}
+			dep.Status = r.Status
+			err = cli.Status().Update(ctx, dep)
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+		return err
+
+	case *ntthpcv1.FunctionChain:
+		dep := &ntthpcv1.FunctionChain{}
+		dep.ObjectMeta = r.ObjectMeta
+		dep.Spec = r.Spec
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+		var err error
+		for i := 0; i < updateChallengeNum; i++ {
+			dep = &ntthpcv1.FunctionChain{}
+			srcInfo := types.NamespacedName{Namespace: r.Namespace, Name: r.Name}
+			if err := cli.Get(ctx, srcInfo, dep); err != nil {
+				continue
+			}
+			dep.Status = r.Status
+			err = cli.Status().Update(ctx, dep)
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+		return err
+
+	case *ntthpcv1.FunctionType:
+		dep := &ntthpcv1.FunctionType{}
+		dep.ObjectMeta = r.ObjectMeta
+		dep.Spec = r.Spec
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+		var err error
+		for i := 0; i < updateChallengeNum; i++ {
+			dep = &ntthpcv1.FunctionType{}
+			srcInfo := types.NamespacedName{Namespace: r.Namespace, Name: r.Name}
+			if err := cli.Get(ctx, srcInfo, dep); err != nil {
+				continue
+			}
+			dep.Status = r.Status
+			err = cli.Status().Update(ctx, dep)
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+		return err
+
+	case *ntthpcv1.FunctionTarget:
+		dep := &ntthpcv1.FunctionTarget{}
+		dep.ObjectMeta = r.ObjectMeta
+		dep.Spec = r.Spec
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+		var err error
+		for i := 0; i < updateChallengeNum; i++ {
+			dep = &ntthpcv1.FunctionTarget{}
+			srcInfo := types.NamespacedName{Namespace: r.Namespace, Name: r.Name}
+			if err := cli.Get(ctx, srcInfo, dep); err != nil {
+				continue
+			}
+			dep.Status = r.Status
+			err = cli.Status().Update(ctx, dep)
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+		return err
+
+	case *ntthpcv1.SchedulingData:
+		dep := &ntthpcv1.SchedulingData{}
+		dep.ObjectMeta = r.ObjectMeta
+		dep.Spec = r.Spec
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+		var err error
+		for i := 0; i < updateChallengeNum; i++ {
+			dep = &ntthpcv1.SchedulingData{}
+			srcInfo := types.NamespacedName{Namespace: r.Namespace, Name: r.Name}
+			if err := cli.Get(ctx, srcInfo, dep); err != nil {
+				continue
+			}
+			dep.Status = r.Status
+			err = cli.Status().Update(ctx, dep)
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+		return err
+
+	case *ntthpcv1.TopologyInfo:
+		dep := &ntthpcv1.TopologyInfo{}
+		dep.ObjectMeta = r.ObjectMeta
+		dep.Spec = r.Spec
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+		var err error
+		for i := 0; i < updateChallengeNum; i++ {
+			dep = &ntthpcv1.TopologyInfo{}
+			srcInfo := types.NamespacedName{Namespace: r.Namespace, Name: r.Name}
+			if err := cli.Get(ctx, srcInfo, dep); err != nil {
+				continue
+			}
+			dep.Status = r.Status
+			err = cli.Status().Update(ctx, dep)
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+		return err
+
+	case *ntthpcv1.WBConnection:
+		dep := &ntthpcv1.WBConnection{}
+		dep.ObjectMeta = r.ObjectMeta
+		dep.Spec = r.Spec
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+		var err error
+		for i := 0; i < updateChallengeNum; i++ {
+			dep = &ntthpcv1.WBConnection{}
+			srcInfo := types.NamespacedName{Namespace: r.Namespace, Name: r.Name}
+			if err := cli.Get(ctx, srcInfo, dep); err != nil {
+				continue
+			}
+			dep.Status = r.Status
+			err = cli.Update(ctx, dep)
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+		return err
+
+	case *ntthpcv1.WBFunction:
+		dep := &ntthpcv1.WBFunction{}
+		dep.ObjectMeta = r.ObjectMeta
+		dep.Spec = r.Spec
+		if err := cli.Create(ctx, dep); err != nil {
+			return err
+		}
+		var err error
+		for i := 0; i < updateChallengeNum; i++ {
+			dep = &ntthpcv1.WBFunction{}
+			srcInfo := types.NamespacedName{Namespace: r.Namespace, Name: r.Name}
+			if err := cli.Get(ctx, srcInfo, dep); err != nil {
+				continue
+			}
+			dep.Status = r.Status
+			err = cli.Update(ctx, dep)
 			if err == nil {
 				break
 			}
@@ -641,6 +941,150 @@ func CreateExpectYaml(ctx context.Context, k8sClient client.Client, dest, name, 
 			}).Should(Succeed())
 		}
 	}).Should(Succeed())
+}
+
+func RemoveFinalizers(ctx context.Context, k8sClient client.Client, namespace string, resources ...client.Object) error {
+
+	for _, resource := range resources {
+		switch resource.(type) {
+		case *ntthpcv1.ComputeResource:
+			list := &ntthpcv1.ComputeResourceList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		case *ntthpcv1.ConnectionTarget:
+			list := &ntthpcv1.ConnectionTargetList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		case *ntthpcv1.DataFlow:
+			list := &ntthpcv1.DataFlowList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		case *ntthpcv1.FunctionChain:
+			list := &ntthpcv1.FunctionChainList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		case *ntthpcv1.FunctionType:
+			list := &ntthpcv1.FunctionTypeList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		case *ntthpcv1.FunctionTarget:
+			list := &ntthpcv1.FunctionTargetList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		case *ntthpcv1.SchedulingData:
+			list := &ntthpcv1.SchedulingDataList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		case *ntthpcv1.TopologyInfo:
+			list := &ntthpcv1.TopologyInfoList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		case *ntthpcv1.WBConnection:
+			list := &ntthpcv1.WBConnectionList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		case *ntthpcv1.WBFunction:
+			list := &ntthpcv1.WBFunctionList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		case *corev1.ConfigMap:
+			list := &corev1.ConfigMapList{}
+			if err := k8sClient.List(ctx, list, client.InNamespace(namespace)); err != nil {
+				return err
+			}
+			for _, item := range list.Items {
+				item.SetFinalizers(nil)
+				if err := k8sClient.Update(ctx, &item); err != nil {
+					return err
+				}
+			}
+
+		default:
+			return fmt.Errorf("unsupported resource type: %T", resource)
+		}
+	}
+
+	return nil
 }
 
 func ValToAddr[T any](in T) *T {

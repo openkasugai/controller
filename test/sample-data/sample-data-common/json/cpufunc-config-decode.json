@@ -2,7 +2,7 @@
   "rxProtocol":"RTP",
   "txProtocol":"DMA",
   "sharedMemoryMiB": 256,
-  "imageURI": "localhost/cpu_decode:1.0.0",
+  "imageURI": "localhost/cpu_decode:1.1.0",
   "additionalNetwork": true,
   "virtualNetworkDeviceDriverType": "sriov",
   "envs":{
@@ -24,6 +24,10 @@
         "securityContext":{
           "privileged": true
         },
+        "lifecycle":{
+          "preStop":{
+            "exec":{
+              "command": ["sh","-c", "kill -TERM $(pidof cpu_decode-shared)"]}}},
         "volumeMounts":[{
           "name": "hugepage-1gi",
           "mountPath": "/dev/hugepages"
@@ -58,7 +62,7 @@
 {
   "rxProtocol":"RTP",
   "txProtocol":"TCP",
-  "imageURI": "localhost/cpu_decode:1.0.0",
+  "imageURI": "localhost/cpu_decode:1.1.0",
   "additionalNetwork": true,
   "virtualNetworkDeviceDriverType": "sriov",
   "envs":{
@@ -79,7 +83,11 @@
         "args":["./sample-functions/functions/cpu_decode/build/cpu_decode-shared"],
         "securityContext":{
           "privileged": true
-        }
+        },
+        "lifecycle":{
+          "preStop":{
+            "exec":{
+              "command": ["sh","-c", "kill -TERM $(pidof cpu_decode-shared)"]}}}
       }],
       "hostNetwork": false,
       "hostIPC": true,

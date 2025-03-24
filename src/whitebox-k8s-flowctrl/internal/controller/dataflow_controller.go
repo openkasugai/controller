@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,8 +22,10 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -33,6 +35,7 @@ import (
 	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	ntthpcv1 "github.com/compsysg/whitebox-k8s-flowctrl/api/v1"
@@ -47,6 +50,8 @@ type DataFlowReconciler struct {
 
 var endPointKeyword = "wb-end-of-chain"
 var startPointKeyword = "wb-start-of-chain"
+
+const dfFinalizerName = "dataflow.finalizers.example.com.v1"
 
 func strSliceCheck(slice []string, target string) bool {
 	for _, str := range slice {
@@ -96,6 +101,34 @@ func (r *DataFlowReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	if err := r.Get(ctx, req.NamespacedName, &dataflow); err != nil {
 		l.Error(err, "unable to fetch DataFlow")
 		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	// get finalizer name
+	finalizerName := getDfFinalizerName(ctx, dataflow)
+
+	// check finalizer existence
+	if !controllerutil.ContainsFinalizer(&dataflow, finalizerName) {
+		// add finalizer to DataFlow
+		controllerutil.AddFinalizer(&dataflow, finalizerName)
+		l.Info("update DataFlow to add Finalizer")
+		if err := r.Update(ctx, &dataflow); err != nil {
+			l.Error(err, "unable to update DataFlow")
+			return ctrl.Result{}, err
+		}
+	}
+
+	// check delete flag
+	if !dataflow.ObjectMeta.DeletionTimestamp.IsZero() {
+		// check if DataFlow has finalizer or not
+		if controllerutil.ContainsFinalizer(&dataflow, finalizerName) {
+			// execute deleteDataFlow function
+			l.Info("execute deleteDataFlow function")
+			var isExistsWbRes bool
+			if dataflow.Status.Status == "WBFunction/WBConnection created" || dataflow.Status.Status == "Deployed" {
+				isExistsWbRes = true
+			}
+			return r.deleteDataFlow(ctx, req, &dataflow, finalizerName, isExistsWbRes)
+		}
 	}
 
 	var functionChain ntthpcv1.FunctionChain
@@ -790,6 +823,133 @@ func (r *DataFlowReconciler) patchApply2(ctx context.Context, req ctrl.Request,
 	err := r.Status().Patch(ctx, patch, client.Apply, srpOpts)
 
 	return ctrl.Result{}, err
+}
+
+func getDfFinalizerName(ctx context.Context, df ntthpcv1.DataFlow) string {
+	var finalizername string
+	finalizername = dfFinalizerName
+	return finalizername
+}
+
+func (r *DataFlowReconciler) deleteDataFlow(ctx context.Context, req ctrl.Request,
+	dataflow *ntthpcv1.DataFlow, finalizerName string, isExistsWbRsc bool) (ctrl.Result, error) {
+
+	l := log.FromContext(ctx)
+
+	var result ctrl.Result
+	var err error
+
+	if isExistsWbRsc {
+		// delete request for WBConnection
+		l.Info("delete request for WBConnections")
+		result, err = r.handleWbConnDeletion(ctx, req, dataflow)
+		if err != nil || result.Requeue {
+			return result, err
+		}
+		// delete request for WBFunction
+		l.Info("delete request for WBFunctions")
+		result, err = r.handleWbFuncDeletion(ctx, req, dataflow)
+		if err != nil || result.Requeue {
+			return result, err
+		}
+	}
+
+	// delete finalizer from DataFlow
+	controllerutil.RemoveFinalizer(dataflow, finalizerName)
+	l.Info("update DataFlow to remove Finalizer")
+	if err := r.Update(ctx, dataflow); err != nil {
+		l.Error(err, "unable to update DataFlow")
+		return ctrl.Result{}, err
+	}
+
+	time.Sleep(time.Millisecond * 10)
+	return ctrl.Result{}, nil
+}
+
+func (r *DataFlowReconciler) handleWbConnDeletion(ctx context.Context, req ctrl.Request,
+	dataflow *ntthpcv1.DataFlow) (ctrl.Result, error) {
+
+	l := log.FromContext(ctx)
+
+	var wbConnection ntthpcv1.WBConnection
+
+	// check if all WBConnection have been deleted according to the slice order
+	for _, dfScheduledConValue := range dataflow.Status.ScheduledConnections {
+		// get WBConnection name
+		wbConnectionName := dataflow.Name + "-wbconnection-" + dfScheduledConValue.From.FunctionKey + "-" + dfScheduledConValue.To.FunctionKey
+		// fetch WBConnection resource
+		if err := r.Get(ctx, client.ObjectKey{Name: wbConnectionName, Namespace: req.NamespacedName.Namespace}, &wbConnection); err != nil {
+			// if not found, it is assumed to have been deleted.
+			if errors.IsNotFound(err) {
+				continue
+			} else {
+				l.Error(err, "unable to fetch wbconnection")
+				return ctrl.Result{}, err
+			}
+		} else {
+			// if DeletionTimestamp is not zero, it is assumed that WBConnection being deleted
+			if !wbConnection.ObjectMeta.DeletionTimestamp.IsZero() {
+				l.Info(fmt.Sprintf("waiting for WBConnection %s to be deleted", wbConnectionName))
+				return ctrl.Result{Requeue: true}, nil
+			} else {
+				// delete request for WBConnection
+				l.Info(fmt.Sprintf("delete request for WBConnection %s", wbConnectionName))
+				if err := r.Delete(ctx, &wbConnection); err != nil {
+					l.Error(err, fmt.Sprintf("unable to complete delete request for WBConnection %s", wbConnectionName))
+					return ctrl.Result{}, err
+				} else {
+					// recursive execution for recheck
+					time.Sleep(time.Millisecond * 10)
+					return r.handleWbConnDeletion(ctx, req, dataflow)
+				}
+			}
+		}
+	}
+
+	return ctrl.Result{}, nil
+}
+
+func (r *DataFlowReconciler) handleWbFuncDeletion(ctx context.Context, req ctrl.Request,
+	dataflow *ntthpcv1.DataFlow) (ctrl.Result, error) {
+
+	l := log.FromContext(ctx)
+
+	var wbFunction ntthpcv1.WBFunction
+
+	// check if all WBFunction have been deleted
+	for dfScheduleduncKey, _ := range dataflow.Status.ScheduledFunctions {
+		// get WBFunction name
+		wbFunctionName := dataflow.Name + "-wbfunction-" + dfScheduleduncKey
+		// fetch WBFunction resource
+		if err := r.Get(ctx, client.ObjectKey{Name: wbFunctionName, Namespace: req.NamespacedName.Namespace}, &wbFunction); err != nil {
+			// if not found, it is assumed to have been deleted.
+			if errors.IsNotFound(err) {
+				continue
+			} else {
+				l.Error(err, "unable to fetch wbfunction")
+				return ctrl.Result{}, err
+			}
+		} else {
+			// if DeletionTimestamp is not zero, it is assumed that WBFunction being deleted
+			if !wbFunction.ObjectMeta.DeletionTimestamp.IsZero() {
+				l.Info(fmt.Sprintf("waiting for WBFunction %s to be deleted", wbFunctionName))
+				return ctrl.Result{Requeue: true}, nil
+			} else {
+				// delete request for WBFunction
+				l.Info(fmt.Sprintf("delete request for WBFunction %s", wbFunctionName))
+				if err := r.Delete(ctx, &wbFunction); err != nil {
+					l.Error(err, fmt.Sprintf("unable to complete delete request for WBFunction %s", wbFunctionName))
+					return ctrl.Result{}, err
+				} else {
+					// recursive execution for recheck
+					time.Sleep(time.Millisecond * 10)
+					return r.handleWbFuncDeletion(ctx, req, dataflow)
+				}
+			}
+		}
+	}
+
+	return ctrl.Result{}, nil
 }
 
 func (r *DataFlowReconciler) SetupWithManager(mgr ctrl.Manager) error {

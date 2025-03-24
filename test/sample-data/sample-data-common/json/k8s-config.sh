@@ -5,6 +5,7 @@ if [ $1 == "delete" ]; then
 	kubectl delete configmap connectionkindmap
 	kubectl delete configmap region-unique-info
 	kubectl delete configmap function-unique-info
+	kubectl delete configmap predetermined-region-info
 	kubectl delete configmap fpgafunc-config-filter-resize-high-infer
 	kubectl delete configmap fpgafunc-config-filter-resize-low-infer
 	kubectl delete configmap cpufunc-config-decode
@@ -20,6 +21,7 @@ elif [ $1 == "create" ]; then
 	kubectl create configmap connectionkindmap --from-file=connectionkindmap.json
 	kubectl create configmap region-unique-info --from-file=region-unique-info.json
 	kubectl create configmap function-unique-info --from-file=function-unique-info.json
+	kubectl create configmap predetermined-region-info --from-file=predetermined-region.json
 	kubectl create configmap fpgafunc-config-filter-resize-high-infer --from-file=fpgafunc-config-filter-resize-high-infer.json
 	kubectl create configmap fpgafunc-config-filter-resize-low-infer --from-file=fpgafunc-config-filter-resize-low-infer.json
 	kubectl create configmap cpufunc-config-decode --from-file=cpufunc-config-decode.json

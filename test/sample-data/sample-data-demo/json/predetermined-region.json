@@ -2,13 +2,13 @@
   {
     "nodeName": "server2",
     "deviceUUID": "21320621V01L",
-    "subDeviceSpecRef": "lane0",
+    "subDeviceSpecRef": "0",
     "regionType": "alveou250-0100001c-2lanes-0nics"
   },
   {
     "nodeName": "server2",
     "deviceUUID": "21320621V01L",
-    "subDeviceSpecRef": "lane1",
+    "subDeviceSpecRef": "1",
     "regionType": "alveou250-0100001c-2lanes-0nics"
   },
   {

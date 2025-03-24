@@ -1,0 +1,1 @@
+../../../../../EthernetConnection/api/v1/ethernetconnection_types.go

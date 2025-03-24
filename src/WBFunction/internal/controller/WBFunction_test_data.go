@@ -1,3 +1,7 @@
+/*
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
+*/
+
 package controller
 
 import (
@@ -5,23 +9,12 @@ import (
 	controllertestcpu "WBFunction/internal/controller/test/type/CPU"
 	controllertestfpga "WBFunction/internal/controller/test/type/FPGA"
 	controllertestgpu "WBFunction/internal/controller/test/type/GPU"
-	// k8scnicncfio "github.com/k8snetworkplumbingwg/network-attachment-definition-client"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	// runtime "k8s.io/apimachinery/pkg/runtime"
-	// "k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	// "sigs.k8s.io/controller-runtime/pkg/scheme"
 )
 
-/*
-var status_def_data int32 = 0
-var status_def_data1 int32 = 0
-
-	var status_def_data2 = examplecomv1.WBFunctionRequirementsInfo{
-		Capacity: 15,
-	}
-*/
 var MaxCapacity_cpu int32 = 1
 var MaxDataFlows_cpu int32 = 20
 var FunctionIndex_cpu *int32 = nil
@@ -87,16 +80,6 @@ var CPUFunction1 = controllertestcpu.CPUFunctionStatus{
 	Status:        "Running",
 }
 
-/**************************************************************************
-TEST Data GPUFunctionCR Create
-**************************************************************************/
-/*
-var status_def_data_gpu int32 = 0
-var status_def_data1_gpu int32 = 0
-var status_def_data2_gpu = examplecomv1.WBFunctionRequirementsInfo{
-	Capacity: 15,
-}
-*/
 var MaxCapacity_gpu int32 = 1
 var MaxDataFlows_gpu int32 = 20
 var FunctionIndex_gpu *int32 = nil
@@ -166,19 +149,8 @@ var GPUFunction1 = controllertestgpu.GPUFunctionStatus{
 	Status:        "Running",
 }
 
-/**************************************************************************
-TEST Data GPUFunctionCR Create
-**************************************************************************/
-/*
-var status_def_data_fpga int32 = 0
-var status_def_data1_fpga int32 = 0
-var status_def_data2_fpga = examplecomv1.WBFunctionRequirementsInfo{
-	Capacity: 15,
-}
-*/
 var MaxCapacity_fpga int32 = 1
 var MaxDataFlows_fpga int32 = 20
-var FunctionIndex_fpga *int32 = nil
 var FunctionIndex_fpga1 int32 = 12
 var Requirements_fpga = examplecomv1.WBFunctionRequirementsInfo{
 	Capacity: 15,
@@ -228,6 +200,624 @@ var WBFunction_fpga_fr = examplecomv1.WBFunction{
 	},
 }
 
+var FunctionIndex_fpga2 int32 = 0
+var WBFunction_fpga_fr2 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night02-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:      "k8s-worker",
+		DeviceType:    "alveo",
+		DeviceIndex:   0,
+		RegionName:    "lane0",
+		FunctionName:  "filter-resize-high-infer",
+		FunctionIndex: &FunctionIndex_fpga2,
+		ConfigName:    "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr3 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night03-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr4 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night04-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr5 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night05-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr6 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night06-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr7 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night07-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr8 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night08-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr9 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night09-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr10 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night10-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr11 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night11-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr12 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night12-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr13 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night13-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr14 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night14-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
+var WBFunction_fpga_fr15 = examplecomv1.WBFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "WBFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "df-night15-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBFunctionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "df-night01",
+			Namespace: "default",
+		},
+		NodeName:     "k8s-worker",
+		DeviceType:   "alveo",
+		DeviceIndex:  0,
+		RegionName:   "lane0",
+		FunctionName: "filter-resize-high-infer",
+		ConfigName:   "fpgafunc-config-filter-resize-high-infer",
+		NextWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		PreviousWBFunctions: map[string]examplecomv1.FromToWBFunction{
+			"1234": {
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "df-night01-wbfunction-decode-main",
+					Namespace: "default",
+				},
+				Port: 8081,
+			},
+		},
+		MaxDataFlows: &MaxDataFlows_fpga,
+		MaxCapacity:  &MaxCapacity_fpga,
+		Requirements: &Requirements_fpga,
+	},
+}
+
 var FPGAFunction1 = controllertestfpga.FPGAFunctionStatus{
 	StartTime: metav1.Now(),
 	DataFlowRef: controllertestfpga.WBNamespacedName{
@@ -236,8 +826,7 @@ var FPGAFunction1 = controllertestfpga.FPGAFunctionStatus{
 	},
 	FunctionName:  "filter-resize-high-infer",
 	FunctionIndex: FunctionIndex_fpga1,
-	// ConfigName:    "fpgafunc-config-filter-resize-high-infer",
-	Status: "Running",
+	Status:        "Running",
 }
 
 var configdata = corev1.ConfigMap{
@@ -365,31 +954,6 @@ var cpuconfig = corev1.ConfigMap{
 	},
 }
 
-/*
-	var fpgaconfig = corev1.ConfigMap{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "fpgafunc-config-filter-resize-high-infer",
-			Namespace: "default",
-		},
-		TypeMeta: metav1.TypeMeta{
-			Kind: "ConfigMap",
-		},
-		Data: map[string]string{
-			"fpgafunc-config-filter-resize-high-infer.json": `
-			{
-				"parentBitstream": {
-					"file": "/home/ubuntu/mcap-lib/OpenKasugai-fpga-example-design-1.0.0-1.mcs",
-					"id": "0100001c"
-				},
-				"childBitstream": {
-					"file": "/home/ubuntu/mcap-lib/OpenKasugai-fpga-example-design-1.0.0-2.bit",
-					"id": "0100001c"
-				},
-				"sharedMemoryMiB": 256
-			}`,
-		},
-	}
-*/
 var infrainfo_configdata = corev1.ConfigMap{
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "infrastructureinfo",
@@ -552,12 +1116,324 @@ var fpgafuncconfig_fr_high_infer = corev1.ConfigMap{
 	},
 }
 
+var DeviceInfo1 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night04-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Deploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "",
+		},
+	},
+}
+
+var DeviceInfo2 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night05-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Deploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "Deployed",
+		},
+	},
+}
+
+var DeviceInfo3 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night06-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+		//		DeletionTimestamp: &deltime,
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Deploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "Deployed",
+		},
+	},
+}
+
 var DeviceInfoRetCPU = examplecomv1.DeviceInfoStatus{
 	Response: examplecomv1.WBFuncResponse{
 		Status:        "Deployed",
 		FunctionIndex: &FunctionIndex_cpu1,
 		DeviceUUID:    "CPU",
-		//			},
+	},
+}
+
+var DeviceInfo4 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night07-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Undeploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "",
+		},
+	},
+}
+
+var DeviceInfo5 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night08-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Deploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "Error",
+		},
+	},
+}
+
+var DeviceInfo6 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night09-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Undeploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "Error",
+		},
+	},
+}
+
+var DeviceInfo7 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night10-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Undeploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "Undeployed",
+		},
+	},
+}
+
+var DeviceInfo8 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night11-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Undeploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "Undeployed",
+		},
+	},
+}
+
+var DeviceInfo9 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night12-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Undeploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "Undeployed",
+		},
+	},
+}
+
+var DeviceInfo10 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night13-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Undeploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "Undeployed",
+		},
+	},
+}
+
+var DeviceInfo11 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night14-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Undeploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "Undeployed",
+		},
+	},
+}
+
+var DeviceInfo12 = examplecomv1.DeviceInfo{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "DeviceInfo",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "deviceinfo-df-night15-wbfunction-filter-resize-high-infer",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.DeviceInfoSpec{
+		Request: examplecomv1.WBFuncRequest{
+			RequestType:  "Undeploy",
+			DeviceType:   "alveo",
+			DeviceIndex:  0,
+			RegionName:   "lane0",
+			NodeName:     "k8s-worker",
+			FunctionName: "filter-resize-high-infer",
+		},
+	},
+	Status: examplecomv1.DeviceInfoStatus{
+		Response: examplecomv1.WBFuncResponse{
+			Status: "Undeployed",
+		},
 	},
 }
 
@@ -566,7 +1442,6 @@ var DeviceInfoRetGPU = examplecomv1.DeviceInfoStatus{
 		Status:        "Deployed",
 		FunctionIndex: &FunctionIndex_cpu1,
 		DeviceUUID:    "GPU",
-		//			},
 	},
 }
 
@@ -575,6 +1450,5 @@ var DeviceInfoRetFPGA = examplecomv1.DeviceInfoStatus{
 		Status:        "Deployed",
 		FunctionIndex: &FunctionIndex_cpu1,
 		DeviceUUID:    "FPGA",
-		//			},
 	},
 }

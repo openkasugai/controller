@@ -1,0 +1,373 @@
+#! /bin/bash
+# Copyright 2025 NTT Corporation , FUJITSU LIMITED
+
+# ======================================================
+# Chain
+# ------------------------------------------------------
+test_chain_normal_lldma_single () {
+	echo "# ${FUNCNAME[0]}"
+	DIR=$1
+	LANE=$2
+	echo "## [CHAIN(LLDMA:$LANE)]$DIR check creation"
+	request_create_chain $INPUT_FPGA_NAME $LANE 0 LLDMA 0 $DIR
+	fcc_chain            $INPUT_FPGA_NAME $LANE 0         $DIR
+	echo "## [CHAIN(LLDMA:$LANE)]$DIR check deletion"
+	request_delete_chain $INPUT_FPGA_NAME $LANE 0 LLDMA 0 $DIR
+	fcc_chain            $INPUT_FPGA_NAME $LANE 0         $DIR
+}
+# ------------------------------------------------------
+test_chain_normal_ptu_single () {
+	echo "# ${FUNCNAME[0]}"
+	DIR=$1
+	LANE=$2
+	echo "## [CHAIN(PTU:$LANE)]$DIR check creation"
+	request_create_chain $INPUT_FPGA_NAME $LANE 0 PTU 1 $DIR
+	fcc_chain            $INPUT_FPGA_NAME $LANE 0       $DIR
+	echo "## [CHAIN(PTU:$LANE)]$DIR check deletion"
+	request_delete_chain $INPUT_FPGA_NAME $LANE 0 PTU 1 $DIR
+	fcc_chain            $INPUT_FPGA_NAME $LANE 0       $DIR
+}
+# ------------------------------------------------------
+test_chain_normal_both_lldma_single () {
+	echo "# ${FUNCNAME[0]}"
+	LANE=$1
+	echo "## [CHAIN(LLDMA:$LANE)]Ingress/Egress check creation"
+	request_create_chain $INPUT_FPGA_NAME $LANE 0 LLDMA 0 INGR
+	request_create_chain $INPUT_FPGA_NAME $LANE 0 LLDMA 0 EGR
+	fcc_chain            $INPUT_FPGA_NAME $LANE 0         BOTH
+	echo "## [CHAIN(LLDMA:$LANE)]Ingress/Egress check deletion"
+	request_delete_chain $INPUT_FPGA_NAME $LANE 0 LLDMA 0 INGR
+	request_delete_chain $INPUT_FPGA_NAME $LANE 0 LLDMA 0 EGR
+	fcc_chain            $INPUT_FPGA_NAME $LANE 0         BOTH
+}
+# ------------------------------------------------------
+test_chain_normal_both_ptu_single () {
+	echo "# ${FUNCNAME[0]}"
+	LANE=$1
+	echo "## [CHAIN(PTU:$LANE)]Ingress/Egress check creation"
+	request_create_chain $INPUT_FPGA_NAME $LANE 0 PTU 1 INGR
+	request_create_chain $INPUT_FPGA_NAME $LANE 0 PTU 2 EGR
+	fcc_chain            $INPUT_FPGA_NAME $LANE 0       BOTH
+	echo "## [CHAIN(PTU:$LANE)]Ingress/Egress check deletion"
+	request_delete_chain $INPUT_FPGA_NAME $LANE 0 PTU 1 INGR
+	request_delete_chain $INPUT_FPGA_NAME $LANE 0 PTU 2 EGR
+	fcc_chain            $INPUT_FPGA_NAME $LANE 0       BOTH
+}
+# ------------------------------------------------------
+test_chain_normal_lldma_multi () {
+	echo "# ${FUNCNAME[0]}"
+	DIR=$1
+	LANE=$2
+	echo "## [CHAIN(LLDMA:$LANE)]$DIR-multi check creation"
+	for i in {0..15}
+	do
+		request_create_chain $INPUT_FPGA_NAME $LANE ${i} LLDMA ${i} $DIR
+	done
+	for i in {0..15}
+	do
+		fcc_chain            $INPUT_FPGA_NAME $LANE ${i}            $DIR
+	done
+	echo "## [CHAIN(LLDMA:$LANE)]$DIR-multi check deletion"
+	for i in {0..15}
+	do
+		request_delete_chain $INPUT_FPGA_NAME $LANE ${i} LLDMA ${i} $DIR
+	done
+	for i in {0..15}
+	do
+		fcc_chain            $INPUT_FPGA_NAME $LANE ${i}            $DIR
+	done
+}
+# ------------------------------------------------------
+test_chain_normal_ptu_multi () {
+	echo "# ${FUNCNAME[0]}"
+	DIR=$1
+	LANE=$2
+	BASE_CID=1
+	echo "## [CHAIN(PTU:$LANE)]$DIR-multi check creation"
+	for i in {0..510}
+	do
+		request_create_chain $INPUT_FPGA_NAME $LANE ${i} PTU $((BASE_CID+i)) $DIR
+	done
+	for i in {0..510}
+	do
+		fcc_chain            $INPUT_FPGA_NAME $LANE ${i}                     $DIR
+	done
+
+	echo "## [CHAIN(PTU:$LANE)]$DIR-multi check deletion"
+	for i in {0..510}
+	do
+		request_delete_chain $INPUT_FPGA_NAME $LANE ${i} PTU $((BASE_CID+i)) $DIR
+	done
+	for i in {0..510}
+	do
+		fcc_chain            $INPUT_FPGA_NAME $LANE ${i}                     $DIR
+	done
+}
+# ------------------------------------------------------
+test_chain_normal_both_lldma_multi () {
+	echo "# ${FUNCNAME[0]}"
+	LANE=$1
+	echo "## [CHAIN(LLDMA:$LANE)]Ingress/Egress-multi check creation"
+	for i in {0..15}
+	do
+		request_create_chain $INPUT_FPGA_NAME $LANE ${i} LLDMA ${i} INGR
+		request_create_chain $INPUT_FPGA_NAME $LANE ${i} LLDMA ${i} EGR
+	done
+	for i in {0..15}
+	do
+		fcc_chain            $INPUT_FPGA_NAME $LANE ${i}            BOTH
+	done
+	echo "## [CHAIN(LLDMA:$LANE)]Ingress/Egress-multi check deletion"
+	for i in {0..15}
+	do
+		request_delete_chain $INPUT_FPGA_NAME $LANE ${i} LLDMA ${i} INGR
+		request_delete_chain $INPUT_FPGA_NAME $LANE ${i} LLDMA ${i} EGR
+	done
+	for i in {0..15}
+	do
+		fcc_chain            $INPUT_FPGA_NAME $LANE ${i}            BOTH
+	done
+}
+# ------------------------------------------------------
+test_chain_normal_both_ptu_multi () {
+	echo "# ${FUNCNAME[0]}"
+	LANE=$1
+	BASE_CID_INGR=1
+	BASE_CID_EGR=17
+	echo "## [CHAIN(PTU:$LANE)]Ingress/Egress check creation"
+	for i in {0..15}
+	do
+		request_create_chain $INPUT_FPGA_NAME $LANE ${i} PTU $((BASE_CID_INGR+i)) INGR
+		request_create_chain $INPUT_FPGA_NAME $LANE ${i} PTU $((BASE_CID_EGR+i))  EGR
+	done
+	for i in {0..15}
+	do
+		fcc_chain            $INPUT_FPGA_NAME $LANE ${i}                          BOTH
+	done
+	echo "## [CHAIN(PTU:$LANE)]Ingress/Egress check deletion"
+	for i in {0..15}
+	do
+		request_delete_chain $INPUT_FPGA_NAME $LANE ${i} PTU $((BASE_CID_INGR+i)) INGR
+		request_delete_chain $INPUT_FPGA_NAME $LANE ${i} PTU $((BASE_CID_EGR+i))  EGR
+	done
+	for i in {0..15}
+	do
+		fcc_chain            $INPUT_FPGA_NAME $LANE ${i}                          BOTH
+	done
+}
+# ------------------------------------------------------
+test_chain_normal () {
+	test_chain_normal_lldma_single Ingress 0
+	test_chain_normal_lldma_single Ingress 1
+	test_chain_normal_lldma_single Egress  0
+	test_chain_normal_lldma_single Egress  1
+	test_chain_normal_ptu_single   Ingress 0
+	test_chain_normal_ptu_single   Ingress 1
+	test_chain_normal_ptu_single   Egress  0
+	test_chain_normal_ptu_single   Egress  1
+	test_chain_normal_both_lldma_single    0
+	test_chain_normal_both_lldma_single    1
+	test_chain_normal_both_ptu_single      0
+	test_chain_normal_both_ptu_single      1
+
+	test_chain_normal_lldma_multi Ingress  0
+	test_chain_normal_lldma_multi Ingress  1
+	test_chain_normal_lldma_multi Egress   0
+	test_chain_normal_lldma_multi Egress   1
+	test_chain_normal_ptu_multi   Ingress  0
+	test_chain_normal_ptu_multi   Ingress  1
+	test_chain_normal_ptu_multi   Egress   0
+	test_chain_normal_ptu_multi   Egress   1
+	test_chain_normal_both_lldma_multi     0
+	test_chain_normal_both_lldma_multi     1
+	test_chain_normal_both_ptu_multi       0
+	test_chain_normal_both_ptu_multi       1
+}
+# ------------------------------------------------------
+test_chain_invalid_single () {
+	echo "# ${FUNCNAME[0]}"
+	TYPE=$1
+	CID=$2
+	echo "## [CHAIN($TYPE:0)]Ingress check creation"
+	request_create_chain $INPUT_FPGA_NAME 0 0 $TYPE $CID Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Ingress	# success
+	echo "## [CHAIN($TYPE:0)]Ingress check deletion"
+	request_delete_chain $INPUT_FPGA_NAME 0 0 $TYPE $CID Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Egress
+
+	echo "## [CHAIN($TYPE:0)]Egress check creation"
+	request_create_chain $INPUT_FPGA_NAME 0 0 $TYPE $CID Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Egress	# success
+	echo "## [CHAIN($TYPE:0)]Egress check deletion"
+	request_delete_chain $INPUT_FPGA_NAME 0 0 $TYPE $CID Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Ingress
+
+	echo "## [CHAIN($TYPE:1)]Ingress check creation"
+	request_create_chain $INPUT_FPGA_NAME 1 0 $TYPE $CID Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Ingress	# success
+	echo "## [CHAIN($TYPE:1)]Ingress check deletion"
+	request_delete_chain $INPUT_FPGA_NAME 1 0 $TYPE $CID Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Egress
+
+	echo "## [CHAIN($TYPE:1)]Egress check creation"
+	request_create_chain $INPUT_FPGA_NAME 1 0 $TYPE $CID Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Egress	# success
+	echo "## [CHAIN($TYPE:1)]Egress check deletion"
+	request_delete_chain $INPUT_FPGA_NAME 1 0 $TYPE $CID Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Egress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Egress
+	fcc_chain         $INPUT_FPGA_NAME 1 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 1 1            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 0            Ingress
+	fcc_chain         $INPUT_FPGA_NAME 0 1            Ingress
+}
+# ------------------------------------------------------
+test_chain_invalid_both_single () {
+	echo "# ${FUNCNAME[0]}"
+	TYPE=$1
+	CID_INGR=$2
+	CID_EGR=$3
+	echo "## [CHAIN($TYPE:0)]Ingress/Egress check creation"
+	request_create_chain $INPUT_FPGA_NAME 0 0 $TYPE $CID_INGR Ingress
+	request_create_chain $INPUT_FPGA_NAME 0 0 $TYPE $CID_EGR  Egress
+	fcc_chain            $INPUT_FPGA_NAME 0 1                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 1 0                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 1 1                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 0 1                 Egress
+	fcc_chain            $INPUT_FPGA_NAME 1 0                 Egress
+	fcc_chain            $INPUT_FPGA_NAME 1 1                 Egress
+	fcc_chain            $INPUT_FPGA_NAME 0 0                 Ingress	# success
+	fcc_chain            $INPUT_FPGA_NAME 0 0                 Egress	# success
+	echo "## [CHAIN($TYPE:0)]Ingress/Egress check deletion"
+	request_delete_chain $INPUT_FPGA_NAME 0 0 $TYPE $CID_INGR Ingress
+	request_delete_chain $INPUT_FPGA_NAME 0 0 $TYPE $CID_EGR  Egress
+	fcc_chain            $INPUT_FPGA_NAME 0 1                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 1 0                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 1 1                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 0 1                 Egress
+	fcc_chain            $INPUT_FPGA_NAME 1 0                 Egress
+	fcc_chain            $INPUT_FPGA_NAME 1 1                 Egress
+
+	echo "## [CHAIN($TYPE:1)]Ingress/Egress check creation"
+	request_create_chain $INPUT_FPGA_NAME 1 0 $TYPE $CID_INGR Ingress
+	request_create_chain $INPUT_FPGA_NAME 1 0 $TYPE $CID_EGR  Egress
+	fcc_chain            $INPUT_FPGA_NAME 1 1                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 0 0                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 0 1                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 1 1                 Egress
+	fcc_chain            $INPUT_FPGA_NAME 0 0                 Egress
+	fcc_chain            $INPUT_FPGA_NAME 0 1                 Egress
+	fcc_chain            $INPUT_FPGA_NAME 1 0                 Ingress	# success
+	fcc_chain            $INPUT_FPGA_NAME 1 0                 Egress	# success
+	echo "## [CHAIN($TYPE:1)]Ingress/Egress check deletion"
+	request_delete_chain $INPUT_FPGA_NAME 1 0 $TYPE $CID_INGR Ingress
+	request_delete_chain $INPUT_FPGA_NAME 1 0 $TYPE $CID_EGR  Egress
+	fcc_chain            $INPUT_FPGA_NAME 1 1                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 0 0                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 0 1                 Ingress
+	fcc_chain            $INPUT_FPGA_NAME 1 1                 Egress
+	fcc_chain            $INPUT_FPGA_NAME 0 0                 Egress
+	fcc_chain            $INPUT_FPGA_NAME 0 1                 Egress
+}
+# ------------------------------------------------------
+test_chain_invalid_both_multi () {
+	echo "# ${FUNCNAME[0]}"
+	TYPE=$1
+	echo "## [CHAIN(LLDMA:0,1)]Ingress/Egress-multi check creation"
+	for lane in {0..1}
+	do
+		for fchid in {1..7}
+		do
+			request_create_chain $INPUT_FPGA_NAME ${lane} ${fchid} $TYPE ${fchid} Ingress
+			request_create_chain $INPUT_FPGA_NAME ${lane} ${fchid} $TYPE ${fchid} Egress
+		done
+	done
+	fcc_chain $INPUT_FPGA_NAME 0 8 Ingress
+	fcc_chain $INPUT_FPGA_NAME 0 8 Egress
+	fcc_chain $INPUT_FPGA_NAME 1 8 Ingress
+	fcc_chain $INPUT_FPGA_NAME 1 8 Egress
+	for lane in {0..1}
+	do
+		for fchid in {1..7}
+		do
+			fcc_chain $INPUT_FPGA_NAME ${lane} ${fchid} Ingress
+			fcc_chain $INPUT_FPGA_NAME ${lane} ${fchid} Egress
+		done
+	done
+	echo "## [CHAIN(LLDMA:0,1)]Ingress/Egress-multi check deletion"
+	for lane in {0..1}
+	do
+		for fchid in {1..7}
+		do
+			request_delete_chain $INPUT_FPGA_NAME ${lane} ${fchid} $TYPE ${fchid} Ingress
+			request_delete_chain $INPUT_FPGA_NAME ${lane} ${fchid} $TYPE ${fchid} Egress
+		done
+	done
+	fcc_chain $INPUT_FPGA_NAME 0 8 Ingress
+	fcc_chain $INPUT_FPGA_NAME 0 8 Egress
+	fcc_chain $INPUT_FPGA_NAME 1 8 Ingress
+	fcc_chain $INPUT_FPGA_NAME 1 8 Egress
+}
+# ------------------------------------------------------
+test_chain_invalid () {
+	test_chain_invalid_single      LLDMA 0
+	test_chain_invalid_single      PTU   1
+	test_chain_invalid_both_single LLDMA 0 0
+	test_chain_invalid_both_single PTU   1 2
+	test_chain_invalid_both_multi  LLDMA
+	test_chain_invalid_both_multi  PTU
+}
+# ------------------------------------------------------
+test_chain () {
+	echo "## [CHAIN]"
+	test_chain_normal
+	test_chain_invalid
+}
+# ======================================================

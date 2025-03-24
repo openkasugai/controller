@@ -323,7 +323,7 @@ func (r *CombinationFilters) filterTargetResourceFit(ctx context.Context, candid
 			// Register Index as a candidate for exclusion
 			if *ft.Status.MaxCapacity < *ft.Status.CurrentCapacity+*requireCapacity {
 				excludeIndexes = append(excludeIndexes, int32(i))
-				// l.Info("function target MaxFunctions capacity over. FunctionTarget=" + ft.Name)
+				l.Info("function target MaxCapacity will inevitably result in capacity over. FunctionTarget=" + ft.Name + " FunctionIndex=" + fmt.Sprintf("%d", *fi))
 			} else if *function.MaxDataFlows == *function.CurrentDataFlows {
 				excludeIndexes = append(excludeIndexes, int32(i))
 				l.Info("function MaxDataFlows is full. FunctionTarget=" + ft.Name + " FunctionIndex=" + fmt.Sprintf("%d", *fi))

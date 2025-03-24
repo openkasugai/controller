@@ -1,0 +1,42 @@
+apiVersion: example.com/v1
+kind: WBConnection
+metadata:
+  name: sample-flow1-wbconnection-decode-main-filter-resize-main
+  namespace: default
+  ownerReferences:
+  - apiVersion: example.com/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DataFlow
+    name: sample-flow1
+    uid: 9110baed-3757-4750-af2f-481676fea8d5
+spec:
+  connectionMethod: host-100gether
+  dataFlowRef:
+    name: sample-flow1
+    namespace: default
+  from:
+    port: 0
+    wbFunctionRef:
+      name: sample-flow1-wbfunction-decode-main
+      namespace: default
+  to:
+    port: 0
+    wbFunctionRef:
+      name: sample-flow1-wbfunction-filter-resize-main
+      namespace: default
+status:
+  connectionMethod: ""
+  dataFlowRef:
+    name: ""
+    namespace: ""
+  from:
+    port: 0
+    wbFunctionRef:
+      name: ""
+      namespace: ""
+  status: "Deployed"
+  to:
+    port: 0
+    wbFunctionRef:
+      name: ""

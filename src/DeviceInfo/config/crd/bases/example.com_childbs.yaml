@@ -39,6 +39,8 @@ spec:
           spec:
             description: ChildBitstreamSpec defines the desired state of ChildBitstream
             properties:
+              child-bitstream-file:
+                type: string
               child-bitstream-id:
                 type: string
               regions:
@@ -105,6 +107,8 @@ spec:
                                     format: int32
                                     type: integer
                                 type: object
+                              functionname:
+                                type: string
                               id:
                                 format: int32
                                 type: integer
@@ -215,6 +219,8 @@ spec:
           status:
             description: ChildBitstreamStatus defines the observed state of ChildBitstream
             properties:
+              child-bitstream-file:
+                type: string
               child-bitstream-id:
                 type: string
               regions:
@@ -281,6 +287,8 @@ spec:
                                     format: int32
                                     type: integer
                                 type: object
+                              functionname:
+                                type: string
                               id:
                                 format: int32
                                 type: integer

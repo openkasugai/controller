@@ -1,18 +1,30 @@
+/*
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
+*/
+
 package controller
 
 import (
 	examplecomv1 "CPUFunction/api/v1"
+	"time"
 
-	// k8scnicncfio "github.com/k8snetworkplumbingwg/network-attachment-definition-client"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
+
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/scheme"
 )
 
-var partitionName1 string = "cpufunctiontest1-wbfunction-decode-main"
+var t = metav1.Time{
+	Time: time.Now(),
+}
+var testTime = metav1.Time{
+	Time: t.Time.AddDate(0, 0, -1),
+}
+
+var partitionName1 string = "cpufunctest1-wbfunction-decode-main"
 
 var CPUFunction1 = examplecomv1.CPUFunction{
 	TypeMeta: metav1.TypeMeta{
@@ -20,8 +32,8 @@ var CPUFunction1 = examplecomv1.CPUFunction{
 		Kind:       "CPUFunction",
 	},
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest1-wbfunction-decode-main",
-		Namespace: "test01",
+		Name:      "cpufunctest1-wbfunction-decode-main",
+		Namespace: "default",
 	},
 	Spec: examplecomv1.CPUFunctionSpec{
 		AcceleratorIDs: []examplecomv1.AccIDInfo{
@@ -32,8 +44,8 @@ var CPUFunction1 = examplecomv1.CPUFunction{
 		},
 		ConfigName: "cpufunc-config-decode",
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest1",
-			Namespace: "test01",
+			Name:      "cpufunctest1",
+			Namespace: "default",
 		},
 		DeviceType:   "cpu",
 		FunctionName: "cpu-decode",
@@ -41,8 +53,8 @@ var CPUFunction1 = examplecomv1.CPUFunction{
 			"0": {
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest1-wbfunction-filter-resize-low-infer-main",
-					Namespace: "test01",
+					Name:      "cpufunctest1-wbfunction-filter-resize-low-infer-main",
+					Namespace: "default",
 				},
 			},
 		},
@@ -51,87 +63,87 @@ var CPUFunction1 = examplecomv1.CPUFunction{
 			"decEnvFrameFPS": {
 				IntVal: 5,
 			},
-			"inputIPAddress": {
-				StrVal: "192.168.122.40",
+			"outputIPAddress": {
+				StrVal: "192.168.90.112",
 				Type:   1,
+			},
+			"outputPort": {
+				IntVal: 15000,
 			},
 			"inputPort": {
 				IntVal: 8556,
 			},
+			"ipAddress": {
+				StrVal: "192.174.90.102/24",
+				Type:   1,
+			},
+			"inputIPAddress": {
+				StrVal: "192.174.90.102",
+				Type:   1,
+			},
 		},
 		SharedMemory: &examplecomv1.SharedMemorySpec{
-			FilePrefix:      "test01-cpufunctiontest1-wbfunction-decode-main",
-			CommandQueueID:  "test01-cpufunctiontest1-wbfunction-decode-main",
+			FilePrefix:      "test01-cpufunctest1-wbfunction-decode-main",
+			CommandQueueID:  "test01-cpufunctest1-wbfunction-decode-main",
 			SharedMemoryMiB: 1,
 		},
 		RegionName: "cpu",
 	},
 	Status: examplecomv1.CPUFunctionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest1",
-			Namespace: "test01",
+			Name:      "",
+			Namespace: "",
 		},
-		FunctionName: "cpu-decode",
-		ImageURI:     "container",
-		ConfigName:   "configname",
-		Status:       "pending",
+		FunctionName: "",
+		ImageURI:     "",
+		ConfigName:   "",
+		Status:       "",
 	},
 }
 
-// var PCIeConnectionCRD unstructured.Unstructured{
-// 	Object: map[string]interface{}{
-// 		"apiVersion":      "apiextensions.k8s.io/v1",
-// 		"kind": "default",
-// 	},
-// }
-
 var PCIeConnection1 = PCIeConnection{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "PCIeConnection",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest1-wbconnection-decode-main-filter-resize-low-infer-main",
-		Namespace: "test01",
+		Name:      "cpufunctest1-wbconnection-decode-main-filter-resize-low-infer-main",
+		Namespace: "default",
 	},
 	Spec: PCIeConnectionSpec{
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest1",
-			Namespace: "test01",
+			Name:      "cpufunctest1",
+			Namespace: "default",
 		},
 
 		From: PCIeFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest1-wbfunction-decode-main",
-				Namespace: "test01",
+				Name:      "cpufunctest1-wbfunction-decode-main",
+				Namespace: "default",
 			},
 		},
 		To: PCIeFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest1-wbfunction-filter-resize-low-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest1-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
 			},
 		},
 	},
 	Status: PCIeConnectionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest1",
-			Namespace: "test01",
+			Name:      "cpufunctest1",
+			Namespace: "default",
 		},
 		Status: "pending",
 		From: PCIeFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest1-wbfunction-decode-main",
-				Namespace: "test01",
+				Name:      "cpufunctest1-wbfunction-decode-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 		To: PCIeFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest1-wbfunction-filter-resize-low-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest1-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
@@ -145,13 +157,9 @@ var functionKernelID int32 = 0
 var ptuKernelID int32 = 0
 
 var FPGAFunction1 = FPGAFunction{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "FPGAFunction",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest1-wbfunction-filter-resize-low-infer-main",
-		Namespace: "test01",
+		Name:      "cpufunctest1-wbfunction-filter-resize-low-infer-main",
+		Namespace: "default",
 	},
 	Spec: FPGAFunctionSpec{
 		AcceleratorIDs: []AccIDInfo{
@@ -162,8 +170,8 @@ var FPGAFunction1 = FPGAFunction{
 		},
 		ConfigName: "fpgafunc-config-filter-resize-low-infer",
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest1",
-			Namespace: "test01",
+			Name:      "cpufunctest1",
+			Namespace: "default",
 		},
 		DeviceType:        "alveo",
 		FrameworkKernelID: &frameworkKernelID,
@@ -182,10 +190,10 @@ var FPGAFunction1 = FPGAFunction{
 		},
 	},
 	Status: FPGAFunctionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest1",
-			Namespace: "test01",
+			Name:      "cpufunctest1",
+			Namespace: "default",
 		},
 		FunctionName:        "filter-resize-low-infer",
 		ParentBitstreamName: "ver2_tpcie_tandem1.mcs",
@@ -202,8 +210,6 @@ var FPGAFunction1 = FPGAFunction{
 		Status: "pending",
 	},
 }
-
-// var NetworkAttachmentDefinition unstructured.Unstructured
 
 var cpuconfigdecode = corev1.ConfigMap{
 	ObjectMeta: metav1.ObjectMeta{
@@ -274,7 +280,7 @@ var cpuconfigdecode = corev1.ConfigMap{
       "txProtocol":"TCP",
       "imageURI": "localhost/host_decode:3.1.0",
       "additionalNetwork": true,
-      "virtualNetworkDeviceDriverType": "",
+      "virtualNetworkDeviceDriverType": "sriov",
       "envs":{
         "DECENV_APPLOG_LEVEL": "6",
         "DECENV_FRAME_WIDTH": "3840",
@@ -353,56 +359,55 @@ var cpuconfigfrhigh = corev1.ConfigMap{
 	},
 }
 
-/*
-	var cpuconfigfrlow = corev1.ConfigMap{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "cpufunc-config-filter-resize-low-infer",
-			Namespace: "default",
-		},
-		Data: map[string]string{
-			"cpufunc-config-filter-resize-low-infer.json": `
-	    [{
-	      "rxProtocol":"TCP",
-	      "txProtocol":"TCP",
-	      "additionalNetwork": true,
-	      "virtualNetworkDeviceDriverType": "sriov",
-	      "imageURI": "localhost/cpu-filterresize-app:3.1.0",
-	      "envs":{
-	        "FRENV_APPLOG_LEVEL": "INFO",
-	        "FRENV_INPUT_WIDTH": "3840",
-	        "FRENV_INPUT_HEIGHT": "2160",
-	        "FRENV_OUTPUT_WIDTH": "416",
-	        "FRENV_OUTPUT_HEIGHT": "416"
-	      },
-	      "template":{
-	        "apiVersion": "v1",
-	        "kind": "Pod",
-	        "spec":{
-	          "containers":[{
-	            "name": "fr",
-	            "command": ["python",
-	               "fr.py",
-	               "--in_port=$(FRENV_INPUT_PORT)",
-	               "--out_addr=$(FRENV_OUTPUT_IP)",
-	               "--out_port=$(FRENV_OUTPUT_PORT)",
-	               "--in_width=$(FRENV_INPUT_WIDTH)",
-	               "--in_height=$(FRENV_INPUT_HEIGHT)",
-	               "--out_width=$(FRENV_OUTPUT_WIDTH)",
-	               "--out_height=$(FRENV_OUTPUT_HEIGHT)",
-	               "--loglevel=$(FRENV_APPLOG_LEVEL)"],
-	            "securityContext":{
-	              "privileged": true
-	            }
-	          }],
-	          "hostNetwork": false,
-	          "hostIPC": true,
-	          "restartPolicy": "Always"
-	        }
-	      }
-	    }]`,
-		},
-	}
-*/
+var cpuconfigfrlow = corev1.ConfigMap{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunc-config-filter-resize-low-infer",
+		Namespace: "default",
+	},
+	Data: map[string]string{
+		"cpufunc-config-filter-resize-low-infer.json": `
+    [{
+      "rxProtocol":"TCP",
+      "txProtocol":"TCP",
+      "additionalNetwork": true,
+      "virtualNetworkDeviceDriverType": "sriov",
+      "imageURI": "localhost/cpu-filterresize-app:3.1.0",
+      "envs":{
+        "FRENV_APPLOG_LEVEL": "INFO",
+        "FRENV_INPUT_WIDTH": "3840",
+        "FRENV_INPUT_HEIGHT": "2160",
+        "FRENV_OUTPUT_WIDTH": "416",
+        "FRENV_OUTPUT_HEIGHT": "416"
+      },
+      "template":{
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "spec":{
+          "containers":[{
+            "name": "fr",
+            "command": ["python",
+               "fr.py",
+               "--in_port=$(FRENV_INPUT_PORT)",
+               "--out_addr=$(FRENV_OUTPUT_IP)",
+               "--out_port=$(FRENV_OUTPUT_PORT)",
+               "--in_width=$(FRENV_INPUT_WIDTH)",
+               "--in_height=$(FRENV_INPUT_HEIGHT)",
+               "--out_width=$(FRENV_OUTPUT_WIDTH)",
+               "--out_height=$(FRENV_OUTPUT_HEIGHT)",
+               "--loglevel=$(FRENV_APPLOG_LEVEL)"],
+            "securityContext":{
+              "privileged": true
+            }
+          }],
+          "hostNetwork": false,
+          "hostIPC": true,
+          "restartPolicy": "Always"
+        }
+      }
+    }]`,
+	},
+}
+
 var cpuconfigcopybranch = corev1.ConfigMap{
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "cpufunc-config-copy-branch",
@@ -506,12 +511,11 @@ var cpuconfigglue = corev1.ConfigMap{
 	},
 }
 
-var partitionName2 string = "cpufunctiontest2-wbfunction-decode-main"
-
+var partitionName2 string = "cpufunctest2-wbfunction-decode-main"
 var CPUFunction2 = examplecomv1.CPUFunction{
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest2-wbfunction-decode-main",
-		Namespace: "test01",
+		Name:      "cpufunctest2-wbfunction-decode-main",
+		Namespace: "default",
 	},
 	Spec: examplecomv1.CPUFunctionSpec{
 		AcceleratorIDs: []examplecomv1.AccIDInfo{
@@ -522,8 +526,8 @@ var CPUFunction2 = examplecomv1.CPUFunction{
 		},
 		ConfigName: "cpufunc-config-decode",
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest2",
-			Namespace: "test01",
+			Name:      "cpufunctest2",
+			Namespace: "default",
 		},
 		DeviceType:   "cpu",
 		FunctionName: "cpu-decode",
@@ -531,8 +535,8 @@ var CPUFunction2 = examplecomv1.CPUFunction{
 			"0": {
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest2-wbfunction-filter-resize-high-infer-main",
-					Namespace: "test01",
+					Name:      "cpufunctest2-wbfunction-filter-resize-high-infer-main",
+					Namespace: "default",
 				},
 			},
 		},
@@ -541,93 +545,93 @@ var CPUFunction2 = examplecomv1.CPUFunction{
 			"decEnvFrameFPS": {
 				IntVal: 15,
 			},
-			"inputIPAddress": {
-				StrVal: "192.168.122.50",
+			"ipAddress": {
+				StrVal: "192.174.90.111/24",
 				Type:   1,
 			},
 			"inputPort": {
 				IntVal: 5004,
 			},
 			"outputIPAddress": {
-				StrVal: "192.168.90.111",
+				StrVal: "192.168.90.131",
 				Type:   1,
 			},
 			"outputPort": {
 				IntVal: 15000,
 			},
+			"inputIPAddress": {
+				StrVal: "192.174.90.111",
+				Type:   1,
+			},
 		},
 		SharedMemory: &examplecomv1.SharedMemorySpec{
-			FilePrefix:      "test01-cpufunctiontest2-wbfunction-decode-main",
-			CommandQueueID:  "test01-cpufunctiontest2-wbfunction-decode-main",
+			FilePrefix:      "test01-cpufunctest2-wbfunction-decode-main",
+			CommandQueueID:  "test01-cpufunctest2-wbfunction-decode-main",
 			SharedMemoryMiB: 256,
 		},
 		RegionName: "cpu",
 	},
 	Status: examplecomv1.CPUFunctionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest2",
-			Namespace: "test01",
+			Name:      "",
+			Namespace: "",
 		},
-		FunctionName: "cpu-decode",
-		ImageURI:     "container",
-		ConfigName:   "configname",
-		Status:       "pending",
+		FunctionName: "",
+		ImageURI:     "",
+		ConfigName:   "",
+		Status:       "",
 	},
 }
 
 var EthernetConnection2 = EthernetConnection{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "EthernetConnection",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest2-wbconnection-decode-main-filter-resize-high-infer-main",
-		Namespace: "test01",
+		Name:      "cpufunctest2-wbconnection-decode-main-filter-resize-high-infer-main",
+		Namespace: "default",
 	},
 	Spec: EthernetConnectionSpec{
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest2",
-			Namespace: "test01",
+			Name:      "cpufunctest2",
+			Namespace: "default",
 		},
 		From: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest2-wbfunction-decode-main",
-				Namespace: "test01",
+				Name:      "cpufunctest2-wbfunction-decode-main",
+				Namespace: "default",
 			},
 		},
 		To: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest2-wbfunction-filter-resize-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest2-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
 		},
 	},
 	Status: EthernetConnectionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest2",
-			Namespace: "test01",
+			Name:      "cpufunctest2",
+			Namespace: "default",
 		},
 		Status: "pending",
 		From: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest2-wbfunction-decode-main",
-				Namespace: "test01",
+				Name:      "cpufunctest2-wbfunction-decode-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 		To: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest2-wbfunction-filter-resize-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest2-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 	},
 }
 
-var partitionName3 string = "dftest-wbfunction-filter-resize-high-infer-main"
+var partitionName3 string = "cpufunctest3-wbfunction-filter-resize-high-infer-main"
 
 var CPUFunction3 = examplecomv1.CPUFunction{
 	TypeMeta: metav1.TypeMeta{
@@ -635,8 +639,8 @@ var CPUFunction3 = examplecomv1.CPUFunction{
 		APIVersion: "example.com/v1",
 	},
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "dftest-wbfunction-filter-resize-high-infer-main",
-		Namespace: "test01",
+		Name:      "cpufunctest3-wbfunction-filter-resize-high-infer-main",
+		Namespace: "default",
 	},
 	Spec: examplecomv1.CPUFunctionSpec{
 		AcceleratorIDs: []examplecomv1.AccIDInfo{
@@ -647,8 +651,8 @@ var CPUFunction3 = examplecomv1.CPUFunction{
 		},
 		ConfigName: "cpufunc-config-filter-resize-high-infer",
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest3",
-			Namespace: "test01",
+			Name:      "cpufunctest3",
+			Namespace: "default",
 		},
 		DeviceType:   "cpu",
 		FunctionName: "cpu-filter-resize-high-infer",
@@ -656,8 +660,8 @@ var CPUFunction3 = examplecomv1.CPUFunction{
 			"0": {
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest3-wbfunction-high-infer-main",
-					Namespace: "test01",
+					Name:      "cpufunctest3-wbfunction-high-infer-main",
+					Namespace: "default",
 				},
 			},
 		},
@@ -666,8 +670,8 @@ var CPUFunction3 = examplecomv1.CPUFunction{
 			"decEnvFrameFPS": {
 				IntVal: 15,
 			},
-			"inputIPAddress": {
-				StrVal: "192.168.122.50",
+			"ipAddress": {
+				StrVal: "192.168.122.50/24",
 				Type:   1,
 			},
 			"inputPort": {
@@ -685,192 +689,289 @@ var CPUFunction3 = examplecomv1.CPUFunction{
 			"0": {
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest3-wbfunction-decode-main",
-					Namespace: "test01",
+					Name:      "cpufunctest3-wbfunction-decode-main",
+					Namespace: "default",
 				},
 			},
 		},
 		SharedMemory: &examplecomv1.SharedMemorySpec{
-			FilePrefix:      "test01-dftest-wbfunction-filter-resize-high-infer-main",
-			CommandQueueID:  "test01-dftest-wbfunction-filter-resize-high-infer-main",
+			FilePrefix:      "test01-cpufunctest3-wbfunction-filter-resize-high-infer-main",
+			CommandQueueID:  "test01-cpufunctest3-wbfunction-filter-resize-high-infer-main",
 			SharedMemoryMiB: 1,
 		},
 		RegionName: "cpu",
 	},
 	Status: examplecomv1.CPUFunctionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest3",
-			Namespace: "test01",
+			Name:      "",
+			Namespace: "",
 		},
-		FunctionName: "cpu-filter-resize",
-		ImageURI:     "container",
-		ConfigName:   "configname",
-		Status:       "pending",
+		FunctionName: "",
+		ImageURI:     "",
+		ConfigName:   "",
+		Status:       "",
 	},
 }
 
 var PCIeConnection3 = PCIeConnection{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "PCIeConnection",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest3-wbconnection-decode-main-filter-resize-high-infer-main",
-		Namespace: "test01",
+		Name:      "cpufunctest3-wbconnection-decode-main-filter-resize-high-infer-main",
+		Namespace: "default",
 	},
 	Spec: PCIeConnectionSpec{
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest3",
-			Namespace: "test01",
+			Name:      "cpufunctest3",
+			Namespace: "default",
 		},
 
 		From: PCIeFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest3-wbfunction-decode-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-decode-main",
+				Namespace: "default",
 			},
 		},
 		To: PCIeFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "dftest-wbfunction-filter-resize-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
 		},
 	},
 	Status: PCIeConnectionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest3",
-			Namespace: "test01",
+			Name:      "cpufunctest3",
+			Namespace: "default",
 		},
 		Status: "pending",
 		From: PCIeFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest3-wbfunction-decode-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-decode-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 		To: PCIeFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "dftest-wbfunction-filter-resize-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 	},
 }
 
-var EthernetConnection1 = EthernetConnection{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "EthernetConnection",
-	// },
+var EthernetConnectionfrhigh = EthernetConnection{
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest3-wbconnection-decode-main-filter-resize-high-infer-main",
-		Namespace: "test01",
+		Name:      "cpufunctest3-wbconnection-decode-main-filter-resize-high-infer-main",
+		Namespace: "default",
 	},
 	Spec: EthernetConnectionSpec{
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest3",
-			Namespace: "test01",
+			Name:      "cpufunctest3",
+			Namespace: "default",
 		},
 		From: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest3-wbfunction-decode-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-decode-main",
+				Namespace: "default",
 			},
 		},
 		To: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "dftest-wbfunction-filter-resize-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
 		},
 	},
 	Status: EthernetConnectionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest3",
-			Namespace: "test01",
+			Name:      "cpufunctest3",
+			Namespace: "default",
 		},
 		Status: "pending",
 		From: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest3-wbfunction-decode-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-decode-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 		To: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "dftest-wbfunction-filter-resize-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 	},
 }
 
-var EthernetConnection3 = EthernetConnection{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "EthernetConnection",
-	// },
+var EthernetConnection3frhigh = EthernetConnection{
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest3-wbconnection-filter-resize-high-infer-main-high-infer-main",
-		Namespace: "test01",
+		Name:      "cpufunctest3-wbconnection-filter-resize-high-infer-main-high-infer-main",
+		Namespace: "default",
 	},
 	Spec: EthernetConnectionSpec{
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest3",
-			Namespace: "test01",
+			Name:      "cpufunctest3",
+			Namespace: "default",
 		},
 		From: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "dftest-wbfunction-filter-resize-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
 		},
 		To: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest3-wbfunction-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-high-infer-main",
+				Namespace: "default",
 			},
 		},
 	},
 	Status: EthernetConnectionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest3",
-			Namespace: "test01",
+			Name:      "cpufunctest3",
+			Namespace: "default",
 		},
 		Status: "pending",
 		From: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "dftest-wbfunction-filter-resize-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 		To: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest3-wbfunction-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest3-wbfunction-high-infer-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 	},
 }
 
-var reqMemSize int32 = 32
-var partitionName4 string = "cpufunctiontest4-wbfunction-copy-branch-main"
+/*
+testcase 1-1-4: cpu-filter-resize-low-infer
+*/
 
-var CPUFunction4 = examplecomv1.CPUFunction{
+var EthernetConnectionfrlow = EthernetConnection{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "EthernetConnection",
+	},
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest4-wbfunction-copy-branch-main",
-		Namespace: "test01",
+		Name:      "cpufunctest4-wbconnection-decode-main-filter-resize-low-infer-main",
+		Namespace: "default",
+	},
+	Spec: EthernetConnectionSpec{
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctest4",
+			Namespace: "default",
+		},
+		From: EthernetFunctionSpec{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest4-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: EthernetFunctionSpec{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest4-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: EthernetConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctest4",
+			Namespace: "default",
+		},
+		Status: "Pending",
+		From: EthernetFunctionStatus{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest4-wbfunction-decode-main",
+				Namespace: "default",
+			},
+			Status: "",
+		},
+		To: EthernetFunctionStatus{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest4-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+			Status: "",
+		},
+	},
+}
+
+var EthernetConnection4frlow = EthernetConnection{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "EthernetConnection",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunctest4-wbconnection-filter-resize-low-infer-main-low-infer-main",
+		Namespace: "default",
+	},
+	Spec: EthernetConnectionSpec{
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctest4",
+			Namespace: "default",
+		},
+		From: EthernetFunctionSpec{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest4-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+		},
+		To: EthernetFunctionSpec{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest4-wbfunction-low-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: EthernetConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctest4",
+			Namespace: "default",
+		},
+		Status: "Pending",
+		From: EthernetFunctionStatus{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest4-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+			Status: "",
+		},
+		To: EthernetFunctionStatus{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest4-wbfunction-low-infer-main",
+				Namespace: "default",
+			},
+			Status: "",
+		},
+	},
+}
+
+var partitionName4 string = "cpufunctest4-wbfunction-filter-resize-low-infer-main"
+
+var CPUFunction4frlow = examplecomv1.CPUFunction{
+	TypeMeta: metav1.TypeMeta{
+		Kind:       "CPUFunction",
+		APIVersion: "example.com/v1",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunctest4-wbfunction-filter-resize-low-infer-main",
+		Namespace: "default",
 	},
 	Spec: examplecomv1.CPUFunctionSpec{
 		AcceleratorIDs: []examplecomv1.AccIDInfo{
@@ -879,10 +980,10 @@ var CPUFunction4 = examplecomv1.CPUFunction{
 				ID:            "node01-cpu0",
 			},
 		},
-		ConfigName: "cpufunc-config-copy-branch",
+		ConfigName: "cpufunc-config-filter-resize-low-infer",
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest4",
-			Namespace: "test01",
+			Name:      "cpufunctest4",
+			Namespace: "default",
 		},
 		DeviceType: "cpu",
 		Envs: []examplecomv1.EnvsInfo{
@@ -896,20 +997,107 @@ var CPUFunction4 = examplecomv1.CPUFunction{
 				},
 			},
 		},
+		FunctionName: "cpu-filter-resize-low-infer",
+		NextFunctions: map[string]examplecomv1.FromToWBFunction{
+			"0": {
+				Port: 0,
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "cpufunctest4-wbfunction-low-infer-main",
+					Namespace: "default",
+				},
+			},
+		},
+		NodeName: "node01",
+		Params: map[string]intstr.IntOrString{
+			"decEnvFrameFPS": {
+				IntVal: 5,
+			},
+			"ipAddress": {
+				StrVal: "192.168.122.150/24",
+				Type:   1,
+			},
+			"inputPort": {
+				IntVal: 15000,
+			},
+			"outputIPAddress": {
+				StrVal: "192.168.122.121",
+				Type:   1,
+			},
+			"outputPort": {
+				IntVal: 16000,
+			},
+			"inputIPAddress": {
+				StrVal: "192.168.122.150",
+				Type:   1,
+			},
+		},
+		PreviousFunctions: map[string]examplecomv1.FromToWBFunction{
+			"0": {
+				Port: 0,
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "cpufunctest4-wbfunction-decode-main",
+					Namespace: "default",
+				},
+			},
+		},
+		SharedMemory: &examplecomv1.SharedMemorySpec{
+			FilePrefix:      "test01-cpufunctest4-wbfunction-filter-resize-low-infer-main",
+			CommandQueueID:  "test01-cpufunctest4-wbfunction-filter-resize-low-infer-main",
+			SharedMemoryMiB: 1,
+		},
+		RegionName: "cpu",
+	},
+	Status: examplecomv1.CPUFunctionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "",
+			Namespace: "",
+		},
+		FunctionName: "",
+		ImageURI:     "",
+		ConfigName:   "",
+		Status:       "",
+	},
+}
+
+/*
+testcase 1-1-5: copybranch
+*/
+var reqMemSize int32 = 32
+var partitionName5 string = "cpufunctest5-wbfunction-copy-branch-main"
+
+var CPUFunction5copy = examplecomv1.CPUFunction{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunctest5-wbfunction-copy-branch-main",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.CPUFunctionSpec{
+		AcceleratorIDs: []examplecomv1.AccIDInfo{
+			{
+				PartitionName: &partitionName5,
+				ID:            "node01-cpu0",
+			},
+		},
+		ConfigName: "cpufunc-config-copy-branch",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "cpufunctest5",
+			Namespace: "default",
+		},
+		DeviceType:   "cpu",
 		FunctionName: "copy-branch",
 		NextFunctions: map[string]examplecomv1.FromToWBFunction{
 			"0": {
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest4-wbfunction-infer-1",
-					Namespace: "test01",
+					Name:      "cpufunctest5-wbfunction-infer-1",
+					Namespace: "default",
 				},
 			},
 			"1": {
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest4-wbfunction-infer-2",
-					Namespace: "test01",
+					Name:      "cpufunctest5-wbfunction-infer-2",
+					Namespace: "default",
 				},
 			},
 		},
@@ -926,7 +1114,7 @@ var CPUFunction4 = examplecomv1.CPUFunction{
 				IntVal: 16000,
 			},
 			"branchOutputIPAddress": {
-				StrVal: "192.174.90.141,192.174.90.142",
+				StrVal: "192.168.90.141,192.168.90.142",
 				Type:   1,
 			},
 			"branchOutputPort": {
@@ -934,7 +1122,7 @@ var CPUFunction4 = examplecomv1.CPUFunction{
 				Type:   1,
 			},
 			"ipAddress": {
-				StrVal: "192.174.122.121/24",
+				StrVal: "192.168.122.121/24",
 				Type:   1,
 			},
 		},
@@ -942,286 +1130,198 @@ var CPUFunction4 = examplecomv1.CPUFunction{
 			"0": {
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-					Namespace: "test01",
+					Name:      "cpufunctest5-wbfunction-filter-resize-low-infer-main",
+					Namespace: "default",
 				},
 			},
 		},
 		SharedMemory: &examplecomv1.SharedMemorySpec{
-			FilePrefix:      "test01-cpufunctiontest4-wbfunction-filter-resize-high-infer-main",
-			CommandQueueID:  "test01-cpufunctiontest4-wbfunction-filter-resize-high-infer-main",
+			FilePrefix:      "test01-cpufunctest5-wbfunction-copy-branch-main",
+			CommandQueueID:  "test01-cpufunctest5-wbfunction-copy-branch-main",
 			SharedMemoryMiB: 0,
 		},
 		RegionName:        "cpu",
 		RequestMemorySize: &reqMemSize,
 	},
 	Status: examplecomv1.CPUFunctionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest4",
-			Namespace: "test01",
+			Name:      "",
+			Namespace: "",
 		},
-		FunctionName: "copy-branch",
-		ImageURI:     "container",
-		ConfigName:   "configname",
-		Status:       "pending",
-	},
-}
-
-var partitionName4frlow string = "cpufunctiontest4-wbfunction-filter-resize-low-infer-main"
-
-var CPUFunction4frlow = examplecomv1.CPUFunction{
-	TypeMeta: metav1.TypeMeta{
-		Kind:       "CPUFunction",
-		APIVersion: "example.com/v1",
-	},
-	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-		Namespace: "test01",
-	},
-	Spec: examplecomv1.CPUFunctionSpec{
-		AcceleratorIDs: []examplecomv1.AccIDInfo{
-			{
-				PartitionName: &partitionName4frlow,
-				ID:            "node01-cpu0",
-			},
-		},
-		ConfigName: "cpufunc-config-filter-resize-low-infer",
-		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest4",
-			Namespace: "test01",
-		},
-		DeviceType:   "cpu",
-		FunctionName: "cpu-filter-resize-low-infer",
-		NextFunctions: map[string]examplecomv1.FromToWBFunction{
-			"0": {
-				Port: 0,
-				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest4-wbfunction-low-infer-main",
-					Namespace: "test01",
-				},
-			},
-		},
-		NodeName: "node01",
-		Params: map[string]intstr.IntOrString{
-			"decEnvFrameFPS": {
-				IntVal: 5,
-			},
-			"inputIPAddress": {
-				StrVal: "192.168.122.50",
-				Type:   1,
-			},
-			"inputPort": {
-				IntVal: 15000,
-			},
-			"outputIPAddress": {
-				StrVal: "192.168.122.121",
-				Type:   1,
-			},
-			"outputPort": {
-				IntVal: 16000,
-			},
-		},
-		PreviousFunctions: map[string]examplecomv1.FromToWBFunction{
-			"0": {
-				Port: 0,
-				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest4-wbfunction-decode-main",
-					Namespace: "test01",
-				},
-			},
-		},
-		SharedMemory: &examplecomv1.SharedMemorySpec{
-			FilePrefix:      "test01-cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-			CommandQueueID:  "test01-cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-			SharedMemoryMiB: 1,
-		},
-		RegionName: "cpu",
-	},
-	Status: examplecomv1.CPUFunctionStatus{
-		StartTime: metav1.Now(),
-		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest4",
-			Namespace: "test01",
-		},
-		FunctionName: "cpu-filter-resize",
-		ImageURI:     "container",
-		ConfigName:   "configname",
-		Status:       "pending",
+		FunctionName: "",
+		ImageURI:     "",
+		ConfigName:   "",
+		Status:       "",
 	},
 }
 
 var EthernetConnection4 = EthernetConnection{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "EthernetConnection",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest4-wbconnection-filter-resize-low-infer-main-copy-branch-main",
-		Namespace: "test01",
+		Name:      "cpufunctest5-wbconnection-filter-resize-low-infer-main-copy-branch-main",
+		Namespace: "default",
 	},
 	Spec: EthernetConnectionSpec{
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest4",
-			Namespace: "test01",
+			Name:      "cpufunctest5",
+			Namespace: "default",
 		},
 		From: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
 			},
 		},
 		To: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-copy-branch-main",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-copy-branch-main",
+				Namespace: "default",
 			},
 		},
 	},
 	Status: EthernetConnectionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest4",
-			Namespace: "test01",
+			Name:      "cpufunctest5",
+			Namespace: "default",
 		},
-		Status: "pending",
+		Status: "Pending",
 		From: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
 			},
-			Status: "pending",
+			Status: "",
 		},
 		To: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-copy-branch-main",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-copy-branch-main",
+				Namespace: "default",
 			},
-			Status: "pending",
+			Status: "",
 		},
 	},
 }
 
 var EthernetConnection5 = EthernetConnection{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "EthernetConnection",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest4-wbconnection-copy-branch-main-infer-1",
-		Namespace: "test01",
+		Name:      "cpufunctest5-wbconnection-copy-branch-main-infer-1",
+		Namespace: "default",
 	},
 	Spec: EthernetConnectionSpec{
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest4",
-			Namespace: "test01",
+			Name:      "cpufunctest5",
+			Namespace: "default",
 		},
 		From: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-copy-branch-main",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-copy-branch-main",
+				Namespace: "default",
 			},
 		},
 		To: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-infer-1",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-infer-1",
+				Namespace: "default",
 			},
 		},
 	},
 	Status: EthernetConnectionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest4",
-			Namespace: "test01",
+			Name:      "cpufunctest5",
+			Namespace: "default",
 		},
-		Status: "pending",
+		Status: "Pending",
 		From: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-copy-branch-main",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-copy-branch-main",
+				Namespace: "default",
 			},
-			Status: "pending",
+			Status: "",
 		},
 		To: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-infer-1",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-infer-1",
+				Namespace: "default",
 			},
-			Status: "pending",
+			Status: "",
 		},
 	},
 }
 
 var EthernetConnection6 = EthernetConnection{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "EthernetConnection",
-	// },
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "EthernetConnection",
+	},
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest4-wbconnection-copy-branch-main-infer-2",
-		Namespace: "test01",
+		Name:      "cpufunctest5-wbconnection-copy-branch-main-infer-2",
+		Namespace: "default",
 	},
 	Spec: EthernetConnectionSpec{
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest4",
-			Namespace: "test01",
+			Name:      "cpufunctest5",
+			Namespace: "default",
 		},
 		From: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-copy-branch-main",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-copy-branch-main",
+				Namespace: "default",
 			},
 		},
 		To: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-infer-2",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-infer-2",
+				Namespace: "default",
 			},
 		},
 	},
 	Status: EthernetConnectionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest4",
-			Namespace: "test01",
+			Name:      "cpufunctest5",
+			Namespace: "default",
 		},
-		Status: "pending",
+		Status: "Pending",
 		From: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-copy-branch-main",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-copy-branch-main",
+				Namespace: "default",
 			},
-			Status: "pending",
+			Status: "",
 		},
 		To: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest4-wbfunction-infer-2",
-				Namespace: "test01",
+				Name:      "cpufunctest5-wbfunction-infer-2",
+				Namespace: "default",
 			},
-			Status: "pending",
+			Status: "",
 		},
 	},
 }
 
-var partitionName5 string = "cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main"
+/*
+testcase 1-1-6: glue
+*/
+var partitionName6 string = "cpufunctest6-wbfunction-glue-fdma-to-tcp-main"
 
-var CPUFunction5 = examplecomv1.CPUFunction{
+var CPUFunction6glue = examplecomv1.CPUFunction{
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
-		Namespace: "test01",
+		Name:      "cpufunctest6-wbfunction-glue-fdma-to-tcp-main",
+		Namespace: "default",
 	},
 	Spec: examplecomv1.CPUFunctionSpec{
 		AcceleratorIDs: []examplecomv1.AccIDInfo{
 			{
-				PartitionName: &partitionName5,
+				PartitionName: &partitionName6,
 				ID:            "node01-cpu0",
 			},
 		},
 		ConfigName: "cpufunc-config-glue-fdma-to-tcp",
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest5",
-			Namespace: "test01",
+			Name:      "cpufunctest6",
+			Namespace: "default",
 		},
 		DeviceType:   "cpu",
 		FunctionName: "glue-fdma-to-tcp",
@@ -1229,8 +1329,8 @@ var CPUFunction5 = examplecomv1.CPUFunction{
 			"0": {
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest5-wbfunction-high-infer-main",
-					Namespace: "test01",
+					Name:      "cpufunctest6-wbfunction-high-infer-main",
+					Namespace: "default",
 				},
 			},
 		},
@@ -1240,7 +1340,7 @@ var CPUFunction5 = examplecomv1.CPUFunction{
 				IntVal: 15,
 			},
 			"inputIPAddress": {
-				StrVal: "192.168.122.121",
+				StrVal: "192.168.122.131",
 				Type:   1,
 			},
 			"inputPort": {
@@ -1270,92 +1370,84 @@ var CPUFunction5 = examplecomv1.CPUFunction{
 			"0": {
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
-					Name:      "cpufunctiontest5-wbfunction-filter-resize-high-infer-main",
-					Namespace: "test01",
+					Name:      "cpufunctest6-wbfunction-filter-resize-high-infer-main",
+					Namespace: "default",
 				},
 			},
 		},
 		SharedMemory: &examplecomv1.SharedMemorySpec{
-			FilePrefix:      "test01-cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
-			CommandQueueID:  "test01-cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
+			FilePrefix:      "test01-cpufunctest6-wbfunction-glue-fdma-to-tcp-main",
+			CommandQueueID:  "test01-cpufunctest6-wbfunction-glue-fdma-to-tcp-main",
 			SharedMemoryMiB: 256,
 		},
 		RegionName:        "cpu",
 		RequestMemorySize: &reqMemSize,
 	},
 	Status: examplecomv1.CPUFunctionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "cpufunctiontest5",
-			Namespace: "test01",
+			Name:      "",
+			Namespace: "",
 		},
-		FunctionName: "glue-fdma-to-tcp",
-		ImageURI:     "container",
-		ConfigName:   "configname",
-		Status:       "pending",
+		FunctionName: "",
+		ImageURI:     "",
+		ConfigName:   "",
+		Status:       "",
 	},
 }
 
 var PCIeConnection5 = PCIeConnection{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "PCIeConnection",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest5-wbconnection-filter-resize-high-infer-main-glue-fdma-to-tcp-main",
-		Namespace: "test01",
+		Name:      "cpufunctest6-wbconnection-filter-resize-high-infer-main-glue-fdma-to-tcp-main",
+		Namespace: "default",
 	},
 	Spec: PCIeConnectionSpec{
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest5",
-			Namespace: "test01",
+			Name:      "cpufunctest6",
+			Namespace: "default",
 		},
 
 		From: PCIeFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest5-wbfunction-filter-resize-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest6-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
 		},
 		To: PCIeFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
-				Namespace: "test01",
+				Name:      "cpufunctest6-wbfunction-glue-fdma-to-tcp-main",
+				Namespace: "default",
 			},
 		},
 	},
 	Status: PCIeConnectionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest5",
-			Namespace: "test01",
+			Name:      "cpufunctest6",
+			Namespace: "default",
 		},
-		Status: "pending",
+		Status: "Pending",
 		From: PCIeFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest5-wbfunction-filter-resize-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest6-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
-			Status: "pending",
+			Status: "",
 		},
 		To: PCIeFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
-				Namespace: "test01",
+				Name:      "cpufunctest6-wbfunction-glue-fdma-to-tcp-main",
+				Namespace: "default",
 			},
-			Status: "pending",
+			Status: "",
 		},
 	},
 }
 
 var FPGAFunction5 = FPGAFunction{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "FPGAFunction",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest5-wbfunction-filter-resize-high-infer-main",
-		Namespace: "test01",
+		Name:      "cpufunctest6-wbfunction-filter-resize-high-infer-main",
+		Namespace: "default",
 	},
 	Spec: FPGAFunctionSpec{
 		AcceleratorIDs: []AccIDInfo{
@@ -1366,8 +1458,8 @@ var FPGAFunction5 = FPGAFunction{
 		},
 		ConfigName: "fpgafunc-config-filter-resize-high-infer",
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest5",
-			Namespace: "test01",
+			Name:      "cpufunctest6",
+			Namespace: "default",
 		},
 		DeviceType:        "alveo",
 		FrameworkKernelID: &frameworkKernelID,
@@ -1386,10 +1478,10 @@ var FPGAFunction5 = FPGAFunction{
 		},
 	},
 	Status: FPGAFunctionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest5",
-			Namespace: "test01",
+			Name:      "cpufunctest6",
+			Namespace: "default",
 		},
 		FunctionName:        "filter-resize-high-infer",
 		ParentBitstreamName: "ver2_tpcie_tandem1.mcs",
@@ -1403,94 +1495,209 @@ var FPGAFunction5 = FPGAFunction{
 		Tx: RxTxSpec{
 			Protocol: "DMA",
 		},
-		Status: "pending",
+		Status: "",
 	},
 }
 
-var EthernetConnection5glue = EthernetConnection{
-	// TypeMeta: metav1.TypeMeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "EthernetConnection",
-	// },
+var EthernetConnection6glue = EthernetConnection{
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "cpufunctiontest5-wbconnection-glue-fdma-to-tcp-main-high-infer-main",
-		Namespace: "test01",
+		Name:      "cpufunctest6-wbconnection-glue-fdma-to-tcp-main-high-infer-main",
+		Namespace: "default",
 	},
 	Spec: EthernetConnectionSpec{
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest5",
-			Namespace: "test01",
+			Name:      "cpufunctest6",
+			Namespace: "default",
 		},
 		From: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
-				Namespace: "test01",
+				Name:      "cpufunctest6-wbfunction-glue-fdma-to-tcp-main",
+				Namespace: "default",
 			},
 		},
 		To: EthernetFunctionSpec{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest5-wbfunction-high-infer-main",
-				Namespace: "test01",
+				Name:      "cpufunctest6-wbfunction-high-infer-main",
+				Namespace: "default",
 			},
 		},
 	},
 	Status: EthernetConnectionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: WBNamespacedName{
-			Name:      "cpufunctiontest5",
-			Namespace: "test01",
+			Name:      "cpufunctest6",
+			Namespace: "default",
+		},
+		Status: "",
+		From: EthernetFunctionStatus{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest6-wbfunction-glue-fdma-to-tcp-main",
+				Namespace: "default",
+			},
+			Status: "",
+		},
+		To: EthernetFunctionStatus{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest6-wbfunction-high-infer-main",
+				Namespace: "default",
+			},
+			Status: "",
+		},
+	},
+}
+
+var NetworkAttachmentDefinition1 = NetworkAttachmentDefinition{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "k8s.cni.cncf.io",
+		Kind:       "NetworkAttachmentDefinition",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "node01-config-net-sriov",
+		Namespace: "default",
+		Annotations: map[string]string{
+			"k8s.v1.cni.cncf.io/resourceName": "intel.com/intel_sriov_netdevice",
+		},
+	},
+	Spec: NetworkAttachmentDefinitionSpec{
+		Config: `{
+			"type": "sriov",
+			"cniVersion": "0.3.1",
+			"name": "node01-config-net-sriov",
+			"ipam": {
+				"type": "static"
+				}
+			}`,
+	},
+}
+
+/*
+testcase 1-2
+*/
+var EthernetConnection1 = EthernetConnection{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunctiontest3-wbconnection-decode-main-filter-resize-high-infer-main",
+		Namespace: "default",
+	},
+	Spec: EthernetConnectionSpec{
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctiontest3",
+			Namespace: "default",
+		},
+		From: EthernetFunctionSpec{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctiontest3-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: EthernetFunctionSpec{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "dftest-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: EthernetConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctiontest3",
+			Namespace: "default",
 		},
 		Status: "pending",
 		From: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
-				Namespace: "test01",
+				Name:      "cpufunctiontest3-wbfunction-decode-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 		To: EthernetFunctionStatus{
 			WBFunctionRef: WBNamespacedName{
-				Name:      "cpufunctiontest5-wbfunction-high-infer-main",
-				Namespace: "test01",
+				Name:      "dftest-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
 			},
 			Status: "pending",
 		},
 	},
 }
 
-var functionIndex122 int32 = 99
-var partitionName122 string = "dftest-wbfunction-filter-resize-high-infer-main"
+var EthernetConnection3 = EthernetConnection{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunctiontest3-wbconnection-filter-resize-high-infer-main-high-infer-main",
+		Namespace: "default",
+	},
+	Spec: EthernetConnectionSpec{
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctiontest3",
+			Namespace: "default",
+		},
+		From: EthernetFunctionSpec{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "dftest-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+		},
+		To: EthernetFunctionSpec{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctiontest3-wbfunction-high-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: EthernetConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctiontest3",
+			Namespace: "default",
+		},
+		Status: "pending",
+		From: EthernetFunctionStatus{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "dftest-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+			Status: "pending",
+		},
+		To: EthernetFunctionStatus{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctiontest3-wbfunction-high-infer-main",
+				Namespace: "default",
+			},
+			Status: "pending",
+		},
+	},
+}
 
-var CPUFunction122 = examplecomv1.CPUFunction{
+var partitionName12 string = "dftest-wbfunction-filter-resize-high-infer-main"
+
+var CPUFunction12 = examplecomv1.CPUFunction{
 	TypeMeta: metav1.TypeMeta{
 		Kind:       "CPUFunction",
 		APIVersion: "example.com/v1",
 	},
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "dftest-wbfunction-filter-resize-high-infer-main",
-		Namespace: "test01",
+		Namespace: "default",
 	},
 	Spec: examplecomv1.CPUFunctionSpec{
 		AcceleratorIDs: []examplecomv1.AccIDInfo{
 			{
-				PartitionName: &partitionName122,
+				PartitionName: &partitionName12,
 				ID:            "node01-cpu0",
 			},
 		},
 		ConfigName: "cpufunc-config-filter-resize-high-infer",
 		DataFlowRef: examplecomv1.WBNamespacedName{
 			Name:      "cpufunctiontest3",
-			Namespace: "test01",
+			Namespace: "default",
 		},
-		DeviceType:    "cpu",
-		FunctionName:  "cpu-filter-resize-high-infer",
-		FunctionIndex: &functionIndex122,
+		DeviceType:   "cpu",
+		FunctionName: "cpu-filter-resize-high-infer",
 		NextFunctions: map[string]examplecomv1.FromToWBFunction{
 			"0": {
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
 					Name:      "cpufunctiontest3-wbfunction-high-infer-main",
-					Namespace: "test01",
+					Namespace: "default",
 				},
 			},
 		},
@@ -1519,7 +1726,91 @@ var CPUFunction122 = examplecomv1.CPUFunction{
 				Port: 0,
 				WBFunctionRef: examplecomv1.WBNamespacedName{
 					Name:      "cpufunctiontest3-wbfunction-decode-main",
-					Namespace: "test01",
+					Namespace: "default",
+				},
+			},
+		},
+		SharedMemory: &examplecomv1.SharedMemorySpec{
+			FilePrefix:      "test01-dftest-wbfunction-filter-resize-high-infer-main",
+			CommandQueueID:  "test01-dftest-wbfunction-filter-resize-high-infer-main",
+			SharedMemoryMiB: 1,
+		},
+		RegionName: "cpu",
+	},
+	Status: examplecomv1.CPUFunctionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "cpufunctiontest3",
+			Namespace: "default",
+		},
+		FunctionName: "cpu-filter-resize",
+		ImageURI:     "container",
+		ConfigName:   "configname",
+		Status:       "pending",
+	},
+}
+
+var functionIndex122 int32 = 99
+var partitionName122 string = "dftest-wbfunction-filter-resize-high-infer-main"
+var CPUFunction122 = examplecomv1.CPUFunction{
+	TypeMeta: metav1.TypeMeta{
+		Kind:       "CPUFunction",
+		APIVersion: "example.com/v1",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "dftest-wbfunction-filter-resize-high-infer-main",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.CPUFunctionSpec{
+		AcceleratorIDs: []examplecomv1.AccIDInfo{
+			{
+				PartitionName: &partitionName122,
+				ID:            "node01-cpu0",
+			},
+		},
+		ConfigName: "cpufunc-config-filter-resize-high-infer",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "cpufunctiontest3",
+			Namespace: "default",
+		},
+		DeviceType:    "cpu",
+		FunctionName:  "cpu-filter-resize-high-infer",
+		FunctionIndex: &functionIndex122,
+		NextFunctions: map[string]examplecomv1.FromToWBFunction{
+			"0": {
+				Port: 0,
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "cpufunctiontest3-wbfunction-high-infer-main",
+					Namespace: "default",
+				},
+			},
+		},
+		NodeName: "node01",
+		Params: map[string]intstr.IntOrString{
+			"decEnvFrameFPS": {
+				IntVal: 15,
+			},
+			"inputIPAddress": {
+				StrVal: "192.168.122.50",
+				Type:   1,
+			},
+			"inputPort": {
+				IntVal: 15000,
+			},
+			"outputIPAddress": {
+				StrVal: "192.168.122.100",
+				Type:   1,
+			},
+			"outputPort": {
+				IntVal: 16000,
+			},
+		},
+		PreviousFunctions: map[string]examplecomv1.FromToWBFunction{
+			"0": {
+				Port: 0,
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "cpufunctiontest3-wbfunction-decode-main",
+					Namespace: "default",
 				},
 			},
 		},
@@ -1531,10 +1822,10 @@ var CPUFunction122 = examplecomv1.CPUFunction{
 		RegionName: "cpu",
 	},
 	Status: examplecomv1.CPUFunctionStatus{
-		StartTime: metav1.Now(),
+		StartTime: testTime,
 		DataFlowRef: examplecomv1.WBNamespacedName{
 			Name:      "cpufunctiontest122",
-			Namespace: "test01",
+			Namespace: "default",
 		},
 		FunctionName: "cpu-filter-resize",
 		ImageURI:     "container",
@@ -1543,6 +1834,596 @@ var CPUFunction122 = examplecomv1.CPUFunction{
 	},
 }
 
+/*
+testcase 2-1 Update
+*/
+var partitionNameUpdate string = "cpufunctestupdate-wbfunction-decode-main"
+
+var cpufunctestUPDATE = examplecomv1.CPUFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "CPUFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunctestupdate-wbfunction-decode-main",
+		Namespace: "default",
+		Finalizers: []string{
+			"cpufunction.finalizers.example.com.v1",
+		},
+	},
+	Spec: examplecomv1.CPUFunctionSpec{
+		AcceleratorIDs: []examplecomv1.AccIDInfo{
+			{
+				PartitionName: &partitionNameUpdate,
+				ID:            "",
+			},
+		},
+		ConfigName: "cpufunc-config-decode",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "cpufunctestupdate",
+			Namespace: "default",
+		},
+		DeviceType:   "cpu",
+		FunctionName: "cpu-decode",
+		NextFunctions: map[string]examplecomv1.FromToWBFunction{
+			"0": {
+				Port: 0,
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "cpufunctestupdate-wbfunction-filter-resize-low-infer-main",
+					Namespace: "default",
+				},
+			},
+		},
+		NodeName: "node01",
+		Params: map[string]intstr.IntOrString{
+			"decEnvFrameFPS": {
+				IntVal: 5,
+			},
+			"outputIPAddress": {
+				StrVal: "192.168.90.112",
+				Type:   1,
+			},
+			"outputPort": {
+				IntVal: 15000,
+			},
+			"inputPort": {
+				IntVal: 8556,
+			},
+			"ipAddress": {
+				StrVal: "192.174.90.102/24",
+				Type:   1,
+			},
+		},
+		SharedMemory: &examplecomv1.SharedMemorySpec{
+			FilePrefix:      "test01-cpufunctestupdate-wbfunction-decode-main",
+			CommandQueueID:  "test01-cpufunctestupdate-wbfunction-decode-main",
+			SharedMemoryMiB: 1,
+		},
+		RegionName: "cpu",
+	},
+	Status: examplecomv1.CPUFunctionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "cpufunctestupdate",
+			Namespace: "default",
+		},
+		FunctionName: "cpu-decode",
+		ImageURI:     "localhost/host_decode:3.1.0",
+		ConfigName:   "cpufunc-config-decode",
+		Status:       "Running",
+	},
+}
+
+/*
+testcase 2-2 Delete
+*/
+var partitionNameDelete string = "cpufunctestupdate-wbfunction-decode-main"
+var functionIndexDelete int32 = 6
+
+var cpufunctestDELETE = examplecomv1.CPUFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "CPUFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunctestdelete-wbfunction-decode-main",
+		Namespace: "default",
+		Finalizers: []string{
+			"cpufunction.finalizers.example.com.v1",
+		},
+	},
+	Spec: examplecomv1.CPUFunctionSpec{
+		AcceleratorIDs: []examplecomv1.AccIDInfo{
+			{
+				PartitionName: &partitionNameDelete,
+				ID:            "",
+			},
+		},
+		ConfigName: "cpufunc-config-decode",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "cpufunctestupdate",
+			Namespace: "default",
+		},
+		DeviceType:   "cpu",
+		FunctionName: "cpu-decode",
+		NextFunctions: map[string]examplecomv1.FromToWBFunction{
+			"0": {
+				Port: 0,
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "cpufunctestupdate-wbfunction-filter-resize-low-infer-main",
+					Namespace: "default",
+				},
+			},
+		},
+		NodeName: "node01",
+		Params: map[string]intstr.IntOrString{
+			"decEnvFrameFPS": {
+				IntVal: 5,
+			},
+			"outputIPAddress": {
+				StrVal: "192.168.90.112",
+				Type:   1,
+			},
+			"outputPort": {
+				IntVal: 15000,
+			},
+			"inputPort": {
+				IntVal: 8556,
+			},
+			"ipAddress": {
+				StrVal: "192.174.90.102/24",
+				Type:   1,
+			},
+		},
+		SharedMemory: &examplecomv1.SharedMemorySpec{
+			FilePrefix:      "test01-cpufunctestupdate-wbfunction-decode-main",
+			CommandQueueID:  "test01-cpufunctestupdate-wbfunction-decode-main",
+			SharedMemoryMiB: 1,
+		},
+		RegionName: "cpu",
+	},
+	Status: examplecomv1.CPUFunctionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "cpufunctestupdate",
+			Namespace: "default",
+		},
+		FunctionName:  "cpu-decode",
+		FunctionIndex: &functionIndexDelete,
+		ImageURI:      "localhost/host_decode:3.1.0",
+		ConfigName:    "cpufunc-config-decode",
+		Status:        "Running",
+	},
+}
+
+/*
+testcase 2-1-4
+*/
+
+var cpuconfigdecode214 = corev1.ConfigMap{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunc-config-decode",
+		Namespace: "default",
+	},
+	Data: map[string]string{
+		"cpufunc-config-decode.json": `
+    [{
+      "rxProtocol":"RTP",
+      "txProtocol":"DMA",
+      "sharedMemoryMiB": 256,
+      "imageURI": "localhost/host_decode:3.1.0",
+      "additionalNetwork": true,
+      "virtualNetworkDeviceDriverType": "sriov",
+      "envs":{
+        "DECENV_APPLOG_LEVEL": "6",
+        "DECENV_FRAME_WIDTH": "3840",
+        "DECENV_FRAME_HEIGHT": "2160",
+        "DECENV_VIDEO_CONNECT_LIMIT": "0",
+        "DECENV_VIDEOSRC_PROTOCOL": "RTP",
+        "DECENV_OUTDST_PROTOCOL": "DMA"
+      },
+      "template":{
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "spec":{
+          "containers":[{
+            "name": "cfunc-1",
+            "command": ["sh","-c"],
+            "args":["./tools/host_decode/build/host_decode-shared"],
+            "securityContext":{
+              "privileged": true
+            },
+          "lifecycle":{
+            "preStop":{
+              "exec":{
+                "command": ["sh","-c", "kill -TERM $(pidof cpu_decode-shared)"]}}},
+            "volumeMounts":[{
+              "name": "hugepage-1gi",
+              "mountPath": "/dev/hugepages"
+            },{
+              "name": "dpdk",
+              "mountPath": "/var/run/dpdk"
+            }],
+            "resources":{
+              "requests":{
+                "memory": "32Gi"
+              },
+              "limits":{
+                "hugepages-1Gi": "1Gi"
+              }
+            }
+          }],
+          "volumes":[{
+            "name": "hugepage-1gi",
+            "hostPath":
+             {"path": "/dev/hugepages"}
+          },{
+            "name": "dpdk",
+            "hostPath":
+             {"path": "/var/run/dpdk"}
+          }],
+          "hostNetwork": false,
+          "hostIPC": true,
+          "restartPolicy": "Always"
+        }
+      }
+    },
+    {
+      "rxProtocol":"RTP",
+      "txProtocol":"TCP",
+      "imageURI": "localhost/host_decode:3.1.0",
+      "additionalNetwork": true,
+      "virtualNetworkDeviceDriverType": "sriov",
+      "envs":{
+        "DECENV_APPLOG_LEVEL": "6",
+        "DECENV_FRAME_WIDTH": "3840",
+        "DECENV_FRAME_HEIGHT": "2160",
+        "DECENV_VIDEO_CONNECT_LIMIT": "0",
+        "DECENV_VIDEOSRC_PROTOCOL": "RTP",
+        "DECENV_OUTDST_PROTOCOL": "TCP"
+      },
+      "template":{
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "spec":{
+          "containers":[{
+            "name": "cfunc-1",
+            "command": ["sh","-c"],
+            "args":["./tools/host_decode/build/host_decode-shared"],
+            "securityContext":{
+              "privileged": true
+            }
+          }],
+          "hostNetwork": false,
+          "hostIPC": true,
+          "restartPolicy": "Always"
+        }
+      }
+    }]`,
+	},
+}
+
+var PCIeConnection214 = PCIeConnection{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunctest214-wbconnection-decode-main-filter-resize-low-infer-main",
+		Namespace: "default",
+	},
+	Spec: PCIeConnectionSpec{
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctest214",
+			Namespace: "default",
+		},
+
+		From: PCIeFunctionSpec{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest214-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: PCIeFunctionSpec{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest214-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: PCIeConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctest214",
+			Namespace: "default",
+		},
+		Status: "pending",
+		From: PCIeFunctionStatus{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest214-wbfunction-decode-main",
+				Namespace: "default",
+			},
+			Status: "pending",
+		},
+		To: PCIeFunctionStatus{
+			WBFunctionRef: WBNamespacedName{
+				Name:      "cpufunctest214-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+			Status: "pending",
+		},
+	},
+}
+
+var FPGAFunction214 = FPGAFunction{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunctest214-wbfunction-filter-resize-low-infer-main",
+		Namespace: "default",
+	},
+	Spec: FPGAFunctionSpec{
+		AcceleratorIDs: []AccIDInfo{
+			{
+				PartitionName: "0",
+				ID:            "/dev/xpcie_21330621T00D",
+			},
+		},
+		ConfigName: "fpgafunc-config-filter-resize-low-infer",
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctest214",
+			Namespace: "default",
+		},
+		DeviceType:        "alveo",
+		FrameworkKernelID: &frameworkKernelID,
+		FunctionChannelID: &functionChannelID,
+		FunctionIndex:     &functionIndex,
+		FunctionKernelID:  &functionKernelID,
+		FunctionName:      "filter-resize-low-infer",
+		NodeName:          "node01",
+		PtuKernelID:       &ptuKernelID,
+		RegionName:        "lane0",
+		Rx: RxTxSpec{
+			Protocol: "TCP",
+		},
+		Tx: RxTxSpec{
+			Protocol: "DMA",
+		},
+	},
+	Status: FPGAFunctionStatus{
+		StartTime: testTime,
+		DataFlowRef: WBNamespacedName{
+			Name:      "cpufunctest214",
+			Namespace: "default",
+		},
+		FunctionName:        "filter-resize-low-infer",
+		ParentBitstreamName: "ver2_tpcie_tandem1.mcs",
+		ChildBitstreamName:  "ver1_tpcie_tandem2.bit",
+		FrameworkKernelID:   0,
+		FunctionChannelID:   0,
+		PtuKernelID:         0,
+		Rx: RxTxSpec{
+			Protocol: "TCP",
+		},
+		Tx: RxTxSpec{
+			Protocol: "DMA",
+		},
+		Status: "pending",
+	},
+}
+
+var NetworkAttachmentDefinition214 = NetworkAttachmentDefinition{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "k8s.cni.cncf.io",
+		Kind:       "NetworkAttachmentDefinition",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "node01-config-net-sriov",
+		Namespace: "default",
+		Annotations: map[string]string{
+			"k8s.v1.cni.cncf.io/resourceName": "intel.com/intel_sriov_netdevice",
+		},
+	},
+	Spec: NetworkAttachmentDefinitionSpec{
+		Config: `{
+			"type": "sriov",
+			"cniVersion": "0.3.1",
+			"name": "node01-config-net-sriov",
+			"ipam": {
+				"type": "static"
+				}
+			}`,
+	},
+}
+
+var CPUFunction214 = examplecomv1.CPUFunction{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "CPUFunction",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "cpufunctest214-wbfunction-decode-main",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.CPUFunctionSpec{
+		AcceleratorIDs: []examplecomv1.AccIDInfo{
+			{
+				PartitionName: &partitionName1,
+				ID:            "",
+			},
+		},
+		ConfigName: "cpufunc-config-decode",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "cpufunctest214",
+			Namespace: "default",
+		},
+		DeviceType:   "cpu",
+		FunctionName: "cpu-decode",
+		NextFunctions: map[string]examplecomv1.FromToWBFunction{
+			"0": {
+				Port: 0,
+				WBFunctionRef: examplecomv1.WBNamespacedName{
+					Name:      "cpufunctest214-wbfunction-filter-resize-low-infer-main",
+					Namespace: "default",
+				},
+			},
+		},
+		NodeName: "node01",
+		Params: map[string]intstr.IntOrString{
+			"decEnvFrameFPS": {
+				IntVal: 5,
+			},
+			"outputIPAddress": {
+				StrVal: "192.168.90.112",
+				Type:   1,
+			},
+			"outputPort": {
+				IntVal: 15000,
+			},
+			"inputPort": {
+				IntVal: 8556,
+			},
+			"ipAddress": {
+				StrVal: "192.174.90.102/24",
+				Type:   1,
+			},
+			"inputIPAddress": {
+				StrVal: "192.174.90.102",
+				Type:   1,
+			},
+		},
+		SharedMemory: &examplecomv1.SharedMemorySpec{
+			FilePrefix:      "test01-cpufunctest1-wbfunction-decode-main",
+			CommandQueueID:  "test01-cpufunctest1-wbfunction-decode-main",
+			SharedMemoryMiB: 1,
+		},
+		RegionName: "cpu",
+	},
+	Status: examplecomv1.CPUFunctionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "",
+			Namespace: "",
+		},
+		FunctionName: "",
+		ImageURI:     "",
+		ConfigName:   "",
+		Status:       "",
+	},
+}
+
+// This defines NetworkAttachmentDefinition CR
+type NetworkAttachmentDefinition struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec NetworkAttachmentDefinitionSpec `json:"spec,omitempty"`
+}
+
+// PCIeConnectionSpec defines the desired state of PCIeConnection
+type NetworkAttachmentDefinitionSpec struct {
+	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+
+	Config string `json:"config"`
+}
+
+// EthernetConnectionList contains a list of EthernetConnection
+type NetworkAttachmentDefinitionList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []NetworkAttachmentDefinition `json:"items"`
+}
+
+func init() {
+	SchemeBuilder1.Register(&NetworkAttachmentDefinition{}, &NetworkAttachmentDefinitionList{})
+}
+
+var (
+	// GroupVersion is group version used to register these objects
+	GroupVersion1 = schema.GroupVersion{Group: "k8s.cni.cncf.io", Version: "v1"}
+
+	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
+	SchemeBuilder1 = &scheme.Builder{GroupVersion: GroupVersion1}
+
+	// AddToScheme adds the types in this group-version to the given scheme.
+	AddToScheme1 = SchemeBuilder1.AddToScheme
+)
+
+// DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
+func (in *NetworkAttachmentDefinition) DeepCopyInto(out *NetworkAttachmentDefinition) {
+	*out = *in
+	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
+	out.Spec = in.Spec
+	in.Spec.DeepCopyInto(&out.Spec)
+}
+
+// DeepCopy is an autogenerated deepcopy function, copying the receiver, creating a new EthernetConnection.
+func (in *NetworkAttachmentDefinition) DeepCopy() *NetworkAttachmentDefinition {
+	if in == nil {
+		return nil
+	}
+	out := new(NetworkAttachmentDefinition)
+	in.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyObject is an autogenerated deepcopy function, copying the receiver, creating a new runtime.Object.
+func (in *NetworkAttachmentDefinition) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
+}
+
+// DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
+func (in *NetworkAttachmentDefinitionList) DeepCopyInto(out *NetworkAttachmentDefinitionList) {
+	*out = *in
+	out.TypeMeta = in.TypeMeta
+	in.ListMeta.DeepCopyInto(&out.ListMeta)
+	if in.Items != nil {
+		in, out := &in.Items, &out.Items
+		*out = make([]NetworkAttachmentDefinition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+}
+
+// DeepCopy is an autogenerated deepcopy function, copying the receiver, creating a new EthernetConnectionList.
+func (in *NetworkAttachmentDefinitionList) DeepCopy() *NetworkAttachmentDefinitionList {
+	if in == nil {
+		return nil
+	}
+	out := new(NetworkAttachmentDefinitionList)
+	in.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyObject is an autogenerated deepcopy function, copying the receiver, creating a new runtime.Object.
+func (in *NetworkAttachmentDefinitionList) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
+}
+
+// DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
+func (in *NetworkAttachmentDefinitionSpec) DeepCopyInto(out *NetworkAttachmentDefinitionSpec) {
+	*out = *in
+	out.Config = in.Config
+}
+
+// DeepCopy is an autogenerated deepcopy function, copying the receiver, creating a new EthernetConnectionSpec.
+func (in *NetworkAttachmentDefinitionSpec) DeepCopy() *NetworkAttachmentDefinitionSpec {
+	if in == nil {
+		return nil
+	}
+	out := new(NetworkAttachmentDefinitionSpec)
+	in.DeepCopyInto(out)
+	return out
+}
+
+/*
+	registration of PCIeConnection
+*/
+
+// pcieconnection_types.go
 // PCIeConnection difines the PCIeConnection CR
 type PCIeConnection struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -1602,6 +2483,7 @@ func init() {
 	SchemeBuilderpcie.Register(&PCIeConnection{}, &PCIeConnectionList{})
 }
 
+// groupversion_info.go
 var (
 	// GroupVersion is group version used to register these objects
 	GroupVersionpcie = schema.GroupVersion{Group: "example.com", Version: "v1"}
@@ -1613,6 +2495,7 @@ var (
 	AddToSchemepcie = SchemeBuilderpcie.AddToScheme
 )
 
+// zz_generated.deepcopy.go
 // DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
 func (in *AccIDInfo) DeepCopyInto(out *AccIDInfo) {
 	*out = *in
@@ -2079,6 +2962,7 @@ func (in *WBNamespacedName) DeepCopy() *WBNamespacedName {
 	return out
 }
 
+// function_common_types.go
 // Function CR structure
 type FunctionData struct {
 	DataFlowRef       WBNamespacedName              `json:"dataFlowRef"`
@@ -2124,7 +3008,7 @@ type EnvsData struct {
 	EnvValue string `json:"envValue"`
 }
 
-// FPGA Device information 
+// FPGA Device information
 type RxTxSpecFunc struct {
 	Protocol        string  `json:"protocol,omitempty"`
 	IPAddress       *string `json:"ipAddress,omitempty"`
@@ -2176,6 +3060,7 @@ type FunctionConfigMap struct {
 	ChildBitStream  string            `json:"childBitStream,omitempty"`
 }
 
+// function_common_types.go
 type WBNamespacedName struct {
 
 	//+kubebuilder:validation:Required
@@ -2198,9 +3083,11 @@ type FromToWBFunction struct {
 	Port int32 `json:"port"`
 }
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+/*
+	registration of EthernetConnection
+*/
 
+// ethernetconnection_types.go
 // EthernetConnectionSpec defines the desired state of EthernetConnection
 type EthernetConnectionSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
@@ -2263,6 +3150,7 @@ func init() {
 	SchemeBuilderpcie.Register(&EthernetConnection{}, &EthernetConnectionList{})
 }
 
+// groupversion_info.go
 var (
 	// GroupVersion is group version used to register these objects
 	GroupVersioneth = schema.GroupVersion{Group: "example.com", Version: "v1"}
@@ -2274,6 +3162,7 @@ var (
 	AddToSchemeeth = SchemeBuildereth.AddToScheme
 )
 
+// zz_generated.deepcopy.go
 // DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
 func (in *EthernetConnection) DeepCopyInto(out *EthernetConnection) {
 	*out = *in
@@ -2402,6 +3291,11 @@ func (in *EthernetFunctionStatus) DeepCopy() *EthernetFunctionStatus {
 	return out
 }
 
+/*
+	registration of FPGAFucntion
+*/
+
+// fpgafunction_types.go
 // FPGAFunctionSpec defines the desired state of FPGAFunction
 type FPGAFunctionSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
@@ -2497,9 +3391,9 @@ func init() {
 		})
 		return SchemeBuilderfpga
 	}()
-	// SchemeBuilderfpga.Register(&FPGAFunction{}, &FPGAFunctionList{})
 }
 
+// groupversion_info.go
 var (
 	// GroupVersion is group version used to register these objects
 	GroupVersionfpga = schema.GroupVersion{Group: "example.com", Version: "v1"}
@@ -2511,6 +3405,7 @@ var (
 	AddToSchemefpga = SchemeBuilderfpga.AddToScheme
 )
 
+// zz_generated.deepcopy.go
 // DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
 func (in *AccStatuses) DeepCopyInto(out *AccStatuses) {
 	*out = *in
@@ -2562,38 +3457,6 @@ func (in *AccStatusesByDevice) DeepCopy() *AccStatusesByDevice {
 	in.DeepCopyInto(out)
 	return out
 }
-
-// // DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
-// func (in *FPGAFuncConfig) DeepCopyInto(out *FPGAFuncConfig) {
-// 	*out = *in
-// 	if in.Envs != nil {
-// 		in, out := &in.Envs, &out.Envs
-// 		*out = make(map[string]string, len(*in))
-// 		for key, val := range *in {
-// 			(*out)[key] = val
-// 		}
-// 	}
-// 	if in.Commands != nil {
-// 		in, out := &in.Commands, &out.Commands
-// 		*out = make([]string, len(*in))
-// 		copy(*out, *in)
-// 	}
-// 	if in.Args != nil {
-// 		in, out := &in.Args, &out.Args
-// 		*out = make([]string, len(*in))
-// 		copy(*out, *in)
-// 	}
-// }
-
-// // DeepCopy is an autogenerated deepcopy function, copying the receiver, creating a new FPGAFuncConfig.
-// func (in *FPGAFuncConfig) DeepCopy() *FPGAFuncConfig {
-// 	if in == nil {
-// 		return nil
-// 	}
-// 	out := new(FPGAFuncConfig)
-// 	in.DeepCopyInto(out)
-// 	return out
-// }
 
 // DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
 func (in *FPGAFunction) DeepCopyInto(out *FPGAFunction) {
@@ -2786,145 +3649,6 @@ func (in *RxTxSpec) DeepCopy() *RxTxSpec {
 		return nil
 	}
 	out := new(RxTxSpec)
-	in.DeepCopyInto(out)
-	return out
-}
-
-var NetworkAttachmentDefinition1 = NetworkAttachmentDefinition{
-	TypeMeta: metav1.TypeMeta{
-		APIVersion: "k8s.cni.cncf.io",
-		Kind:       "NetworkAttachmentDefinition",
-	},
-	ObjectMeta: metav1.ObjectMeta{
-		Name:      "node01-config-net-sriov",
-		Namespace: "test01",
-		Annotations: map[string]string{
-			"k8s.v1.cni.cncf.io/resourceName": "intel.com/intel_sriov_netdevice",
-		},
-	},
-	Spec: NetworkAttachmentDefinitionSpec{
-		Config: `{
-			"type": "sriov",
-			"cniVersion": "0.3.1",
-			"name": "node01-config-net-sriov",
-			"ipam": {
-				"type": "static"
-				}
-			}`,
-	},
-}
-
-// This defines NetworkAttachmentDefinition CR
-type NetworkAttachmentDefinition struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	Spec NetworkAttachmentDefinitionSpec `json:"spec,omitempty"`
-}
-
-// PCIeConnectionSpec defines the desired state of PCIeConnection
-type NetworkAttachmentDefinitionSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	Config string `json:"config"`
-}
-
-// EthernetConnectionList contains a list of EthernetConnection
-type NetworkAttachmentDefinitionList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []NetworkAttachmentDefinition `json:"items"`
-}
-
-func init() {
-	SchemeBuilder1.Register(&NetworkAttachmentDefinition{}, &NetworkAttachmentDefinitionList{})
-}
-
-var (
-	// GroupVersion is group version used to register these objects
-	GroupVersion1 = schema.GroupVersion{Group: "k8s.cni.cncf.io", Version: "v1"}
-
-	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
-	SchemeBuilder1 = &scheme.Builder{GroupVersion: GroupVersion1}
-
-	// AddToScheme adds the types in this group-version to the given scheme.
-	AddToScheme1 = SchemeBuilder1.AddToScheme
-)
-
-// DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
-func (in *NetworkAttachmentDefinition) DeepCopyInto(out *NetworkAttachmentDefinition) {
-	*out = *in
-	out.TypeMeta = in.TypeMeta
-	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
-	out.Spec = in.Spec
-	in.Spec.DeepCopyInto(&out.Spec)
-	//in.Status.DeepCopyInto(&out.Status)
-
-}
-
-// DeepCopy is an autogenerated deepcopy function, copying the receiver, creating a new EthernetConnection.
-func (in *NetworkAttachmentDefinition) DeepCopy() *NetworkAttachmentDefinition {
-	if in == nil {
-		return nil
-	}
-	out := new(NetworkAttachmentDefinition)
-	in.DeepCopyInto(out)
-	return out
-}
-
-// DeepCopyObject is an autogenerated deepcopy function, copying the receiver, creating a new runtime.Object.
-func (in *NetworkAttachmentDefinition) DeepCopyObject() runtime.Object {
-	if c := in.DeepCopy(); c != nil {
-		return c
-	}
-	return nil
-}
-
-// DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
-func (in *NetworkAttachmentDefinitionList) DeepCopyInto(out *NetworkAttachmentDefinitionList) {
-	*out = *in
-	out.TypeMeta = in.TypeMeta
-	in.ListMeta.DeepCopyInto(&out.ListMeta)
-	if in.Items != nil {
-		in, out := &in.Items, &out.Items
-		*out = make([]NetworkAttachmentDefinition, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
-		}
-	}
-}
-
-// DeepCopy is an autogenerated deepcopy function, copying the receiver, creating a new EthernetConnectionList.
-func (in *NetworkAttachmentDefinitionList) DeepCopy() *NetworkAttachmentDefinitionList {
-	if in == nil {
-		return nil
-	}
-	out := new(NetworkAttachmentDefinitionList)
-	in.DeepCopyInto(out)
-	return out
-}
-
-// DeepCopyObject is an autogenerated deepcopy function, copying the receiver, creating a new runtime.Object.
-func (in *NetworkAttachmentDefinitionList) DeepCopyObject() runtime.Object {
-	if c := in.DeepCopy(); c != nil {
-		return c
-	}
-	return nil
-}
-
-// DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
-func (in *NetworkAttachmentDefinitionSpec) DeepCopyInto(out *NetworkAttachmentDefinitionSpec) {
-	*out = *in
-	out.Config = in.Config
-}
-
-// DeepCopy is an autogenerated deepcopy function, copying the receiver, creating a new EthernetConnectionSpec.
-func (in *NetworkAttachmentDefinitionSpec) DeepCopy() *NetworkAttachmentDefinitionSpec {
-	if in == nil {
-		return nil
-	}
-	out := new(NetworkAttachmentDefinitionSpec)
 	in.DeepCopyInto(out)
 	return out
 }

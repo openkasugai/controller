@@ -1,0 +1,46 @@
+apiVersion: example.com/v1
+kind: WBFunction
+metadata:
+  name: sample-flow1-wbfunction-high-infer-main-1
+  namespace: default
+  ownerReferences:
+  - apiVersion: example.com/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DataFlow
+    name: sample-flow1
+    uid: 9110baed-3757-4750-af2f-481676fea8d5
+spec:
+  configName: gpufunc-config-high-infer-1
+  dataFlowRef:
+    name: sample-flow1
+    namespace: default
+  deviceIndex: 1
+  deviceType: a100
+  functionName: high-infer
+  maxCapacity: 15
+  maxDataFlows: 1
+  nodeName: node1
+  previousWBFunctions:
+    "0":
+      port: 0
+      wbFunctionRef:
+        name: sample-flow1-wbfunction-copy-branch-main
+        namespace: default
+  regionName: gpu
+  requirements:
+    capacity: 15
+status:
+  configName: ""
+  dataFlowRef:
+    name: ""
+    namespace: ""
+  deviceIndex: 0
+  deviceType: ""
+  functionIndex: 0
+  functionName: ""
+  nodeName: ""
+  regionName: ""
+  satisfiedRequirements:
+    capacity: 0
+  status: "Deployed"

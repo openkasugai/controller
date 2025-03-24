@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -32,8 +32,6 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
-	//	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	//	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	examplecomv1 "WBFunction/api/v1"
 	controllertestcpu "WBFunction/internal/controller/test/type/CPU"
@@ -58,11 +56,9 @@ func TestControllers(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	// logf.SetLogger(zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true)))
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
-		// CRDDirectoryPaths:     []string{filepath.Join("..", "..", "config", "crd", "bases")},
 		CRDDirectoryPaths: []string{
 			filepath.Join("..", "..", "config", "crd", "bases"),
 			filepath.Join("test", "crd")},
@@ -87,8 +83,6 @@ var _ = BeforeSuite(func() {
 
 	err = examplecomv1.AddToScheme(testScheme)
 	Expect(err).NotTo(HaveOccurred())
-	// err = clientgoscheme.AddToScheme(testScheme)
-	// Expect(err).NotTo(HaveOccurred())
 
 	err = controllertestcpu.AddToScheme(testScheme)
 	Expect(err).NotTo(HaveOccurred())
@@ -107,7 +101,6 @@ var _ = BeforeSuite(func() {
 
 	//+kubebuilder:scaffold:scheme
 
-	// k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
 	k8sClient, err = client.New(cfg, client.Options{
 		Scheme: testScheme,
 		Cache:  &client.CacheOptions{},

@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: pcieconnection-container0
-        image: localhost/pcieconnection:1.0.0
+        image: localhost/pcieconnection:1.1.0
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -40,7 +40,7 @@ spec:
       volumes:
       - name: crc-pcieconnection-daemon
         hostPath:
-          path: /etc/k8s_worker/config
+          path: /etc/k8s_node/config
           type: File
       - name: var-run-dpdk
         hostPath:

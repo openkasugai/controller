@@ -1,0 +1,14 @@
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-glue-fdma-to-tcp
+  namespace: default
+spec:
+  functionName: glue-fdma-to-tcp
+  functionInfoCMRef:
+    name: funcinfo-glue-fdma-to-tcp
+    namespace: default
+  version: 1.0.0
+status:
+  regionTypeCandidates: ["cpu"]
+  status: Ready

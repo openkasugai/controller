@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 */
 
 package controller
@@ -11,181 +11,28 @@ import (
 	controllertestgpu "PCIeConnection/internal/controller/test/type/GPU"
 	"time"
 
-	//	corev1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	// "k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	// "sigs.k8s.io/controller-runtime/pkg/scheme"
 )
 
-// fpgalist-ph3 config
-/*
-var fpgalist = corev1.ConfigMap{
-	ObjectMeta: metav1.ObjectMeta{
-		Name:      "fpgalist-ph3",
-		Namespace: "default",
-	},
-	TypeMeta: metav1.TypeMeta{
-		Kind: "ConfigMap",
-	},
-	Data: map[string]string{
-		"fpgalist-ph3.json": `
-    [
-      {
-        "nodeName": "node01",
-        "deviceFilePaths": [
-        "/dev/xpcie_21330621T04L","/dev/xpcie_21330621T01J","/dev/xpcie_21330621T00Y","/dev/xpcie_21330621T00D"
-        ],
-        "networkInfo": [
-              {
-            "deviceIndex": 0,
-            "laneIndex": 0,
-            "functionType": "filter/resize",
-            "ipAddress": "192.174.90.91",
-            "subnetAddress": "255.255.255.0",
-            "gatewayAddress": "192.174.90.1",
-            "macAddress": "00:12:34:00:5D:A0",
-            "rx":{
-              "protocol":"TCP"
-            },
-            "tx":{
-              "protocol":"DMA"
-            }
-          },
-          {
-            "deviceIndex": 0,
-            "laneIndex": 1,
-            "functionType": "filter/resize",
-            "ipAddress": "192.174.90.92",
-            "subnetAddress": "255.255.255.0",
-            "gatewayAddress": "192.174.90.1",
-            "macAddress": "00:12:34:00:5D:A1",
-            "rx":{
-              "protocol":"TCP"
-            },
-            "tx":{
-              "protocol":"DMA"
-            }
-          },
-                {
-            "deviceIndex": 1,
-            "laneIndex": 0,
-            "functionType": "decode",
-            "ipAddress": "192.174.90.81",
-            "subnetAddress": "255.255.255.0",
-            "gatewayAddress": "192.174.90.1",
-            "macAddress": "00:12:34:00:5C:A1",
-            "rx":{
-              "protocol":"RTP",
-              "startPort":5004,
-              "endPort":5027
-            },
-            "tx":{
-              "protocol":"TCP"
-            }
-          },
-          {
-            "deviceIndex": 1,
-            "laneIndex": 1,
-            "functionType": "decode",
-            "ipAddress": "192.174.90.82",
-            "subnetAddress": "255.255.255.0",
-            "gatewayAddress": "192.174.90.1",
-            "macAddress": "00:12:34:00:5C:A2",
-            "rx":{
-              "protocol":"RTP",
-              "startPort":5004,
-              "endPort":5027
-            },
-            "tx":{
-              "protocol":"TCP"
-            }
-          },
-          {
-            "deviceIndex": 2,
-            "laneIndex": 0,
-            "functionType": "decode",
-            "ipAddress": "192.174.90.83",
-            "subnetAddress": "255.255.255.0",
-            "gatewayAddress": "192.174.90.1",
-            "macAddress": "00:12:34:00:5B:A0",
-            "rx":{
-              "protocol":"RTP",
-              "startPort":5004,
-              "endPort":5027
-            },
-            "tx":{
-              "protocol":"TCP"
-            }
-          },
-          {
-            "deviceIndex": 2,
-            "laneIndex": 1,
-            "functionType": "decode",
-            "ipAddress": "192.174.90.84",
-            "subnetAddress": "255.255.255.0",
-            "gatewayAddress": "192.174.90.1",
-            "macAddress": "00:12:34:00:5B:A1",
-            "rx":{
-              "protocol":"RTP",
-              "startPort":5004,
-              "endPort":5027
-            },
-            "tx":{
-              "protocol":"TCP"
-            }
-          },
-          {
-            "deviceIndex": 3,
-            "laneIndex": 0,
-            "functionType": "filter/resize",
-            "ipAddress": "192.174.90.93",
-            "subnetAddress": "255.255.255.0",
-            "gatewayAddress": "192.174.90.1",
-            "macAddress": "00:12:34:00:5A:A1",
-            "rx":{
-              "protocol":"TCP"
-            },
-            "tx":{
-              "protocol":"DMA"
-            }
-          },
-          {
-            "deviceIndex": 3,
-            "laneIndex": 1,
-            "functionType": "filter/resize",
-            "ipAddress": "192.174.90.94",
-            "subnetAddress": "255.255.255.0",
-            "gatewayAddress": "192.174.90.1",
-            "macAddress": "00:12:34:00:5A:A2",
-            "rx":{
-              "protocol":"TCP"
-            },
-            "tx":{
-              "protocol":"DMA"
-            }
-          }
-        ]
-      }
-    ]`,
-	},
-}
-*/
 // indirect variables difinitions
 var frameworkKernelID int32 = 0
 var functionChannelID int32 = 0
 var functionIndex int32 = 0
 var functionKernelID int32 = 0
+var partitionName string = "0"
 var ptuKernelID int32 = 0
 
-//	var sharedmem = controllertestfpga.SharedMemorySpec{
-//		FilePrefix:      "pcieconnectiontest1-wbfunction-decode-main",
-//		CommandQueueID:  "pcieconnectiontest1-wbfunction-decode-main",
-//		SharedMemoryMiB: 1,
-//	}
-var fdmaconnectorID int32 = 512
+var lldmaconnectorID int32 = 512
 var dmachannelID int32 = 0
+var lldmaconnectorIDNil int32
+var dmachannelIDNil int32
+
+var protocolRTP = "RTP"
+var protocolTCP = "TCP"
+var protocolDMA = "DMA"
 
 var FPGAFunctiondecode = controllertestfpga.FPGAFunction{
 	TypeMeta: metav1.TypeMeta{
@@ -199,7 +46,7 @@ var FPGAFunctiondecode = controllertestfpga.FPGAFunction{
 	Spec: controllertestfpga.FPGAFunctionSpec{
 		AcceleratorIDs: []controllertestfpga.AccIDInfo{
 			{
-				PartitionName: "0",
+				PartitionName: &partitionName,
 				ID:            "/dev/xpcie_21330621T01J",
 			},
 		},
@@ -217,13 +64,15 @@ var FPGAFunctiondecode = controllertestfpga.FPGAFunction{
 		NodeName:          "node01",
 		PtuKernelID:       &ptuKernelID,
 		RegionName:        "lane0",
-		Rx: controllertestfpga.RxTxSpec{
-			Protocol: "RTP",
+		Rx: &controllertestfpga.RxTxData{
+			Protocol:         protocolRTP,
+			DMAChannelID:     &dmachannelIDNil,
+			LLDMAConnectorID: &lldmaconnectorIDNil,
 		},
-		Tx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Tx: &controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			DMAChannelID:     &dmachannelID,
+			LLDMAConnectorID: &lldmaconnectorID,
 		},
 		SharedMemory: &controllertestfpga.SharedMemorySpec{
 			FilePrefix:      "pcieconnectiontest1-wbfunction-decode-main",
@@ -238,18 +87,21 @@ var FPGAFunctiondecode = controllertestfpga.FPGAFunction{
 			Namespace: "default",
 		},
 		FunctionName:        "decode",
+		FunctionIndex:       0,
 		ParentBitstreamName: "ver2_tpcie_tandem1.mcs",
 		ChildBitstreamName:  "ver2_tpcie_tandem2.bit",
 		FrameworkKernelID:   0,
 		FunctionChannelID:   0,
 		PtuKernelID:         0,
-		Rx: controllertestfpga.RxTxSpec{
-			Protocol: "RTP",
+		Rx: controllertestfpga.RxTxData{
+			Protocol:         protocolRTP,
+			DMAChannelID:     &dmachannelIDNil,
+			LLDMAConnectorID: &lldmaconnectorIDNil,
 		},
-		Tx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Tx: controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			DMAChannelID:     &dmachannelID,
+			LLDMAConnectorID: &lldmaconnectorID,
 		},
 		Status: "Running",
 		SharedMemory: &controllertestfpga.SharedMemorySpec{
@@ -260,11 +112,6 @@ var FPGAFunctiondecode = controllertestfpga.FPGAFunction{
 	},
 }
 
-//	var sharedmemfilter = controllertestfpga.SharedMemorySpec{
-//		FilePrefix:      "pcieconnectiontest1-wbfunction-filter-resize-high-infer-main",
-//		CommandQueueID:  "pcieconnectiontest1-wbfunction-filter-resize-high-infer-main",
-//		SharedMemoryMiB: 1,
-//	}
 var FPGAFunctionfilter = controllertestfpga.FPGAFunction{
 	TypeMeta: metav1.TypeMeta{
 		APIVersion: "example.com/v1",
@@ -277,7 +124,7 @@ var FPGAFunctionfilter = controllertestfpga.FPGAFunction{
 	Spec: controllertestfpga.FPGAFunctionSpec{
 		AcceleratorIDs: []controllertestfpga.AccIDInfo{
 			{
-				PartitionName: "0",
+				PartitionName: &partitionName,
 				ID:            "/dev/xpcie_21330621T00D",
 			},
 		},
@@ -295,15 +142,15 @@ var FPGAFunctionfilter = controllertestfpga.FPGAFunction{
 		NodeName:          "node01",
 		PtuKernelID:       &ptuKernelID,
 		RegionName:        "lane0",
-		Rx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Rx: &controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			LLDMAConnectorID: &lldmaconnectorID,
+			DMAChannelID:     &dmachannelID,
 		},
-		Tx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Tx: &controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			LLDMAConnectorID: &lldmaconnectorID,
+			DMAChannelID:     &dmachannelID,
 		},
 		SharedMemory: &controllertestfpga.SharedMemorySpec{
 			FilePrefix:      "pcieconnectiontest1-wbfunction-filter-resize-high-infer-main",
@@ -318,20 +165,21 @@ var FPGAFunctionfilter = controllertestfpga.FPGAFunction{
 			Namespace: "default",
 		},
 		FunctionName:        "filter-resize-high-infer",
+		FunctionIndex:       0,
 		ParentBitstreamName: "ver2_tpcie_tandem1.mcs",
 		ChildBitstreamName:  "ver1_tpcie_tandem2.bit",
 		FrameworkKernelID:   0,
 		FunctionChannelID:   0,
 		PtuKernelID:         0,
-		Rx: controllertestfpga.RxTxSpec{
-			Protocol:        "TCP",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Rx: controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			LLDMAConnectorID: &lldmaconnectorID,
+			DMAChannelID:     &dmachannelID,
 		},
-		Tx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Tx: controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			LLDMAConnectorID: &lldmaconnectorID,
+			DMAChannelID:     &dmachannelID,
 		},
 		Status: "Running",
 		SharedMemory: &controllertestfpga.SharedMemorySpec{
@@ -394,7 +242,10 @@ var PCIeConnection1 = examplecomv1.PCIeConnection{
 	},
 }
 
-var CPUFunctiondecode = controllertestcpu.CPUFunction{
+var partitionNameCPUDecode2 string = "pcieconnectiontest2-wbfunction-decode-main"
+var podNameCPUDecode2 string = "pcieconnectiontest1-wbfunction-decode-main-cpu-pod"
+
+var CPUFunctionDecode2 = controllertestcpu.CPUFunction{
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "pcieconnectiontest2-wbfunction-decode-main",
 		Namespace: "default",
@@ -402,7 +253,7 @@ var CPUFunctiondecode = controllertestcpu.CPUFunction{
 	Spec: controllertestcpu.CPUFunctionSpec{
 		AcceleratorIDs: []controllertestcpu.AccIDInfo{
 			{
-				PartitionName: "pcieconnectiontest2-wbfunction-decode-main",
+				PartitionName: &partitionNameCPUDecode2,
 				ID:            "node01-cpu0",
 			},
 		},
@@ -457,8 +308,14 @@ var CPUFunctiondecode = controllertestcpu.CPUFunction{
 		},
 		FunctionName: "cpu-decode",
 		ImageURI:     "container",
+		PodName:      &podNameCPUDecode2,
 		ConfigName:   "configname",
 		Status:       "Running",
+		SharedMemory: &controllertestcpu.SharedMemorySpec{
+			FilePrefix:      "test01-pcieconnectiontest2-wbfunction-decode-main",
+			CommandQueueID:  "test01-pcieconnectiontest2-wbfunction-decode-main",
+			SharedMemoryMiB: 256,
+		},
 	},
 }
 
@@ -474,7 +331,7 @@ var FPGAFunctionfilter2 = controllertestfpga.FPGAFunction{
 	Spec: controllertestfpga.FPGAFunctionSpec{
 		AcceleratorIDs: []controllertestfpga.AccIDInfo{
 			{
-				PartitionName: "0",
+				PartitionName: &partitionName,
 				ID:            "/dev/xpcie_21330621T00D",
 			},
 		},
@@ -492,15 +349,15 @@ var FPGAFunctionfilter2 = controllertestfpga.FPGAFunction{
 		NodeName:          "node01",
 		PtuKernelID:       &ptuKernelID,
 		RegionName:        "lane0",
-		Rx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Rx: &controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			LLDMAConnectorID: &lldmaconnectorID,
+			DMAChannelID:     &dmachannelID,
 		},
-		Tx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Tx: &controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			LLDMAConnectorID: &lldmaconnectorID,
+			DMAChannelID:     &dmachannelID,
 		},
 		SharedMemory: &controllertestfpga.SharedMemorySpec{
 			FilePrefix:      "pcieconnectiontest2-wbfunction-filter-resize-high-infer-main",
@@ -515,26 +372,26 @@ var FPGAFunctionfilter2 = controllertestfpga.FPGAFunction{
 			Namespace: "default",
 		},
 		FunctionName:        "filter-resize-low-infer",
+		FunctionIndex:       0,
 		ParentBitstreamName: "ver2_tpcie_tandem1.mcs",
 		ChildBitstreamName:  "ver1_tpcie_tandem2.bit",
 		FrameworkKernelID:   0,
 		FunctionChannelID:   0,
 		PtuKernelID:         0,
-		Rx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Rx: controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			LLDMAConnectorID: &lldmaconnectorID,
+			DMAChannelID:     &dmachannelID,
 		},
-		Tx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Tx: controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			LLDMAConnectorID: &lldmaconnectorID,
+			DMAChannelID:     &dmachannelID,
 		},
 		Status: "Running",
 	},
 }
 
-// var t, _ = time.Parse("2006-01-02T15:04:05Z", "2023-12-01T10:00:00Z")
 var t = metav1.Time{
 	Time: time.Now(),
 }
@@ -606,7 +463,7 @@ var FPGAFunctionfilter3 = controllertestfpga.FPGAFunction{
 	Spec: controllertestfpga.FPGAFunctionSpec{
 		AcceleratorIDs: []controllertestfpga.AccIDInfo{
 			{
-				PartitionName: "0",
+				PartitionName: &partitionName,
 				ID:            "/dev/xpcie_21330621T00D",
 			},
 		},
@@ -624,13 +481,15 @@ var FPGAFunctionfilter3 = controllertestfpga.FPGAFunction{
 		NodeName:          "node01",
 		PtuKernelID:       &ptuKernelID,
 		RegionName:        "lane0",
-		Rx: controllertestfpga.RxTxSpec{
-			Protocol: "TCP",
+		Rx: &controllertestfpga.RxTxData{
+			Protocol:         protocolTCP,
+			LLDMAConnectorID: &lldmaconnectorIDNil,
+			DMAChannelID:     &dmachannelIDNil,
 		},
-		Tx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Tx: &controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			LLDMAConnectorID: &lldmaconnectorID,
+			DMAChannelID:     &dmachannelID,
 		},
 		SharedMemory: &controllertestfpga.SharedMemorySpec{
 			FilePrefix:      "pcieconnectiontest3-wbfunction-filter-resize-high-infer-main",
@@ -645,22 +504,28 @@ var FPGAFunctionfilter3 = controllertestfpga.FPGAFunction{
 			Namespace: "default",
 		},
 		FunctionName:        "filter-resize-high-infer",
+		FunctionIndex:       0,
 		ParentBitstreamName: "ver2_tpcie_tandem1.mcs",
 		ChildBitstreamName:  "ver1_tpcie_tandem2.bit",
 		FrameworkKernelID:   0,
 		FunctionChannelID:   0,
 		PtuKernelID:         0,
-		Rx: controllertestfpga.RxTxSpec{
-			Protocol: "TCP",
+		Rx: controllertestfpga.RxTxData{
+			Protocol:         protocolTCP,
+			LLDMAConnectorID: &lldmaconnectorIDNil,
+			DMAChannelID:     &dmachannelIDNil,
 		},
-		Tx: controllertestfpga.RxTxSpec{
-			Protocol:        "DMA",
-			FDMAConnectorID: &fdmaconnectorID,
-			DMAChannelID:    &dmachannelID,
+		Tx: controllertestfpga.RxTxData{
+			Protocol:         protocolDMA,
+			LLDMAConnectorID: &lldmaconnectorID,
+			DMAChannelID:     &dmachannelID,
 		},
 		Status: "Running",
 	},
 }
+
+var partitionNameGPUHigh string = "pcieconnectiontest3-wbfunction-high-infer-main"
+var podNameGPUhighinfer string = "pcieconnectiontest1-wbfunction-high-infer-main-gpu-pod"
 
 var GPUFunctionhighinfer = controllertestgpu.GPUFunction{
 	ObjectMeta: metav1.ObjectMeta{
@@ -671,7 +536,7 @@ var GPUFunctionhighinfer = controllertestgpu.GPUFunction{
 		AcceleratorIDs: []controllertestgpu.AccIDInfo{
 			{
 				ID:            "GPU-",
-				PartitionName: "pcieconnectiontest3-wbfunction-high-infer-main",
+				PartitionName: &partitionNameGPUHigh,
 			},
 		},
 		ConfigName: "gpufunc-config-high-infer",
@@ -697,8 +562,14 @@ var GPUFunctionhighinfer = controllertestgpu.GPUFunction{
 		},
 		FunctionName: "high-infer",
 		ImageURI:     "container",
+		PodName:      &podNameGPUhighinfer,
 		ConfigName:   "configname",
 		Status:       "Running",
+		SharedMemory: &controllertestgpu.SharedMemorySpec{
+			FilePrefix:      "pcieconnectiontest3-wbfunction-high-infer-main",
+			CommandQueueID:  "pcieconnectiontest3-wbfunction-high-infer-main",
+			SharedMemoryMiB: 1,
+		},
 	},
 }
 var PCIeConnection3 = examplecomv1.PCIeConnection{
@@ -753,7 +624,10 @@ var PCIeConnection3 = examplecomv1.PCIeConnection{
 	},
 }
 
-var CPUFunctionDecode = controllertestcpu.CPUFunction{
+var partitionNameCPUDecode4 string = "pcieconnectiontest4-wbfunction-decode-main"
+var podNameCPUDecode4 string = "pcieconnectiontest1-wbfunction-decode-main-cpu-pod"
+
+var CPUFunctionDecode4 = controllertestcpu.CPUFunction{
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "pcieconnectiontest4-wbfunction-decode-main",
 		Namespace: "default",
@@ -761,7 +635,7 @@ var CPUFunctionDecode = controllertestcpu.CPUFunction{
 	Spec: controllertestcpu.CPUFunctionSpec{
 		AcceleratorIDs: []controllertestcpu.AccIDInfo{
 			{
-				PartitionName: "pcieconnectiontest4-wbfunction-decode-main",
+				PartitionName: &partitionNameCPUDecode4,
 				ID:            "node01-cpu0",
 			},
 		},
@@ -816,10 +690,19 @@ var CPUFunctionDecode = controllertestcpu.CPUFunction{
 		},
 		FunctionName: "cpu-decode",
 		ImageURI:     "container",
+		PodName:      &podNameCPUDecode4,
 		ConfigName:   "configname",
 		Status:       "Running",
+		SharedMemory: &controllertestcpu.SharedMemorySpec{
+			FilePrefix:      "test01-pcieconnectiontest4-wbfunction-decode-main",
+			CommandQueueID:  "test01-pcieconnectiontest4-wbfunction-decode-main",
+			SharedMemoryMiB: 256,
+		},
 	},
 }
+
+var partitionNameCPUFR string = "pcieconnectiontest4-wbfunction-filter-resize-high-infer-main"
+var podNameCPUFilterResize string = "pcieconnectiontest2-wbfunction-decode-main-cpu-pod"
 
 var CPUFunctionFilterResize = controllertestcpu.CPUFunction{
 	TypeMeta: metav1.TypeMeta{
@@ -833,7 +716,7 @@ var CPUFunctionFilterResize = controllertestcpu.CPUFunction{
 	Spec: controllertestcpu.CPUFunctionSpec{
 		AcceleratorIDs: []controllertestcpu.AccIDInfo{
 			{
-				PartitionName: "pcieconnectiontest4-wbfunction-filter-resize-high-infer-main",
+				PartitionName: &partitionNameCPUFR,
 				ID:            "node01-cpu0",
 			},
 		},
@@ -897,6 +780,7 @@ var CPUFunctionFilterResize = controllertestcpu.CPUFunction{
 		},
 		FunctionName: "cpu-filter-resize",
 		ImageURI:     "container",
+		PodName:      &podNameCPUFilterResize,
 		ConfigName:   "configname",
 		Status:       "Running",
 	},
@@ -1009,61 +893,6 @@ var pcieconnectiontestUPDATE = examplecomv1.PCIeConnection{
 	},
 }
 
-var pcieconnectiontestDELETE = examplecomv1.PCIeConnection{
-	TypeMeta: metav1.TypeMeta{
-		APIVersion: "example.com/v1",
-		Kind:       "PCIeConnection",
-	},
-	ObjectMeta: metav1.ObjectMeta{
-		Name:      "pcieconnectiontestdelete-wbconnection-decode-main-filter-resize-high-infer-main",
-		Namespace: "default",
-		Finalizers: []string{
-			"pcieconnection.finalizers.example.com.v1",
-		},
-	},
-	Spec: examplecomv1.PCIeConnectionSpec{
-		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "pcieconnectiontestdelete",
-			Namespace: "default",
-		},
-
-		From: examplecomv1.PCIeFunctionSpec{
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "pcieconnectiontestdelete-wbfunction-decode-main",
-				Namespace: "default",
-			},
-		},
-		To: examplecomv1.PCIeFunctionSpec{
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "pcieconnectiontestdelete-wbfunction-filter-resize-high-infer-main",
-				Namespace: "default",
-			},
-		},
-	},
-	Status: examplecomv1.PCIeConnectionStatus{
-		StartTime: metav1.Now(),
-		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "pcieconnectiontestdelete",
-			Namespace: "default",
-		},
-		Status: "OK",
-		From: examplecomv1.PCIeFunctionStatus{
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "pcieconnectiontestdelete-wbfunction-decode-main",
-				Namespace: "default",
-			},
-			Status: "OK",
-		},
-		To: examplecomv1.PCIeFunctionStatus{
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "pcieconnectiontestdelete-wbfunction-filter-resize-high-infer-main",
-				Namespace: "default",
-			},
-			Status: "OK",
-		},
-	},
-}
-
 var ChildBitstreamID string = "aaaaaa"
 var ChildBitstreamID2 string = "cccccc"
 var ChildBitstreamCRName string = "ddddddd"
@@ -1147,273 +976,395 @@ var FPGA1 = []examplecomv1.FPGA{
 	},
 }
 
-// var CPUFunction4 = examplecomv1.CPUFunction{
-// 	ObjectMeta: metav1.ObjectMeta{
-// 		Name:      "cpufunctiontest4-wbfunction-copy-branch-main",
-// 		Namespace: "test01",
-// 	},
-// 	Spec: examplecomv1.CPUFunctionSpec{
-// 		AcceleratorIDs: []examplecomv1.AccIDInfo{
-// 			{
-// 				PartitionName: "cpufunctiontest4-wbfunction-copy-branch-main",
-// 				ID:            "node01-cpu0",
-// 			},
-// 		},
-// 		ConfigName: "cpufunc-config-copy-branch",
-// 		DataFlowRef: examplecomv1.WBNamespacedName{
-// 			Name:      "cpufunctiontest4",
-// 			Namespace: "test01",
-// 		},
-// 		DeviceType: "cpu",
-// 		Envs: []examplecomv1.EnvsInfo{
-// 			{
-// 				PartitionName: "cpufunction4",
-// 				EachEnv: []examplecomv1.EnvsData{
-// 					{
-// 						EnvKey:   "test",
-// 						EnvValue: "testvalue",
-// 					},
-// 				},
-// 			},
-// 		},
-// 		FunctionName: "copy-branch",
-// 		NextFunctions: map[string]examplecomv1.FromToWBFunction{
-// 			"0": {
-// 				Port: 0,
-// 				WBFunctionRef: examplecomv1.WBNamespacedName{
-// 					Name:      "cpufunctiontest4-wbfunction-infer-1",
-// 					Namespace: "test01",
-// 				},
-// 			},
-// 			"1": {
-// 				Port: 0,
-// 				WBFunctionRef: examplecomv1.WBNamespacedName{
-// 					Name:      "cpufunctiontest4-wbfunction-infer-2",
-// 					Namespace: "test01",
-// 				},
-// 			},
-// 		},
-// 		NodeName: "node01",
-// 		Params: map[string]intstr.IntOrString{
-// 			"decEnvFrameFPS": {
-// 				IntVal: 5,
-// 			},
-// 			"inputIPAddress": {
-// 				StrVal: "192.168.122.121",
-// 				Type:   1,
-// 			},
-// 			"inputPort": {
-// 				IntVal: 16000,
-// 			},
-// 			"branchOutputIPAddress": {
-// 				StrVal: "192.174.90.141,192.174.90.142",
-// 				Type:   1,
-// 			},
-// 			"branchOutputPort": {
-// 				StrVal: "17000,18000",
-// 				Type:   1,
-// 			},
-// 			"ipAddress": {
-// 				StrVal: "192.174.122.121/24",
-// 				Type:   1,
-// 			},
-// 		},
-// 		PreviousFunctions: map[string]examplecomv1.FromToWBFunction{
-// 			"0": {
-// 				Port: 0,
-// 				WBFunctionRef: examplecomv1.WBNamespacedName{
-// 					Name:      "cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-// 					Namespace: "test01",
-// 				},
-// 			},
-// 		},
-// 		SharedMemory: &examplecomv1.SharedMemorySpec{
-// 			FilePrefix:      "test01-cpufunctiontest4-wbfunction-filter-resize-high-infer-main",
-// 			CommandQueueID:  "test01-cpufunctiontest4-wbfunction-filter-resize-high-infer-main",
-// 			SharedMemoryMiB: 0,
-// 		},
-// 		RegionName:        "cpu",
-// 		RequestMemorySize: &reqMemSize,
-// 	},
-// 	Status: examplecomv1.CPUFunctionStatus{
-// 		StartTime: metav1.Now(),
-// 		DataFlowRef: examplecomv1.WBNamespacedName{
-// 			Name:      "cpufunctiontest4",
-// 			Namespace: "test01",
-// 		},
-// 		FunctionName: "copy-branch",
-// 		ImageURI:     "container",
-// 		ConfigName:   "configname",
-// 		Status:       "pending",
-// 	},
-// }
-// var CPUFunction4frlow = examplecomv1.CPUFunction{
-// 	TypeMeta: metav1.TypeMeta{
-// 		Kind:       "CPUFunction",
-// 		APIVersion: "example.com/v1",
-// 	},
-// 	ObjectMeta: metav1.ObjectMeta{
-// 		Name:      "cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-// 		Namespace: "test01",
-// 	},
-// 	Spec: examplecomv1.CPUFunctionSpec{
-// 		AcceleratorIDs: []examplecomv1.AccIDInfo{
-// 			{
-// 				PartitionName: "cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-// 				ID:            "node01-cpu0",
-// 			},
-// 		},
-// 		ConfigName: "cpufunc-config-filter-resize-low-infer",
-// 		DataFlowRef: examplecomv1.WBNamespacedName{
-// 			Name:      "cpufunctiontest4",
-// 			Namespace: "test01",
-// 		},
-// 		DeviceType:   "cpu",
-// 		FunctionName: "cpu-filter-resize-low-infer",
-// 		NextFunctions: map[string]examplecomv1.FromToWBFunction{
-// 			"0": {
-// 				Port: 0,
-// 				WBFunctionRef: examplecomv1.WBNamespacedName{
-// 					Name:      "cpufunctiontest4-wbfunction-low-infer-main",
-// 					Namespace: "test01",
-// 				},
-// 			},
-// 		},
-// 		NodeName: "node01",
-// 		Params: map[string]intstr.IntOrString{
-// 			"decEnvFrameFPS": {
-// 				IntVal: 5,
-// 			},
-// 			"inputIPAddress": {
-// 				StrVal: "192.168.122.50",
-// 				Type:   1,
-// 			},
-// 			"inputPort": {
-// 				IntVal: 15000,
-// 			},
-// 			"outputIPAddress": {
-// 				StrVal: "192.168.122.121",
-// 				Type:   1,
-// 			},
-// 			"outputPort": {
-// 				IntVal: 16000,
-// 			},
-// 		},
-// 		PreviousFunctions: map[string]examplecomv1.FromToWBFunction{
-// 			"0": {
-// 				Port: 0,
-// 				WBFunctionRef: examplecomv1.WBNamespacedName{
-// 					Name:      "cpufunctiontest4-wbfunction-decode-main",
-// 					Namespace: "test01",
-// 				},
-// 			},
-// 		},
-// 		SharedMemory: &examplecomv1.SharedMemorySpec{
-// 			FilePrefix:      "test01-cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-// 			CommandQueueID:  "test01-cpufunctiontest4-wbfunction-filter-resize-low-infer-main",
-// 			SharedMemoryMiB: 1,
-// 		},
-// 		RegionName: "cpu",
-// 	},
-// 	Status: examplecomv1.CPUFunctionStatus{
-// 		StartTime: metav1.Now(),
-// 		DataFlowRef: examplecomv1.WBNamespacedName{
-// 			Name:      "cpufunctiontest4",
-// 			Namespace: "test01",
-// 		},
-// 		FunctionName: "cpu-filter-resize",
-// 		ImageURI:     "container",
-// 		ConfigName:   "configname",
-// 		Status:       "pending",
-// 	},
-// }
+var PCIeConnection5 = examplecomv1.PCIeConnection{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "PCIeConnection",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Finalizers: []string{
+			"pcieconnection.finalizers.example.com.v1",
+		},
+		Name:      "pcieconnectiontest5-wbconnection-decode-main-filter-resize-low-infer-main",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.PCIeConnectionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest5",
+			Namespace: "default",
+		},
 
-// var CPUFunction5 = examplecomv1.CPUFunction{
-// 	ObjectMeta: metav1.ObjectMeta{
-// 		Name:      "cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
-// 		Namespace: "test01",
-// 	},
-// 	Spec: examplecomv1.CPUFunctionSpec{
-// 		AcceleratorIDs: []examplecomv1.AccIDInfo{
-// 			{
-// 				PartitionName: "cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
-// 				ID:            "node01-cpu0",
-// 			},
-// 		},
-// 		ConfigName: "cpufunc-config-glue-fdma-to-tcp",
-// 		DataFlowRef: examplecomv1.WBNamespacedName{
-// 			Name:      "cpufunctiontest5",
-// 			Namespace: "test01",
-// 		},
-// 		DeviceType:   "cpu",
-// 		FunctionName: "glue-fdma-to-tcp",
-// 		NextFunctions: map[string]examplecomv1.FromToWBFunction{
-// 			"0": {
-// 				Port: 0,
-// 				WBFunctionRef: examplecomv1.WBNamespacedName{
-// 					Name:      "cpufunctiontest5-wbfunction-high-infer-main",
-// 					Namespace: "test01",
-// 				},
-// 			},
-// 		},
-// 		NodeName: "node01",
-// 		Params: map[string]intstr.IntOrString{
-// 			"decEnvFrameFPS": {
-// 				IntVal: 15,
-// 			},
-// 			"inputIPAddress": {
-// 				StrVal: "192.168.122.121",
-// 				Type:   1,
-// 			},
-// 			"inputPort": {
-// 				IntVal: 16000,
-// 			},
-// 			"outputIPAddress": {
-// 				StrVal: "192.168.122.100",
-// 				Type:   1,
-// 			},
-// 			"outputPort": {
-// 				IntVal: 16000,
-// 			},
-// 			"glueOutputIPAddress": {
-// 				StrVal: "192.174.90.141",
-// 				Type:   1,
-// 			},
-// 			"glueOutputPort": {
-// 				StrVal: "16000",
-// 				Type:   1,
-// 			},
-// 			"ipAddress": {
-// 				StrVal: "192.174.122.131/24",
-// 				Type:   1,
-// 			},
-// 		},
-// 		PreviousFunctions: map[string]examplecomv1.FromToWBFunction{
-// 			"0": {
-// 				Port: 0,
-// 				WBFunctionRef: examplecomv1.WBNamespacedName{
-// 					Name:      "cpufunctiontest5-wbfunction-filter-resize-high-infer-main",
-// 					Namespace: "test01",
-// 				},
-// 			},
-// 		},
-// 		SharedMemory: &examplecomv1.SharedMemorySpec{
-// 			FilePrefix:      "test01-cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
-// 			CommandQueueID:  "test01-cpufunctiontest5-wbfunction-glue-fdma-to-tcp-main",
-// 			SharedMemoryMiB: 256,
-// 		},
-// 		RegionName:        "cpu",
-// 		RequestMemorySize: &reqMemSize,
-// 	},
-// 	Status: examplecomv1.CPUFunctionStatus{
-// 		StartTime: metav1.Now(),
-// 		DataFlowRef: examplecomv1.WBNamespacedName{
-// 			Name:      "cpufunctiontest5",
-// 			Namespace: "test01",
-// 		},
-// 		FunctionName: "glue-fdma-to-tcp",
-// 		ImageURI:     "container",
-// 		ConfigName:   "configname",
-// 		Status:       "pending",
-// 	},
-// }
+		From: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest2-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest2-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: examplecomv1.PCIeConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest5",
+			Namespace: "default",
+		},
+		Status: "Running",
+		From: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest2-wbfunction-decode-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+		To: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest2-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+	},
+}
+
+var PCIeConnection6 = examplecomv1.PCIeConnection{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "PCIeConnection",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Finalizers: []string{
+			"pcieconnection.finalizers.example.com.v1",
+		},
+		Name:      "pcieconnectiontest6-wbconnection-decode-main-filter-resize-high-infer-main",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.PCIeConnectionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest6",
+			Namespace: "default",
+		},
+
+		From: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest1-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest1-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: examplecomv1.PCIeConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest6",
+			Namespace: "default",
+		},
+		Status: "Terminating",
+		From: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest1-wbfunction-decode-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+		To: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest1-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+	},
+}
+
+var PCIeConnection7 = examplecomv1.PCIeConnection{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "PCIeConnection",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Finalizers: []string{
+			"pcieconnection.finalizers.example.com.v1",
+		},
+		Name:      "pcieconnectiontest7-wbconnection-decode-main-filter-resize-low-infer-main",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.PCIeConnectionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest7",
+			Namespace: "default",
+		},
+
+		From: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest2-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest2-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: examplecomv1.PCIeConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest7",
+			Namespace: "default",
+		},
+		Status: "Terminating",
+		From: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest2-wbfunction-decode-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+		To: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest2-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+	},
+}
+
+var PCIeConnection8 = examplecomv1.PCIeConnection{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "PCIeConnection",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Finalizers: []string{
+			"pcieconnection.finalizers.example.com.v1",
+		},
+		Name:      "pcieconnectiontest8-wbconnection-filter-resize-high-infer-main-high-infer-main",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.PCIeConnectionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest8",
+			Namespace: "default",
+		},
+
+		From: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest3-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+		},
+		To: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest3-wbfunction-high-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: examplecomv1.PCIeConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest8",
+			Namespace: "default",
+		},
+		Status: "Terminating",
+		From: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest3-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+		To: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest3-wbfunction-high-infer-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+	},
+}
+
+var PCIeConnection9 = examplecomv1.PCIeConnection{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "PCIeConnection",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Finalizers: []string{
+			"pcieconnection.finalizers.example.com.v1",
+		},
+		Name:      "pcieconnectiontest9-wbconnection-decode-main-filter-resize-high-infer-main",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.PCIeConnectionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest9",
+			Namespace: "default",
+		},
+
+		From: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest4-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest4-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: examplecomv1.PCIeConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest9",
+			Namespace: "default",
+		},
+		Status: "Terminating",
+		From: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest4-wbfunction-decode-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+		To: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest4-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+	},
+}
+
+var CPUPod1 = corev1.Pod{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "v1",
+		Kind:       "Pod",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Finalizers: []string{
+			"kubernetes",
+		},
+		Name:      "pcieconnectiontest1-wbfunction-decode-main-cpu-pod",
+		Namespace: "default",
+	},
+	Spec: corev1.PodSpec{
+		Containers: []corev1.Container{
+			0: corev1.Container{
+				Image: "pcieconnectiontest1-cpu_decode",
+				Name:  "pcieconnectiontest1-cpu-pod",
+			},
+		},
+	},
+}
+
+var CPUPod2 = corev1.Pod{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "v1",
+		Kind:       "Pod",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Finalizers: []string{
+			"kubernetes",
+		},
+		Name:      "pcieconnectiontest2-wbfunction-decode-main-cpu-pod",
+		Namespace: "default",
+	},
+	Spec: corev1.PodSpec{
+		Containers: []corev1.Container{
+			0: corev1.Container{
+				Image: "pcieconnectiontest2-cpu_decode",
+				Name:  "pcieconnectiontest2-cpu-pod",
+			},
+		},
+	},
+}
+
+var GPUPod1 = corev1.Pod{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "v1",
+		Kind:       "Pod",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Finalizers: []string{
+			"kubernetes",
+		},
+		Name:      "pcieconnectiontest1-wbfunction-high-infer-main-gpu-pod",
+		Namespace: "default",
+	},
+	Spec: corev1.PodSpec{
+		Containers: []corev1.Container{
+			0: corev1.Container{
+				Image: "pcieconnectiontest1-gpu_infer_dma",
+				Name:  "pcieconnectiontest1-gpu-pod",
+			},
+		},
+	},
+}
+
+var PCIeConnection723 = examplecomv1.PCIeConnection{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "PCIeConnection",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "pcieconnectiontest723-wbconnection-decode-main-filter-resize-high-infer-main",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.PCIeConnectionSpec{
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest4",
+			Namespace: "default",
+		},
+
+		From: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest4-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: examplecomv1.PCIeFunctionSpec{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest4-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: examplecomv1.PCIeConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "pcieconnectiontest4",
+			Namespace: "default",
+		},
+		Status: "Running",
+		From: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest4-wbfunction-decode-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+		To: examplecomv1.PCIeFunctionStatus{
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "pcieconnectiontest4-wbfunction-filter-resize-high-infer-main",
+				Namespace: "default",
+			},
+			Status: "OK",
+		},
+	},
+}

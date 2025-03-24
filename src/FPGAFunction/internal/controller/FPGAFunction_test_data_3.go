@@ -1,3 +1,7 @@
+/*
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
+*/
+
 package controller
 
 import (
@@ -5,6 +9,7 @@ import (
 	controllertestcpu "FPGAFunction/internal/controller/test/type/CPU"
 	controllertestethernet "FPGAFunction/internal/controller/test/type/Ethernet"
 	controllertestgpu "FPGAFunction/internal/controller/test/type/GPU"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -219,12 +224,12 @@ var GPUFunction2 = controllertestgpu.GPUFunction{
 	},
 }
 
-var childbsid2 string = "2222222222"
+var childbsid2 string = "00000002"
 var maxFunctions2 int32 = 1
 var maxCapacity2 int32 = 2
-var name2 string = "child1"
+var name2 string = "lane0"
 var cids2 string = "111"
-var id2 int32 = 3
+var id2 int32 = 0
 var identifier2 string = "child1_identifier"
 var typ2 string = "childbs_chaintype"
 var varsion2 string = "childbs_varsion1.1.3"
@@ -238,6 +243,7 @@ var port3_2 int32 = 8
 var dmaChannel3_2 int32 = 9
 var lldmaConnector3_2 int32 = 10
 var uid2 types.UID = "aaaaaaa"
+var functionChannelIDs2 = "0-7"
 
 var ChildBitstream1 = examplecomv1.ChildBs{
 	TypeMeta: metav1.TypeMeta{
@@ -245,7 +251,7 @@ var ChildBitstream1 = examplecomv1.ChildBs{
 		Kind:       "Childbs",
 	},
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "fpga-21320621v00dtest012222222222",
+		Name:      "fpga-21320621v00d-test01-00000002",
 		Namespace: "default",
 		OwnerReferences: []metav1.OwnerReference{
 			{
@@ -310,9 +316,10 @@ var ChildBitstream1 = examplecomv1.ChildBs{
 						{
 							ID: &id2,
 							Module: &[]examplecomv1.FunctionsModule{{
-								Identifier: &identifier2,
-								Type:       &typ2,
-								Version:    &varsion2,
+								FunctionChannelIDs: &functionChannelIDs2,
+								Identifier:         &identifier2,
+								Type:               &typ2,
+								Version:            &varsion2,
 							}},
 							/*Parameters: &map[string]intstr.IntOrString{
 							   	"0": {
@@ -322,12 +329,12 @@ var ChildBitstream1 = examplecomv1.ChildBs{
 							     },
 							  },
 							*/IntraResourceMgmtMap: &map[string]examplecomv1.FunctionsIntraResourceMgmtMap{
-								"1": {
-									Available:      &available2,
+								"0": {
+									Available:      &available_false,
 									FunctionCRName: &funcCRName2,
 									Rx: &examplecomv1.RxTxSpec{
 
-										Protocol: &map[string]examplecomv1.Details{
+										Protocol: &map[string]examplecomv1.ChildBsDetails{
 											"RTP": {
 												Port:             &port3_1,
 												DMAChannelID:     &dmaChannel3_1,
@@ -336,7 +343,7 @@ var ChildBitstream1 = examplecomv1.ChildBs{
 										},
 									},
 									Tx: &examplecomv1.RxTxSpec{
-										Protocol: &map[string]examplecomv1.Details{
+										Protocol: &map[string]examplecomv1.ChildBsDetails{
 											"DMA": {
 												Port:             &port3_2,
 												DMAChannelID:     &dmaChannel3_2,
@@ -344,6 +351,53 @@ var ChildBitstream1 = examplecomv1.ChildBs{
 											},
 										},
 									},
+								},
+								"1": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+									Rx: &examplecomv1.RxTxSpec{
+
+										Protocol: &map[string]examplecomv1.ChildBsDetails{
+											"RTP": {
+												Port:             &port3_1,
+												DMAChannelID:     &dmaChannel3_1,
+												LLDMAConnectorID: &lldmaConnector3_1,
+											},
+										},
+									},
+									Tx: &examplecomv1.RxTxSpec{
+										Protocol: &map[string]examplecomv1.ChildBsDetails{
+											"DMA": {
+												Port:             &port3_2,
+												DMAChannelID:     &dmaChannel3_2,
+												LLDMAConnectorID: &lldmaConnector3_2,
+											},
+										},
+									},
+								},
+								"2": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+								},
+								"3": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+								},
+								"4": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+								},
+								"5": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+								},
+								"6": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+								},
+								"7": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
 								},
 							},
 							DeploySpec: examplecomv1.FunctionsDeploySpec{
@@ -414,9 +468,10 @@ var ChildBitstream1 = examplecomv1.ChildBs{
 						{
 							ID: &id2,
 							Module: &[]examplecomv1.FunctionsModule{{
-								Identifier: &identifier2,
-								Type:       &typ2,
-								Version:    &varsion2,
+								FunctionChannelIDs: &functionChannelIDs2,
+								Identifier:         &identifier2,
+								Type:               &typ2,
+								Version:            &varsion2,
 							}},
 							Parameters: &map[string]intstr.IntOrString{
 								"5": {
@@ -426,11 +481,12 @@ var ChildBitstream1 = examplecomv1.ChildBs{
 								},
 							},
 							IntraResourceMgmtMap: &map[string]examplecomv1.FunctionsIntraResourceMgmtMap{
-								"1": {
-									Available:      &available2,
+								"0": {
+									Available:      &available_false,
 									FunctionCRName: &funcCRName2,
 									Rx: &examplecomv1.RxTxSpec{
-										Protocol: &map[string]examplecomv1.Details{
+
+										Protocol: &map[string]examplecomv1.ChildBsDetails{
 											"RTP": {
 												Port:             &port3_1,
 												DMAChannelID:     &dmaChannel3_1,
@@ -439,7 +495,7 @@ var ChildBitstream1 = examplecomv1.ChildBs{
 										},
 									},
 									Tx: &examplecomv1.RxTxSpec{
-										Protocol: &map[string]examplecomv1.Details{
+										Protocol: &map[string]examplecomv1.ChildBsDetails{
 											"DMA": {
 												Port:             &port3_2,
 												DMAChannelID:     &dmaChannel3_2,
@@ -447,6 +503,52 @@ var ChildBitstream1 = examplecomv1.ChildBs{
 											},
 										},
 									},
+								},
+								"1": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+									Rx: &examplecomv1.RxTxSpec{
+										Protocol: &map[string]examplecomv1.ChildBsDetails{
+											"RTP": {
+												Port:             &port3_1,
+												DMAChannelID:     &dmaChannel3_1,
+												LLDMAConnectorID: &lldmaConnector3_1,
+											},
+										},
+									},
+									Tx: &examplecomv1.RxTxSpec{
+										Protocol: &map[string]examplecomv1.ChildBsDetails{
+											"DMA": {
+												Port:             &port3_2,
+												DMAChannelID:     &dmaChannel3_2,
+												LLDMAConnectorID: &lldmaConnector3_2,
+											},
+										},
+									},
+								},
+								"2": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+								},
+								"3": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+								},
+								"4": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+								},
+								"5": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+								},
+								"6": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
+								},
+								"7": {
+									Available:      &available2,
+									FunctionCRName: &funcCRName2,
 								},
 							},
 							DeploySpec: examplecomv1.FunctionsDeploySpec{
@@ -474,7 +576,7 @@ var FPGA2 = []examplecomv1.FPGA{
 			Kind:       "FPGA",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "fpga-21320621v00dtest01",
+			Name:      "fpga-21320621v00d-test01",
 			Namespace: "default",
 		},
 		Spec: examplecomv1.FPGASpec{

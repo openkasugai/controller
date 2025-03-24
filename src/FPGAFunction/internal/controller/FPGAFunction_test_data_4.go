@@ -1,3 +1,7 @@
+/*
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
+*/
+
 package controller
 
 import (
@@ -5,16 +9,15 @@ import (
 	controllertestcpu "FPGAFunction/internal/controller/test/type/CPU"
 	controllertestgpu "FPGAFunction/internal/controller/test/type/GPU"
 	controllertestpcie "FPGAFunction/internal/controller/test/type/PCIe"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	//	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
 var frameworkKernelID3 int32 = 2
 var functionChannelID3 int32 = 2
 
-// var functionIndex3 int32 = 2
 var functionKernelID3 int32 = 2
 var ptuKernelID3 int32 = 2
 var partitionName3 string = "0"
@@ -61,12 +64,11 @@ var FPGAFunction3 = examplecomv1.FPGAFunction{
 		},
 		FrameworkKernelID: &frameworkKernelID3,
 		FunctionChannelID: &functionChannelID3,
-		// FunctionIndex:     &functionIndex1,
-		FunctionKernelID: &functionKernelID3,
-		FunctionName:     "filter-resize-high-infer",
-		NodeName:         "test01",
-		PtuKernelID:      &ptuKernelID3,
-		RegionName:       "lane0",
+		FunctionKernelID:  &functionKernelID3,
+		FunctionName:      "filter-resize-high-infer",
+		NodeName:          "test01",
+		PtuKernelID:       &ptuKernelID3,
+		RegionName:        "lane0",
 		SharedMemory: &examplecomv1.SharedMemorySpec{
 			FilePrefix:      "df-night03-wbfunction-filter-resize-high-infer-main",
 			CommandQueueID:  "df-night03-wbfunction-filter-resize-high-infer-main",
@@ -75,23 +77,6 @@ var FPGAFunction3 = examplecomv1.FPGAFunction{
 	},
 	Status: examplecomv1.FPGAFunctionStatus{
 		StartTime: metav1.Now(),
-		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "fpgafunctiontest",
-			Namespace: "default",
-		},
-		FunctionName:        "filter-resize-high-infer",
-		ParentBitstreamName: "ver2_tpcie_tandem1.mcs",
-		ChildBitstreamName:  "ver1_tpcie_tandem2.bit",
-		FrameworkKernelID:   0,
-		FunctionChannelID:   0,
-		PtuKernelID:         0,
-		Rx: examplecomv1.RxTxData{
-			Protocol: "DMA",
-		},
-		Tx: examplecomv1.RxTxData{
-			Protocol: "DMA",
-		},
-		Status: "pending",
 	},
 }
 
@@ -227,206 +212,7 @@ var GPUFunction3 = controllertestgpu.GPUFunction{
 
 var childbsid3 string = "333333333"
 
-/*
-var maxFunctions1 int32 = 2
-var maxCapacity1 int32 = 3
-*/
 var name3 string = "child3"
-
-/*
-var cids1 string = "222"
-var id1 int32 = 4
-var identifier1 string = "child2_identifier"
-var typ1 string = "childbs_chaintype"
-var varsion1 string = "childbs_varsion1.1.5"
-var maxDataflows1 int32 = 5
-var available1 bool = true
-var funcCRName1 string = "funcCRName"
-var port7 int32 = 6
-var dmaChannel3 int32 = 7
-var lldmaConnector3 int32 = 8
-var port8 int32 = 9
-var dmaChannel4 int32 = 10
-var lldmaConnector4 int32 = 11
-var uid1 types.UID = "bbbbbbbbb"
-
-var ChildBitstream2 = examplecomv1.ChildBs{
-	TypeMeta: metav1.TypeMeta{
-		APIVersion: "example.com/v1",
-		Kind:       "Childbs",
-	},
-	ObjectMeta: metav1.ObjectMeta{
-		Name:      "fpga-21320621v00dtest012222222222",
-		Namespace: "default",
-		OwnerReferences: []metav1.OwnerReference{
-			{
-				APIVersion: "example.com/v1",
-				Kind:       "FPGA",
-				Name:       "fpga3",
-				UID:        uid1,
-			},
-		},
-	},
-	Spec: examplecomv1.ChildBsSpec{
-		Regions: []examplecomv1.ChildBsRegion{
-			{
-				Modules: &examplecomv1.ChildBsModule{
-					LLDMA: &examplecomv1.ChildBsLLDMA{
-						Cids: &cids1,
-						ID:   &id1,
-					},
-					Chain: &examplecomv1.ChildBsChain{
-						ID:         &id1,
-						Identifier: &identifier1,
-						Type:       &typ1,
-						Version:    &varsion1,
-					},
-					Directtrans: &examplecomv1.ChildBsDirecttrans{
-						ID:         &id1,
-						Identifier: &identifier1,
-						Type:       &typ1,
-						Version:    &varsion1,
-					},
-					Conversion: &examplecomv1.ChildBsConversion{
-						ID: &id1,
-						Module: &examplecomv1.ConversionModule{
-							Identifier: &identifier1,
-							Type:       &typ1,
-							Version:    &varsion1,
-						},
-					},
-					Functions: &[]examplecomv1.ChildBsFunctions{
-						{
-							ID: &id1,
-							Module: &examplecomv1.FunctionsModule{
-								Identifier: &identifier1,
-								Type:       &typ1,
-								Version:    &varsion1,
-							},
-							IntraResourceMgmtMap: &map[string]examplecomv1.FunctionsIntraResourceMgmtMap{
-								"1": {
-									Available:      &available1,
-									FunctionCRName: &funcCRName1,
-									Rx: &examplecomv1.RxTxSpec{
-
-										Protocol: &map[string]examplecomv1.Details{
-											"RTP": {
-												Port:             &port7,
-												DMAChannelID:     &dmaChannel3,
-												LLDMAConnectorID: &lldmaConnector3,
-											},
-										},
-									},
-									Tx: &examplecomv1.RxTxSpec{
-										Protocol: &map[string]examplecomv1.Details{
-											"DMA": {
-												Port:             &port8,
-												DMAChannelID:     &dmaChannel4,
-												LLDMAConnectorID: &lldmaConnector4,
-											},
-										},
-									},
-								},
-							},
-							DeploySpec: examplecomv1.FunctionsDeploySpec{
-								MaxCapacity:  &maxCapacity1,
-								MaxDataFlows: &maxDataflows1,
-							},
-						},
-					},
-				},
-				MaxFunctions: &maxFunctions1,
-				MaxCapacity:  &maxCapacity1,
-				Name:         &name1,
-			},
-		},
-		ChildBitstreamID: &childbsid1,
-	},
-	Status: examplecomv1.ChildBsStatus{
-		Regions: []examplecomv1.ChildBsRegion{
-			{
-				Modules: &examplecomv1.ChildBsModule{
-					LLDMA: &examplecomv1.ChildBsLLDMA{
-						Cids: &cids1,
-						ID:   &id1,
-					},
-					Chain: &examplecomv1.ChildBsChain{
-						ID:         &id1,
-						Identifier: &identifier1,
-						Type:       &typ1,
-						Version:    &varsion1,
-					},
-					Directtrans: &examplecomv1.ChildBsDirecttrans{
-						ID:         &id1,
-						Identifier: &identifier1,
-						Type:       &typ1,
-						Version:    &varsion1,
-					},
-					Conversion: &examplecomv1.ChildBsConversion{
-						ID: &id1,
-						Module: &examplecomv1.ConversionModule{
-							Identifier: &identifier1,
-							Type:       &typ1,
-							Version:    &varsion1,
-						},
-					},
-					Functions: &[]examplecomv1.ChildBsFunctions{
-						{
-							ID: &id1,
-							Module: &examplecomv1.FunctionsModule{
-								Identifier: &identifier1,
-								Type:       &typ1,
-								Version:    &varsion1,
-							},
-							Parameters: &map[string]intstr.IntOrString{
-								"5": {
-									StrVal: "param01",
-									IntVal: 12345,
-									Type:   1,
-								},
-							},
-							IntraResourceMgmtMap: &map[string]examplecomv1.FunctionsIntraResourceMgmtMap{
-								"1": {
-									Available:      &available1,
-									FunctionCRName: &funcCRName1,
-									Rx: &examplecomv1.RxTxSpec{
-										Protocol: &map[string]examplecomv1.Details{
-											"RTP": {
-												Port:             &port7,
-												DMAChannelID:     &dmaChannel3,
-												LLDMAConnectorID: &lldmaConnector3,
-											},
-										},
-									},
-									Tx: &examplecomv1.RxTxSpec{
-										Protocol: &map[string]examplecomv1.Details{
-											"DMA": {
-												Port:             &port8,
-												DMAChannelID:     &dmaChannel4,
-												LLDMAConnectorID: &lldmaConnector4,
-											},
-										},
-									},
-								},
-							},
-							DeploySpec: examplecomv1.FunctionsDeploySpec{
-								MaxCapacity:  &maxCapacity1,
-								MaxDataFlows: &maxDataflows1,
-							},
-						},
-					},
-				},
-				MaxFunctions: &maxFunctions1,
-				MaxCapacity:  &maxCapacity1,
-				Name:         &name1,
-			},
-		},
-		Status:           examplecomv1.ChildBsStatusReady,
-		State:            examplecomv1.ChildBsReady,
-		ChildBitstreamID: &childbsid1,
-	},
-}
-*/
 
 var FPGA3 = []examplecomv1.FPGA{
 	{
@@ -435,7 +221,7 @@ var FPGA3 = []examplecomv1.FPGA{
 			Kind:       "FPGA",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "fpga-21320621v00dtest01",
+			Name:      "fpga-21320621v00d-test01",
 			Namespace: "default",
 		},
 		Spec: examplecomv1.FPGASpec{
@@ -450,22 +236,7 @@ var FPGA3 = []examplecomv1.FPGA{
 			PCIDevice:         5,
 			PCIFunction:       6,
 			Vendor:            "zzzzzzvendor",
-		}, /*
-			Status: examplecomv1.FPGAStatus{
-				ChildBitstreamID:     &childbsid3,
-				ChildBitstreamCRName: &name3,
-				DeviceIndex:          0,
-				DeviceFilePath:       "/dev/xethernet_21330621T01J",
-				DeviceUUID:           "21330621T01J",
-				NodeName:             "test01",
-				ParentBitstreamID:    "bbbbbbbbb",
-				PCIDomain:            3,
-				PCIBus:               4,
-				PCIDevice:            5,
-				PCIFunction:          6,
-				Vendor:               "zzzzzzvendor",
-				Status:               examplecomv1.FPGAStatusPreparing,
-			},*/
+		},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "example.com/v1",
@@ -663,6 +434,21 @@ var deployinfo_configdata2 = corev1.ConfigMap{
 			}]
 		},{
 			"nodeName": "test01",
+			"deviceFilePath": "/dev/xpcie_21320621V00D",
+			"deviceUUID": "21320621V00D",
+			"functionTargets": [{
+				"regionType": "alveou250-0100001c-2lanes-0nics",
+				"regionName": "lane0",
+				"maxFunctions": 8,
+				"maxCapacity": 40
+				},{
+				"regionType": "alveo",
+				"regionName": "lane1",
+				"maxFunctions": 8,
+				"maxCapacity": 40
+			}]
+		},{
+			"nodeName": "test01",
 			"deviceUUID": "gpu-123456789t4",
 			"functionTargets": [{
 				"regionType": "gpu",
@@ -689,73 +475,6 @@ var deployinfo_configdata2 = corev1.ConfigMap{
 				"maxCapacity": 40
 			}]
 		}]}`,
-	},
-}
-
-var regionUniqueInfoConfig2 = corev1.ConfigMap{
-	ObjectMeta: metav1.ObjectMeta{
-		Name:      "region-unique-info",
-		Namespace: "default",
-	},
-	TypeMeta: metav1.TypeMeta{
-		Kind: "ConfigMap",
-	},
-	Data: map[string]string{
-		"region-unique-info.json": `
-		[{
-			"subDeviceSpecRef": "0100001c",
-			"functionTargets":[{
-				"regionName": "lane0",
-				"regionType": "alveou250-0100001c-2lanes-1nics",
-				"maxFunctions": 2,
-				"maxCapacity": 40
-			},{
-				"regionName": "lane1",
-				"regionType": "alveou250-0100001c-2lanes-1nics",
-				"maxFunctions": 2,
-				"maxCapacity": 40
-			}]
-		},{
-			"subDeviceSpecRef": "Tesla T4",
-			"functionTargets":[{
-				"regionName": "t4",
-				"regionType": "t4",
-				"maxFunctions": 110,
-				"maxCapacity": 40
-			}]
-		},{
-			"subDeviceSpecRef": "NVIDIA A100 80GB PCIe",
-			"functionTargets":[{
-				"regionName": "a100",
-				"regionType": "a100",
-				"maxFunctions": 110,
-				"maxCapacity": 120
-			}]
-		},{
-			"subDeviceSpecRef": "Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz",
-			"functionTargets":[{
-				"regionName": "cpu",
-				"regionType": "cpu",
-				"maxFunctions": 110,
-				"maxCapacity": 120
-			}]
-		},{
-			"subDeviceSpecRef": "Intel(R) Xeon(R) Gold 6348 CPU @ 2.60GHz",
-			"functionTargets":[{
-				"regionName": "cpu",
-				"regionType": "cpu",
-				"maxFunctions": 110,
-				"maxCapacity": 120
-			}]
-		},{
-			"subDeviceSpecRef": "Intel(R) Xeon(R) Gold 6330 CPU @ 2.00GHz",
-			"functionTargets":[{
-				"regionName": "cpu",
-				"regionType": "cpu",
-				"maxFunctions": 110,
-				"maxCapacity": 120
-			}]
-		}]`,
 	},
 }
 

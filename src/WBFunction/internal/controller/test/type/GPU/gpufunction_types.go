@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ type GPUFunctionStatus struct {
 	VirtualNetworkDeviceDriverType string            `json:"virtualNetworkDeviceDriverType,omitempty"`
 	AdditionalNetwork              *bool             `json:"additionalNetwork,omitempty"`
 	FunctionIndex                  *int32            `json:"functionIndex,omitempty"`
+	PodName                        *string           `json:"podName,omitempty"`
 	StartTime                      metav1.Time       `json:"startTime"`
 	//+kubebuilder:default=Pending
 	Status              string                   `json:"status"`

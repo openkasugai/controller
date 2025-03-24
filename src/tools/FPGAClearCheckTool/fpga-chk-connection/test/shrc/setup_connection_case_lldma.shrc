@@ -1,0 +1,247 @@
+#! /bin/bash
+# Copyright 2025 NTT Corporation , FUJITSU LIMITED
+
+# ======================================================
+# LLDMA
+# ------------------------------------------------------
+test_lldma_normal_rx_single () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]RX check creation"
+	request_create_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	fcc_lldma RX-0
+	echo "## [LLDMA]RX check deletion"
+	request_delete_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	fcc_lldma RX-0
+}
+# ------------------------------------------------------
+test_lldma_normal_tx_single () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]TX check creation"
+	request_create_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	fcc_lldma TX-0
+	echo "## [LLDMA]TX check deletion"
+	request_delete_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	fcc_lldma TX-0
+}
+# ------------------------------------------------------
+test_lldma_normal_both_single () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]RX/TX check creation"
+	request_create_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	request_create_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	fcc_lldma RX-0 TX-0
+	echo "## [LLDMA]RX/TX check deletion"
+	request_delete_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	request_delete_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	fcc_lldma RX-0 TX-0
+}
+# ------------------------------------------------------
+test_lldma_normal_rx_multi () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]RXs check creation"
+	for i in {0..15}
+	do
+		request_create_lldma $INPUT_FPGA_NAME RX-${i}  ${i}  INGR
+	done
+	OPT=""
+	for i in {0..15}
+	do
+		OPT+=" RX-${i}"
+	done
+	fcc_lldma $OPT
+	echo "## [LLDMA]RXs check deletion"
+	for i in {0..15}
+	do
+		request_delete_lldma $INPUT_FPGA_NAME RX-${i}  ${i}  INGR
+	done
+	OPT=""
+	for i in {0..15}
+	do
+		OPT+=" RX-${i}"
+	done
+	fcc_lldma $OPT
+}
+# ------------------------------------------------------
+test_lldma_normal_tx_multi () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]TXs check creation"
+	for i in {0..15}
+	do
+		request_create_lldma $INPUT_FPGA_NAME TX-${i}  ${i}  EGR
+	done
+	OPT=""
+	for i in {0..15}
+	do
+		OPT+=" TX-${i}"
+	done
+	fcc_lldma $OPT
+	echo "## [LLDMA]TXs check deletion"
+	for i in {0..15}
+	do
+		request_delete_lldma $INPUT_FPGA_NAME TX-${i}  ${i}  EGR
+	done
+	OPT=""
+	for i in {0..15}
+	do
+		OPT+=" TX-${i}"
+	done
+	fcc_lldma $OPT
+}
+# ------------------------------------------------------
+test_lldma_normal_both_multi () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]TX/RXs check creation"
+	for i in {0..15}
+	do
+		request_create_lldma $INPUT_FPGA_NAME RX-${i}  ${i}  INGR
+		request_create_lldma $INPUT_FPGA_NAME TX-${i}  ${i}  EGR
+	done
+	OPT=""
+	for i in {0..15}
+	do
+		OPT+=" RX-${i}"
+		OPT+=" TX-${i}"
+	done
+	fcc_lldma $OPT
+	echo "## [LLDMA]TX/RXs check deletion"
+	for i in {0..15}
+	do
+		request_delete_lldma $INPUT_FPGA_NAME RX-${i}  ${i}  INGR
+		request_delete_lldma $INPUT_FPGA_NAME TX-${i}  ${i}  EGR
+	done
+	OPT=""
+	for i in {0..15}
+	do
+		OPT+=" RX-${i}"
+		OPT+=" TX-${i}"
+	done
+	fcc_lldma $OPT
+}
+# ------------------------------------------------------
+test_lldma_normal () {
+	test_lldma_normal_rx_single
+	test_lldma_normal_tx_single
+	test_lldma_normal_both_single
+	test_lldma_normal_rx_multi
+	test_lldma_normal_tx_multi
+	test_lldma_normal_both_multi
+}
+# ------------------------------------------------------
+test_lldma_invalid_rx_single () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]RX check creation"
+	request_create_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	fcc_lldma RX-0-dummy
+	fcc_lldma RX-0
+	echo "## [LLDMA]RX check deletion"
+	request_delete_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	fcc_lldma RX-0-dummy
+}
+# ------------------------------------------------------
+test_lldma_invalid_tx_single () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]TX check creation"
+	request_create_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	fcc_lldma TX-0-dummy
+	fcc_lldma TX-0
+	echo "## [LLDMA]TX check deletion"
+	request_delete_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	fcc_lldma TX-0-dummy
+}
+# ------------------------------------------------------
+test_lldma_invalid_both_single () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]RX/TX check creation"
+	request_create_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	request_create_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	fcc_lldma RX-0-dummy TX-0-dummy
+	fcc_lldma RX-0 TX-0
+	echo "## [LLDMA]RX/TX check deletion"
+	request_delete_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	request_delete_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	fcc_lldma RX-0-dummy TX-0-dummy
+}
+# ------------------------------------------------------
+test_lldma_invalid_rx_multi () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]RXs check creation"
+	for i in {0..15}
+	do
+		request_create_lldma $INPUT_FPGA_NAME RX-${i}  ${i}  INGR
+	done
+	fcc_lldma RX-dummy
+	OPT=""
+	for i in {0..15}
+	do
+		OPT+=" RX-${i}"
+	done
+	fcc_lldma $OPT
+	echo "## [LLDMA]RXs check deletion"
+	for i in {0..15}
+	do
+		request_delete_lldma $INPUT_FPGA_NAME RX-${i}  ${i}  INGR
+	done
+	fcc_lldma RX-dummy
+}
+# ------------------------------------------------------
+test_lldma_invalid_tx_multi () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]TXs check creation"
+	for i in {0..15}
+	do
+		request_create_lldma $INPUT_FPGA_NAME TX-${i}  ${i}  EGR
+	done
+	fcc_lldma TX-dummy
+	OPT=""
+	for i in {0..15}
+	do
+		OPT+=" TX-${i}"
+	done
+	fcc_lldma $OPT
+	echo "## [LLDMA]TXs check deletion"
+	for i in {0..15}
+	do
+		request_delete_lldma $INPUT_FPGA_NAME TX-${i}  ${i}  EGR
+	done
+}
+# ------------------------------------------------------
+test_lldma_invalid_both_multi () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [LLDMA]TX/RXs check creation"
+	for i in {0..15}
+	do
+		request_create_lldma $INPUT_FPGA_NAME RX-${i}  ${i}  INGR
+		request_create_lldma $INPUT_FPGA_NAME TX-${i}  ${i}  EGR
+	done
+	fcc_lldma RX-dummy TX-dummy
+	OPT=""
+	for i in {0..15}
+	do
+		OPT+=" RX-${i}"
+		OPT+=" TX-${i}"
+	done
+	fcc_lldma $OPT
+	echo "## [LLDMA]TX/RXs check deletion"
+	for i in {0..15}
+	do
+		request_delete_lldma $INPUT_FPGA_NAME RX-${i}  ${i}  INGR
+		request_delete_lldma $INPUT_FPGA_NAME TX-${i}  ${i}  EGR
+	done
+	fcc_lldma RX-dummy TX-dummy
+}
+# ------------------------------------------------------
+test_lldma_invalid () {
+	test_lldma_invalid_rx_single
+	test_lldma_invalid_tx_single
+	test_lldma_invalid_both_single
+	test_lldma_invalid_rx_multi
+	test_lldma_invalid_tx_multi
+	test_lldma_invalid_both_multi
+}
+# ------------------------------------------------------
+test_lldma () {
+	echo "## [LLDMA]"
+	test_lldma_normal
+	test_lldma_invalid
+}
+# ======================================================

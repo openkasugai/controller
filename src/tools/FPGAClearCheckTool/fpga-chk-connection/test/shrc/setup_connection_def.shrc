@@ -1,0 +1,201 @@
+#! /bin/bash
+# Copyright 2025 NTT Corporation , FUJITSU LIMITED
+
+# Command
+DIRNAME_SETUP_CONNECTION="."
+APPNAME_SETUP_CONNECTION="setup_connection"
+CMD_SETUP_CONNECTION="$DIRNAME_SETUP_CONNECTION/$APPNAME_SETUP_CONNECTION"
+CMD_SETUP_CONNECTION_DAEMON="$CMD_SETUP_CONNECTION --daemon"
+CMD_SETUP_CONNECTION_CREATE="$CMD_SETUP_CONNECTION --create"
+CMD_SETUP_CONNECTION_DELETE="$CMD_SETUP_CONNECTION --delete"
+CMD_SETUP_CONNECTION_QUIT="$CMD_SETUP_CONNECTION --quit"
+CMD_SETUP_CONNECTION_USER="$CMD_SETUP_CONNECTION --user"
+
+DIRNAME_FCC="../bin"
+APPNAME_FCC="fpga-chk-connection"
+CMD_FCC="$DIRNAME_FCC/$APPNAME_FCC"
+
+
+# Function
+exec_daemon () {
+	IS_ALIVE_DAEMON=`ps --no-headers -C "$CMD_SETUP_CONNECTION" | wc -l`
+
+	if [ $IS_ALIVE_DAEMON -eq 0 ];then
+		echo " - Execute Daemon process : $CMD_SETUP_CONNECTION_DAEMON"
+		$CMD_SETUP_CONNECTION_DAEMON
+	else
+		request_quit
+		exit 0
+	fi
+}
+# 1:fpga_addr, 2:fpga_port, 3:host_addr, 4:host_port, 5:direction
+exec_user () {
+	if [ $# -ne 5 ];then
+		echo " ! exec_user : Argument error($#)"
+	else
+		CMD="$CMD_SETUP_CONNECTION_USER"
+		OPT="--fpga_addr $1 --fpga_port $2 --host_addr $3 --host_port $4 --dir $5"
+		EXEC_CMD="$CMD $OPT"
+		echo " - Execute Connection Command : $EXEC_CMD"
+		$EXEC_CMD
+	fi
+}
+
+# 1:command+options
+exec_request () {
+	echo " - Execute Request Command : $1"
+	$1
+}
+# 1:command, 2:device, 3:conid, 4:chid, 5:direction
+request_lldma () {
+	if [ $# -ne 5 ];then
+		echo " ! request_lldma : Argument error($#)"
+	else
+		CMD="$1"
+		OPT="-d $2 -k $3 --chid $4 --dir $5"
+		exec_request "$CMD $OPT"
+	fi
+}
+# 1:command, 2:device, 3:lane, 4:fpga_port, 5:fpga_port, 6:host_addr, 7:host_port, 8:dir
+request_ptu () {
+	if [ $# -ne 8 ];then
+		echo " ! request_ptu : Argument error($#)"
+	else
+		CMD="$1"
+		OPT="-d $2 -l $3 --fpga_addr $4 --fpga_port $5 --host_addr $6 --host_port $7 --dir $8"
+		exec_request "$CMD $OPT"
+	fi
+}
+# 1:command, 2:device, 3:lane, 4:f, 5:e, 6:c, 7:dir
+request_chain () {
+	if [ $# -ne 7 ];then
+		echo " ! request_chain : Argument error($#)"
+	else
+		CMD="$1"
+		OPT="-d $2 -l $3 -f $4 -e $5 -c $6 --dir $7"
+		exec_request "$CMD $OPT"
+	fi
+}
+
+
+# 1:device, 2:conid, 3:chid, 4:direction
+request_create_lldma () {
+	request_lldma\
+		"$CMD_SETUP_CONNECTION_CREATE"\
+		$1 $2 $3 $4
+}
+request_delete_lldma () {
+	request_lldma\
+		"$CMD_SETUP_CONNECTION_DELETE"\
+		$1 $2 $3 $4
+}
+
+# 1:device, 2:lane, 3:fpga_addr, 4:fpga_port, 5:host_addr, 6:host_port
+request_create_ptu_server () {
+	request_ptu\
+		"$CMD_SETUP_CONNECTION_CREATE"\
+		$1 $2 $3 $4 $5 $6 INGR &
+	echo " # Sleep 1[sec]"
+	sleep 1
+	exec_user $3 $4 $5 $6 INGR
+}
+request_create_ptu_client () {
+	exec_user $3 $4 $5 $6 EGR &
+	echo " # Sleep 1[sec]"
+	sleep 1
+	request_ptu\
+		"$CMD_SETUP_CONNECTION_CREATE"\
+		$1 $2 $3 $4 $5 $6 EGR
+}
+request_delete_ptu () {
+	request_ptu\
+		"$CMD_SETUP_CONNECTION_DELETE"\
+		$1 $2 $3 $4 $5 $6 $7
+}
+
+# 1:device, 2:lane, 3:f, 4:e, 5:c, 6:dir
+request_create_chain () {
+	request_chain\
+		"$CMD_SETUP_CONNECTION_CREATE"\
+		$1 $2 $3 $4 $5 $6
+}
+request_delete_chain () {
+	request_chain\
+		"$CMD_SETUP_CONNECTION_DELETE"\
+		$1 $2 $3 $4 $5 $6
+}
+
+request_quit () {
+	CMD="$CMD_SETUP_CONNECTION_QUIT"
+	exec_request "$CMD"
+}
+
+# 1:options
+exec_fcc () {
+	echo "# ================================== " | tee -a "exec_fcc.log"
+	echo "## [FCC]Options : $*" | tee -a "exec_fcc.log"
+	echo "# ---------------------------------- " | tee -a "exec_fcc.log"
+	$CMD_FCC $* | tee -a "exec_fcc.log"
+	echo "# ================================== "
+}
+# 1:-j, 2:string
+exec_fcc_json () {
+	echo "# ================================== " | tee -a "exec_fcc.log"
+	echo "## [FCC]Options : $*" | tee -a "exec_fcc.log"
+	echo "# ---------------------------------- " | tee -a "exec_fcc.log"
+	$CMD_FCC $1 "$2" | tee -a "exec_fcc.log"
+	echo "# ================================== "
+}
+# 1:conid
+fcc_lldma () {
+	OPT=""
+	for arg in "$@"
+	do
+		OPT+=" -k ${arg}"
+	done
+	exec_fcc $OPT
+}
+# 1:device, 2:lane, 3:connection_id
+fcc_ptu () {
+	exec_fcc -d $1 -l $2 -e PTU -c $3
+}
+# 1:device, 2:lane, 3:fchid, 4:dir
+fcc_chain () {
+	OPT=""
+	CMD_FCC_CHAIN_OPT=("-d" "-l" "-f" "--dir")
+	IDX=0
+	IDX_ADD=1
+	for arg in "$@"
+	do
+		OPT+=" ${CMD_FCC_CHAIN_OPT[$IDX]} ${arg}"
+		if [ $IDX -eq 3 ];then
+			OPT+=" --"
+			IDX=0
+		else
+			IDX=$((IDX+IDX_ADD))
+		fi
+	done
+	exec_fcc $OPT
+}
+# void
+fcc_dump () {
+	exec_fcc --dump
+}
+
+exec_test () {
+	exec_test_LOGFILE=$1.log
+	echo "# ===================================" | tee -a $exec_test_LOGFILE
+	echo "# Start : $1 : `date +%H-%M-%S`"       | tee -a $exec_test_LOGFILE
+	echo "# -----------------------------------" | tee -a $exec_test_LOGFILE
+	$1 >> $exec_test_LOGFILE
+	echo "# -----------------------------------" | tee -a $exec_test_LOGFILE
+	echo "# End   : $1 : `date +%H-%M-%S`"       | tee -a $exec_test_LOGFILE
+	echo "# ===================================" | tee -a $exec_test_LOGFILE
+}
+
+mv_logfiles () {
+	LOG_DIR=log/`date +%Y-%m-%d/%H-%M-%S`
+	mkdir $LOG_DIR -p
+	mv *.json *.log $LOG_DIR
+	echo "# Logfiles : $LOG_DIR"
+}

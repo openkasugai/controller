@@ -55,7 +55,6 @@ spec:
                       type: string
                   required:
                   - id
-                  - partitionName
                   type: object
                 type: array
               configName:

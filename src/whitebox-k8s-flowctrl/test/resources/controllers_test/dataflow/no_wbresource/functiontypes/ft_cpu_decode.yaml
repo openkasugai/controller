@@ -1,0 +1,14 @@
+apiVersion: example.com/v1
+kind: FunctionType
+metadata:
+  name: functype-cpu-decode
+  namespace: default
+spec:
+  functionName: cpu-decode
+  functionInfoCMRef:
+    name: funcinfo-cpu-decode
+    namespace: default
+  version: 1.0.0
+status:
+  regionTypeCandidates: ["cpu"]
+  status: Ready

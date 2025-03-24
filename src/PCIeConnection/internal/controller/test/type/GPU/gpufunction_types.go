@@ -60,6 +60,7 @@ type GPUFunctionStatus struct {
 	VirtualNetworkDeviceDriverType string            `json:"virtualNetworkDeviceDriverType,omitempty"`
 	AdditionalNetwork              *bool             `json:"additionalNetwork,omitempty"`
 	FunctionIndex                  *int32            `json:"functionIndex,omitempty"`
+	PodName                        *string           `json:"podName,omitempty"`
 	StartTime                      metav1.Time       `json:"startTime"`
 	//+kubebuilder:default=Pending
 	Status              string                   `json:"status"`

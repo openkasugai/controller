@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package controllers_test
 import (
 	//"context"
 	"path/filepath"
+	"strconv"
 	"testing"
 	"time"
 
@@ -31,11 +32,10 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme" //nolint:stylecheck // ST1019: intentional import as another name
 	"k8s.io/client-go/rest"
 
-	//ctrl "sigs.k8s.io/controller-runtime"
+	ctrl "sigs.k8s.io/controller-runtime" //nolint:stylecheck // ST1019: intentional import as another name
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
-	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server" //nolint:stylecheck // ST1019: intentional import as another name
 
 	"k8s.io/apimachinery/pkg/runtime"
 
@@ -51,6 +51,7 @@ var cfg *rest.Config
 var k8sClient client.Client
 var testEnv *envtest.Environment
 var testScheme *runtime.Scheme
+var addr int = 13000
 
 func TestAPIs(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -64,7 +65,7 @@ func TestAPIs(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	logf.SetLogger(zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true)))
+	// logf.SetLogger(zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true)))
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
@@ -105,3 +106,15 @@ var _ = AfterSuite(func() {
 	err := testEnv.Stop()
 	Expect(err).NotTo(HaveOccurred())
 })
+
+func getMgr(mgr ctrl.Manager) (ctrl.Manager, error) {
+	if mgr == nil {
+		return ctrl.NewManager(cfg, ctrl.Options{
+			Scheme: testScheme,
+			Metrics: metricsserver.Options{
+				BindAddress: strconv.Itoa(addr),
+			},
+		})
+	}
+	return mgr, nil
+}

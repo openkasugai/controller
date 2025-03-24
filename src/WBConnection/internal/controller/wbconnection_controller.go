@@ -8,7 +8,7 @@ import (
 	"context"
 
 	"k8s.io/apimachinery/pkg/api/errors"
-	//	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -20,8 +20,6 @@ import (
 
 	// Additional imports
 	"encoding/json"
-
-	//	"fmt"
 	"strconv"
 	"strings"
 
@@ -97,6 +95,7 @@ func (r *WBConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Request
 	var eventConnectionKind int // 0:Add, 1:Upd,  2:Del
 	var connectionKind string
 	var connectionAPIVersion string
+	var crConnectionMetadata metav1.ObjectMeta
 	var crConnectionSpec ConnectionSpec
 	var crConnectionStatus ConnectionStatus
 	var requeueFlag bool
@@ -136,7 +135,8 @@ func (r *WBConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Request
 				eventConnectionKind = CREATE
 			} else {
 				err = r.getCustomResourceData(ctx, req,
-					connectionKind, connectionAPIVersion, &crConnectionSpec, &crConnectionStatus)
+					connectionKind, connectionAPIVersion,
+					&crConnectionSpec, &crConnectionStatus, &crConnectionMetadata)
 				if errors.IsNotFound(err) {
 					// If FromFunction CR does not exist
 					logger.Info("Maked Connection does not exist.")
@@ -170,7 +170,7 @@ func (r *WBConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Request
 					} else {
 						// Create a resource
 						err = r.createCustomResource(ctx, req,
-							connectionKind, connectionAPIVersion, &crConnectionSpec, &crData)
+							connectionKind, connectionAPIVersion, &crData)
 						if nil != err {
 							break
 						}
@@ -186,8 +186,7 @@ func (r *WBConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Request
 						break
 					}
 					logger.Info("Status Information Change end.")
-				}
-				if examplecomv1.WBDeployStatusDeployed !=
+				} else if examplecomv1.WBDeployStatusDeployed !=
 					crData.Status.Status {
 					requeueFlag = true
 				}
@@ -241,15 +240,67 @@ func (r *WBConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Request
 			r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
 				"Delete", "Delete Start")
 
+			// check topologyinfo usage flag
+			if crData.Status.ConnectionPath != nil {
+				// check if capacity substract process has finished
+				if controllerutil.ContainsFinalizer(&crData, "topologyinfo.finalizers.example.com.v1") {
+					requeueFlag = true
+					break
+				}
+			}
+
+			var deleteFlag bool
+			deleteFlag = false
+
+			err = r.getCustomResourceData(ctx, req,
+				connectionKind, connectionAPIVersion,
+				&crConnectionSpec, &crConnectionStatus, &crConnectionMetadata)
+			if errors.IsNotFound(err) {
+				// If FromFunction CR does not exist
+				logger.Info("Deleted Connection does not exist.")
+				deleteFlag = true
+			} else if nil != err {
+				logger.Error(err, "Deleted Connection unable to fetch CR.")
+				requeueFlag = true
+				break
+			}
+
+			if deleteFlag == false {
+				if crConnectionMetadata.DeletionTimestamp.IsZero() {
+					// Delete ConnectionCR
+					err = r.deleteConnectionCR(ctx, req, connectionKind, connectionAPIVersion)
+					if err != nil {
+						logger.Error(err, "Delete ConnectionCR Request Failed.")
+					} else {
+						logger.Info("Delete ConnectionCR Request Successful.")
+					}
+				}
+				if crData.Status.Status == examplecomv1.WBDeployStatusDeployed {
+					// Changed Status statement.
+					err = r.updCustomResource(ctx, &crData,
+						eventConnectionKind,
+						examplecomv1.WBDeployStatusTerminating)
+					if err != nil {
+						logger.Error(err, "WBConnectionCR state transition failed.")
+					} else {
+						logger.Info("WBConnectionCR state transition success.")
+					}
+				} else {
+					requeueFlag = true
+				}
+				break
+			}
+			// Changed Status.
+			crData.Status.Status = examplecomv1.WBDeployStatusReleased
+
 			// Delete the Finalizer statement.
-			err = r.delCustomResource(ctx, &crData)
+			err = r.deleteWBConnectionCR(ctx, &crData)
 			if err != nil {
 				break
 			}
 
 			r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
 				"Delete", "Delete End")
-
 		}
 		break //nolint:staticcheck // SA4004: Intentional break
 	}
@@ -321,7 +372,8 @@ func (r *WBConnectionReconciler) getCustomResourceData(
 	connectionKind string,
 	connectionAPIVersion string,
 	pConnectionSpec *ConnectionSpec,
-	pConnectionStatus *ConnectionStatus) error {
+	pConnectionStatus *ConnectionStatus,
+	pConnectionMetadata *metav1.ObjectMeta) error {
 
 	logger := log.FromContext(ctx)
 
@@ -349,6 +401,22 @@ func (r *WBConnectionReconciler) getCustomResourceData(
 		}
 
 		if len(crData.Object) != 0 {
+			// Store metadata information
+			crDataStringMap, _, _ = unstructured.NestedMap(crData.Object, "metadata")
+
+			// Convert the obtained mapdata to byte type
+			metadatabytes, err := json.Marshal(crDataStringMap)
+			if err != nil {
+				logger.Error(err, "unable to json.marshal.")
+				break
+			}
+			// Replace with a struct
+			err = json.Unmarshal(metadatabytes, pConnectionMetadata)
+			if err != nil {
+				logger.Error(err, "unable to json.unmarshal.")
+				break
+			}
+
 			// Store spec information
 			crDataStringMap, _, _ = unstructured.NestedMap(crData.Object, "spec")
 
@@ -392,7 +460,7 @@ func (r *WBConnectionReconciler) createCustomResource(
 	req ctrl.Request,
 	connectionKind string,
 	connectionAPIVersion string,
-	pConnectionSpec *ConnectionSpec,
+	//	pConnectionSpec *ConnectionSpec,
 	pCRData *examplecomv1.WBConnection) error {
 
 	logger := log.FromContext(ctx)
@@ -467,7 +535,6 @@ func getFinalizerName(ctx context.Context,
 
 func getEventKind(ctx context.Context,
 	pCRData *examplecomv1.WBConnection) int {
-	//	logger := log.FromContext(ctx)
 	var eventKind int
 	eventKind = UPDATE
 	// Whether or not there is a deletion timestamp
@@ -477,7 +544,6 @@ func getEventKind(ctx context.Context,
 		// Whether or not Finalizer is written
 		eventKind = CREATE
 	}
-	//	fmt.Printf("controller.go %#v\n", pCRData)
 	return eventKind
 }
 
@@ -504,7 +570,33 @@ func (r *WBConnectionReconciler) updCustomResource(ctx context.Context,
 	return err
 }
 
-func (r *WBConnectionReconciler) delCustomResource(ctx context.Context,
+func (r *WBConnectionReconciler) deleteConnectionCR(ctx context.Context,
+	req ctrl.Request,
+	connectionKind string,
+	connectionAPIVersion string) error {
+
+	logger := log.FromContext(ctx)
+
+	// Organize the cr information to be created
+	crData := &unstructured.Unstructured{}
+	crData.SetGroupVersionKind(schema.GroupVersionKind{
+		Version: connectionAPIVersion,
+		Kind:    connectionKind,
+	})
+	crData.SetName(req.Name)
+	crData.SetNamespace(req.Namespace)
+
+	err := r.Delete(ctx, crData)
+	if err != nil {
+		logger.Error(err, "Failed to delete ConnectionCR.")
+	} else {
+		logger.Info("Success to delete ConnectionCR.")
+	}
+
+	return err
+}
+
+func (r *WBConnectionReconciler) deleteWBConnectionCR(ctx context.Context,
 	pCRData *examplecomv1.WBConnection) error {
 	logger := log.FromContext(ctx)
 	var err error
@@ -590,7 +682,6 @@ func (r *WBConnectionReconciler) getConfigMap(ctx context.Context,
 		logger.Error(err, "ConfigMap unable to fetch. ConfigName="+cfgname)
 	} else {
 		mapdata, _, _ = unstructured.NestedStringMap(tmpData.Object, "data")
-		//		fmt.Printf("NestedMap %#v\n", mapdata)
 		for _, jsonrecord := range mapdata {
 			*cfgdata = []byte(jsonrecord)
 		}

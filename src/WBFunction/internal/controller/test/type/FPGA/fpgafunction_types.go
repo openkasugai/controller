@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -41,15 +41,15 @@ type FPGAFunctionSpec struct {
 	FunctionChannelID *int32                      `json:"functionChannelID,omitempty"`
 	PtuKernelID       *int32                      `json:"ptuKernelID,omitempty"`
 	FrameworkKernelID *int32                      `json:"frameworkKernelID,omitempty"`
-	Rx                RxTxData                    `json:"rx,omitempty"`
-	Tx                RxTxData                    `json:"tx,omitempty"`
+	Rx                *RxTxData                   `json:"rx,omitempty"`
+	Tx                *RxTxData                   `json:"tx,omitempty"`
 	PreviousFunctions map[string]FromToWBFunction `json:"previousFunctions,omitempty"`
 	NextFunctions     map[string]FromToWBFunction `json:"nextFunctions,omitempty"`
 }
 
 type AccIDInfo struct {
-	PartitionName string `json:"partitionName"`
-	ID            string `json:"id"`
+	PartitionName *string `json:"partitionName,omitempty"`
+	ID            string  `json:"id"`
 }
 
 type EnvsInfo struct {

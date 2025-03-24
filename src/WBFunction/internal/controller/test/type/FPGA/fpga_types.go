@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -37,12 +37,12 @@ type FPGASpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	ChildBitstreamID  *string `json:"childBitstreamID,omitempty"`
+	ChildBitstreamID  *string `json:"child-bitstream-id,omitempty"`
 	DeviceIndex       int32   `json:"deviceIndex"`
 	DeviceFilePath    string  `json:"deviceFilePath"`
 	DeviceUUID        string  `json:"deviceUUID"`
 	NodeName          string  `json:"nodeName"`
-	ParentBitstreamID string  `json:"parentBitstreamID"`
+	ParentBitstreamID string  `json:"parent-bitstream-id"`
 	PCIDomain         int32   `json:"pciDomain"`
 	PCIBus            int32   `json:"pciBus"`
 	PCIDevice         int32   `json:"pciDevice"`
@@ -55,13 +55,13 @@ type FPGAStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	ChildBitstreamID     *string    `json:"childBitstreamID,omitempty"`
+	ChildBitstreamID     *string    `json:"child-bitstream-id,omitempty"`
 	ChildBitstreamCRName *string    `json:"childBitstreamCRName,omitempty"`
 	DeviceFilePath       string     `json:"deviceFilePath"`
 	DeviceIndex          int32      `json:"deviceIndex"`
 	DeviceUUID           string     `json:"deviceUUID"`
 	NodeName             string     `json:"nodeName"`
-	ParentBitstreamID    string     `json:"parentBitstreamID"`
+	ParentBitstreamID    string     `json:"parent-bitstream-id"`
 	PCIDomain            int32      `json:"pciDomain"`
 	PCIBus               int32      `json:"pciBus"`
 	PCIDevice            int32      `json:"pciDevice"`

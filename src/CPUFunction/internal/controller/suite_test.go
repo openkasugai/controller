@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,14 +26,11 @@ import (
 	. "github.com/onsi/gomega"
 
 	pkgruntime "k8s.io/apimachinery/pkg/runtime"
-	// "k8s.io/apimachinery/pkg/runtime/schema"
 
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
-	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	examplecomv1 "CPUFunction/api/v1"
 	//+kubebuilder:scaffold:imports
@@ -47,6 +44,10 @@ var k8sClient client.Client
 var testEnv *envtest.Environment
 var testScheme *pkgruntime.Scheme
 
+const (
+	TESTNAMESPACE string = "default"
+)
+
 func TestControllers(t *testing.T) {
 	RegisterFailHandler(Fail)
 
@@ -54,7 +55,6 @@ func TestControllers(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	logf.SetLogger(zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true)))
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
@@ -95,7 +95,6 @@ var _ = BeforeSuite(func() {
 
 	err = AddToSchemeeth(testScheme)
 	Expect(err).NotTo(HaveOccurred())
-	// AddToScheme(testScheme)
 
 	err = examplecomv1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
@@ -111,7 +110,6 @@ var _ = BeforeSuite(func() {
 
 	err = AddToSchemeeth(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
-	// AddToScheme(scheme.Scheme)
 
 	//+kubebuilder:scaffold:scheme
 
@@ -126,11 +124,3 @@ var _ = AfterSuite(func() {
 	err := testEnv.Stop()
 	Expect(err).NotTo(HaveOccurred())
 })
-
-// func AddToScheme(scheme *pkgruntime.Scheme) error {
-
-// 	scheme.AddKnownTypes(schema.GroupVersion{Group: "k8s.cni.cncf.io", Version: "v1"}, &NetworkAttachmentDefinition{})
-// 	scheme.AddKnownTypes(schema.GroupVersion{Group: "example.com", Version: "v1"}, &examplecomv1.CPUFunction{})
-
-// 	return nil
-// }

@@ -226,6 +226,8 @@ spec:
                 type: string
               imageURI:
                 type: string
+              podName:
+                type: string
               rxProtocol:
                 type: string
               sharedMemory:

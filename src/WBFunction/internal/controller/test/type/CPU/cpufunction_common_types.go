@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 */
 
 package v1
@@ -38,20 +38,23 @@ type CPUFuncConfig struct {
 	ImageURI                       string            `json:"imageURI"`
 	Envs                           map[string]string `json:"envs"`
 	Template                       PodTemplate       `json:"template"`
+	Annotations                    map[string]string `json:"annotations,omitempty"`
+	Labels                         map[string]string `json:"labels,omitempty"`
+	IPAM                           []string          `json:"ipam,omitempty"`
 }
 
 type PodTemplate struct {
 	metav1.TypeMeta `json:",inline"`
 	Spec            CPUPodSpec `json:"spec"`
-	// Spec corev1.PodSpec `json:"spec,omitempty"` // TODO
 }
 
 type CPUPodSpec struct {
-	Volumes       []corev1.Volume      `json:"volumes,omitempty" `
-	Containers    []CPUContainer       `json:"containers"`
-	RestartPolicy corev1.RestartPolicy `json:"restartPolicy,omitempty"`
-	HostNetwork   bool                 `json:"hostNetwork,omitempty"`
-	HostIPC       bool                 `json:"hostIPC,omitempty"`
+	Volumes               []corev1.Volume      `json:"volumes,omitempty" `
+	Containers            []CPUContainer       `json:"containers"`
+	RestartPolicy         corev1.RestartPolicy `json:"restartPolicy,omitempty"`
+	HostNetwork           bool                 `json:"hostNetwork,omitempty"`
+	HostIPC               bool                 `json:"hostIPC,omitempty"`
+	ShareProcessNamespace bool                 `json:"shareProcessNamespace,omitempty"`
 }
 
 type CPUContainer struct {
@@ -62,4 +65,6 @@ type CPUContainer struct {
 	SecurityContext *corev1.SecurityContext     `json:"securityContext,omitempty" protobuf:"bytes,15,opt,name=securityContext"`
 	VolumeMounts    []corev1.VolumeMount        `json:"volumeMounts,omitempty" patchStrategy:"merge" patchMergeKey:"mountPath" protobuf:"bytes,9,rep,name=volumeMounts"`
 	Resources       corev1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,8,opt,name=resources"`
+	Image           string                      `json:"image,omitempty" protobuf:"bytes,2,opt,name=image"`
+	Ports           []corev1.ContainerPort      `json:"ports,omitempty" patchStrategy:"merge" patchMergeKey:"containerPort" protobuf:"bytes,6,rep,name=ports"`
 }

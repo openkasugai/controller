@@ -14,17 +14,8 @@ require (
 	sigs.k8s.io/controller-runtime v0.15.0
 )
 
-//replace github.com/NVIDIA/go-dcgm => /home/ubuntu/gopath/pkg/mod/github.com/NVIDIA/go-dcgm
-
-//require (
-//	github.com/NVIDIA/go-dcgm v0.0.0-00010101000000-000000000000
-//	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
-//	go.uber.org/zap v1.24.0
-//	gopkg.in/ini.v1 v1.67.0
-//	k8s.io/api v0.27.2
-//	k8s.io/apimachinery v0.27.3
-//	sigs.k8s.io/controller-runtime v0.15.0
-//)
+// Use when running unit tests
+// replace github.com/NVIDIA/go-dcgm => /home/ubuntu/gopath/pkg/mod/github.com/!n!v!i!d!i!a/go-dcgm
 
 require (
 	github.com/Masterminds/semver v1.5.0 // indirect

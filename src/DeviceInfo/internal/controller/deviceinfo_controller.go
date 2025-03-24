@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 */
 
 package controller
@@ -23,7 +23,6 @@ import (
 	"k8s.io/client-go/tools/record"
 	"os"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	// "strconv"
 	"strings"
 )
 
@@ -51,7 +50,7 @@ const (
 	COMPUTERESOUCEKIND        = "ComputeResource"
 	COMPUTERESOURCENAME       = "compute-"
 	DEVICEINFOAPIVERSION      = "example.com/v1"
-	DEVICEINFOKIND            = "DeviceInfo"
+	DEVICEINFOKIND            = "deviceinfo"
 )
 
 var gMyNodeName string    // Store the node name
@@ -121,7 +120,7 @@ func (r *DeviceInfoReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 				crRequestData := crDeviceInfoData.Spec.Request
 
-				err := r.Get(ctx, client.ObjectKey{
+				err = r.Get(ctx, client.ObjectKey{
 					Namespace: gMyClusterName,
 					Name:      COMPUTERESOURCENAME + gMyNodeName,
 				}, &crComputeResourceData)
@@ -242,6 +241,8 @@ func (r *DeviceInfoReconciler) ChildBSCR(ctx context.Context, req ctrl.Request) 
 			break
 		}
 
+		childBsEventKind := getChildBsEventKind(&crChildBs)
+
 		for index := 0; index < len(crChildBs.Spec.Regions); index++ {
 			childData := crChildBs.Spec.Regions[index]
 			childDataFunctions := childData.Modules.Functions
@@ -267,16 +268,20 @@ func (r *DeviceInfoReconciler) ChildBSCR(ctx context.Context, req ctrl.Request) 
 				examplecomv1.ChildBsConfiguringParam,
 				examplecomv1.ChildBsNoConfigureNetwork,
 				examplecomv1.ChildBsConfiguringNetwork:
+
 				crComputeResourceRegionInfo.Available = false
 				crComputeResourceRegionInfo.Status = examplecomv1.WBRegionStatusPreparing
-			case examplecomv1.ChildBsReady:
+			case examplecomv1.ChildBsReady,
+				examplecomv1.ChildBsReconfiguring,
+				examplecomv1.ChildBsStoppingModule,
+				examplecomv1.ChildBsNotWriteBsfile,
+				examplecomv1.ChildBsNotStopNetworkModule:
 				// Get information for initial ComputeResourceCR generation
 				err = loadConfigMap(ctx, r)
 				if nil != err {
 					break
 				}
-				updateComputeResourceCR(ctx, crComputeResourceRegionInfo)
-
+				updateComputeResourceCR(ctx, crComputeResourceRegionInfo, childBsEventKind)
 			case examplecomv1.ChildBsError:
 				crComputeResourceRegionInfo.Available = false
 				crComputeResourceRegionInfo.Status = examplecomv1.WBRegionStatusError
@@ -290,16 +295,97 @@ func (r *DeviceInfoReconciler) ChildBSCR(ctx context.Context, req ctrl.Request) 
 			break
 		} else if nil != err {
 			logger.Error(err, "unable to get ComputeResource.")
+			break
 		} else {
 			logger.Info("ComputeResource Update Success")
-			break
+		}
+
+		if CREATE == childBsEventKind {
+			err = r.updateChildBsCR(ctx, &crChildBs)
+			if err != nil {
+				break
+			}
+		} else if DELETE == childBsEventKind {
+			err = r.deleteChildBsFinalizer(ctx, &crChildBs)
+			if err != nil {
+				break
+			}
 		}
 	}
 	return err
 }
 
-func updateComputeResourceCR(ctx context.Context, regioninfo *examplecomv1.RegionInfo) {
+// Event type determines
+func getChildBsEventKind(pChildBsCRData *examplecomv1.ChildBs) int {
 
+	var eventKind int
+	eventKind = UPDATE
+
+	// Whether or not there is a deletion timestamp
+	if !pChildBsCRData.ObjectMeta.DeletionTimestamp.IsZero() {
+		eventKind = DELETE
+	} else if !controllerutil.ContainsFinalizer(pChildBsCRData, getChildBsFinalizerName()) {
+		// Whether or not Finalizer is written
+		eventKind = CREATE
+	}
+	return eventKind
+}
+
+// FINALIZER name generation
+func getChildBsFinalizerName() (finalizername string) {
+
+	finalizername = DEVICEINFOKIND + ".finalizers." +
+		examplecomv1.GroupVersion.Group + "." +
+		examplecomv1.GroupVersion.Version
+	return finalizername
+}
+
+// Update the deployment result in the CR Status.
+func (r *DeviceInfoReconciler) updateChildBsCR(ctx context.Context,
+	pChildBsCR *examplecomv1.ChildBs) error {
+
+	logger := log.FromContext(ctx)
+
+	var err error
+
+	controllerutil.AddFinalizer(pChildBsCR, getChildBsFinalizerName())
+
+	// Update the Status area
+	err = r.Update(ctx, pChildBsCR)
+	if nil != err {
+		logger.Error(err, "ChildBsCR Status Update Error")
+	} else {
+		logger.Info("ChildBsCR Update Success")
+	}
+
+	return err
+}
+
+// Delete a custom resource
+func (r *DeviceInfoReconciler) deleteChildBsFinalizer(ctx context.Context,
+	pChildBsCR *examplecomv1.ChildBs) error {
+
+	logger := log.FromContext(ctx)
+
+	var err error
+	err = nil
+
+	// Delete the Finalizer statement.
+	if controllerutil.ContainsFinalizer(pChildBsCR, getChildBsFinalizerName()) {
+		controllerutil.RemoveFinalizer(pChildBsCR, getChildBsFinalizerName())
+		err := r.Update(ctx, pChildBsCR)
+		if nil != err {
+			logger.Error(err, "ChildBsCR RemoveFinalizer Update Error.")
+		}
+	}
+	return err
+}
+
+func updateComputeResourceCR(ctx context.Context,
+	regioninfo *examplecomv1.RegionInfo,
+	eventKind int) {
+
+	logger := log.FromContext(ctx)
 	deployDevice := gDeployInfo["devices"]
 
 	// Repeat for the number of devices in Deployment Information ConfigMap
@@ -327,10 +413,6 @@ func updateComputeResourceCR(ctx context.Context, regioninfo *examplecomv1.Regio
 			}
 		}
 
-		if 0 != len(regioninfo.Functions) {
-			break
-		}
-
 		regionList, funcData := createFunctionData(*deployDevice.FunctionTargets)
 
 		// Create RegionInfos for each FunctionTargets(Region)
@@ -342,35 +424,47 @@ func updateComputeResourceCR(ctx context.Context, regioninfo *examplecomv1.Regio
 				continue
 			}
 
-			var defaultCurrentFunctions int32
-			var defaultCurrentCapacity int32
-			defaultCurrentFunctions = 0
-			defaultCurrentCapacity = 0
-
-			regioninfo.Available = true
-			regioninfo.MaxFunctions = deployFunctionTargets.MaxFunctions
-			regioninfo.CurrentFunctions = &defaultCurrentFunctions
-			regioninfo.MaxCapacity = deployFunctionTargets.MaxCapacity
-			regioninfo.CurrentCapacity = &defaultCurrentCapacity
-
 			if 0 != len(regionList) &&
 				0 != len(funcData[regionList[regionIndex]]) {
-				regioninfo.Functions = funcData[regionList[regionIndex]]
-				*regioninfo.CurrentFunctions = int32(len(funcData[regionList[regionIndex]]))
-				regioninfo.Status = examplecomv1.WBRegionStatusReady
-			} else {
-				if "" != regioninfo.DeviceFilePath {
-					regioninfo.Status = examplecomv1.WBRegionStatusNotReady
-				}
-				regioninfo.Status = examplecomv1.WBRegionStatusReady
-			}
 
-			// fmt.Println("regionIndex : ", regionIndex) //debug
-			// fmt.Println("regionList : ", regionList[regionIndex]) //debug
-			// fmt.Println("regioninfo.Functions : ", regioninfo.Functions) //debug
+				if 0 != len(regioninfo.Functions) {
+					logger.Info("No change.")
+					break
+				}
+				var currentFunctions int32 = int32(len(funcData[regionList[regionIndex]]))
+				var defaultCurrentCapacity int32
+				defaultCurrentCapacity = 0
+
+				regioninfo.Available = true
+				regioninfo.Functions = funcData[regionList[regionIndex]]
+				regioninfo.CurrentFunctions = &currentFunctions
+				regioninfo.MaxFunctions = deployFunctionTargets.MaxFunctions
+				regioninfo.MaxCapacity = deployFunctionTargets.MaxCapacity
+				regioninfo.CurrentCapacity = &defaultCurrentCapacity
+				regioninfo.Status = examplecomv1.WBRegionStatusReady
+				logger.Info("Ready Case Processing Completed.")
+			} else {
+				regioninfo.Functions = nil
+				regioninfo.CurrentFunctions = nil
+				regioninfo.CurrentCapacity = nil
+				if nil != deployFunctionTargets.MaxFunctions {
+					regioninfo.MaxFunctions = deployFunctionTargets.MaxFunctions
+				}
+				if nil != deployFunctionTargets.MaxCapacity {
+					regioninfo.MaxCapacity = deployFunctionTargets.MaxCapacity
+				}
+
+				if DELETE == eventKind {
+					regioninfo.Available = true
+					regioninfo.Status = examplecomv1.WBRegionStatusNotReady
+				} else {
+					regioninfo.Available = false
+					regioninfo.Status = examplecomv1.WBRegionStatusPreparing
+				}
+				logger.Info("Reconfiguring Case Processing Completed.")
+			}
 		}
 	}
-	// fmt.Println("data : ", data) //debug
 }
 
 // SetupWithManager sets up the controller with the Manager.
@@ -414,7 +508,6 @@ func getEventKind(ctx context.Context,
 		// Whether or not Finalizer is written
 		eventKind = CREATE
 	}
-	//	fmt.Printf("getEventKind %#v\n", pCRData)
 	return eventKind
 }
 
@@ -448,13 +541,11 @@ func (r *DeviceInfoReconciler) makeDeploySpace(ctx context.Context,
 
 	logger := log.FromContext(ctx)
 	var err error
-	//	var specifyingFlag bool // Whether or not FunctionIndex is specified
 	var ResponceData examplecomv1.WBFuncResponse
 	var crComputeResourceRegionInfo *examplecomv1.RegionInfo
 	var regionIndex int32
 
 	err = nil
-	//	specifyingFlag = true
 	ResponceData.Status = examplecomv1.ResponceDeployed
 
 	deviceRequest := pCRDeviceInfo.Spec.Request
@@ -813,6 +904,13 @@ func undeployProccessing(ctx context.Context,
 			*pRegionInfo.CurrentFunctions = *pRegionInfo.CurrentFunctions - int32(1)
 		}
 
+		*targetFunction.MaxDataFlows =
+			*targetFunction.MaxDataFlows - int32(1)
+		*targetFunction.CurrentDataFlows =
+			*targetFunction.CurrentDataFlows - int32(1)
+		*targetFunction.CurrentCapacity =
+			*targetFunction.CurrentCapacity - *pCRDeviceInfo.Capacity
+
 		// Set Available
 		if *pRegionInfo.MaxFunctions-*pRegionInfo.CurrentFunctions >= 0 &&
 			*pRegionInfo.MaxCapacity-*pRegionInfo.CurrentCapacity > 0 {
@@ -845,12 +943,6 @@ func undeployProccessing(ctx context.Context,
 			*pRegionInfo = targetRegion
 			break
 		}
-
-		*targetFunction.CurrentDataFlows =
-			*targetFunction.CurrentDataFlows - int32(1)
-		*targetFunction.CurrentCapacity =
-			*targetFunction.CurrentCapacity - *pCRDeviceInfo.Capacity
-
 		if *targetFunction.MaxDataFlows-*targetFunction.CurrentDataFlows > 0 &&
 			*targetFunction.MaxCapacity-*targetFunction.CurrentCapacity > 0 {
 			targetFunction.Available = true
@@ -866,7 +958,6 @@ func undeployProccessing(ctx context.Context,
 func acceleratorJudge(ctx context.Context,
 	region string,
 	deviceFilePath string) bool {
-	// old	deviceUUID string) bool {
 
 	var fpgaJudge bool // For FPGA: true
 	fpgaJudge = false
@@ -962,15 +1053,12 @@ func StartupProccessing(r *DeviceInfoReconciler, mng ctrl.Manager) error {
 			crData.Spec.NodeName = gMyNodeName
 			crData.Status.Regions = deployData
 			crData.Status.NodeName = gMyNodeName
-			// fmt.Println("spec data : ", crData.Spec.Regions) // debug
 
 			// ComputeResource generation
 			crData.SetName(COMPUTERESOURCENAME + gMyNodeName)
 			crData.SetNamespace(gMyClusterName)
 			crData.Kind = COMPUTERESOUCEKIND
 			crData.APIVersion = COMPUTERESOURCEAPIVERSION
-
-			// fmt.Println("crData : ", crData) //debug
 
 			// Register ComputeResourceCR
 			err = r.Create(ctx, &crData)
@@ -1043,7 +1131,6 @@ func (r *DeviceInfoReconciler) getConfigMap(ctx context.Context,
 		logger.Error(err, "ConfigMap unable to fetch. ConfigName="+cfgname)
 	} else {
 		mapdata, _, _ = unstructured.NestedStringMap(tmpData.Object, "data")
-		// fmt.Printf("NestedMap %#v\n", mapdata) //debug
 		for _, jsonrecord := range mapdata {
 			*cfgdata = []byte(jsonrecord)
 		}
@@ -1059,8 +1146,6 @@ func createComputeResourceCR() (regioninfos []examplecomv1.RegionInfo) {
 
 	// Repeat for the number of devices in the Infrastructure information ConfigMap
 	for infraIndex := 0; infraIndex < len(infraDevice); infraIndex++ {
-		// fmt.Println("infra_node : ", infraDevice[infraIndex].Node) //debug
-		// fmt.Println("infra_node : ", gMyNodeName) //debug
 		infraData := infraDevice[infraIndex]
 
 		if infraData.NodeName != gMyNodeName {
@@ -1146,17 +1231,12 @@ func createComputeResourceCR() (regioninfos []examplecomv1.RegionInfo) {
 					}
 				}
 
-				// fmt.Println("regionIndex : ", regionIndex) //debug
-				// fmt.Println("regionList : ", regionList[regionIndex]) //debug
-				// fmt.Println("regions.Functions : ", regions.Functions) //debug
-
 				// Stored for DeviceInfoCR
 				regioninfos = append(regioninfos, regions)
 			}
 			break
 		}
 	}
-	// fmt.Println("data : ", data) //debug
 	return regioninfos
 }
 
@@ -1191,7 +1271,6 @@ func createFunctionData(
 				}
 			}
 
-			// fmt.Println("listFlag:", listFlag) //debug
 			if listFlag == false {
 				regionList = append(regionList, region)
 			}
@@ -1214,6 +1293,5 @@ func createFunctionData(
 				append(functions[region], funcData)
 		}
 	}
-	// fmt.Println("functions : ", functions) //debug
 	return regionList, functions
 }

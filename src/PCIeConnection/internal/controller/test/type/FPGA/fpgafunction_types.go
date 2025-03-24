@@ -27,27 +27,29 @@ import (
 type FPGAFunctionSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	DataFlowRef       WBNamespacedName  `json:"dataFlowRef"`
-	FunctionName      string            `json:"functionName"`
-	NodeName          string            `json:"nodeName"`
-	DeviceType        string            `json:"deviceType"`
-	AcceleratorIDs    []AccIDInfo       `json:"acceleratorIDs"`
-	RegionName        string            `json:"regionName"`
-	FunctionIndex     *int32            `json:"functionIndex,omitempty"`
-	Envs              []EnvsInfo        `json:"envs,omitempty"`
-	ConfigName        string            `json:"configName"`
-	SharedMemory      *SharedMemorySpec `json:"sharedMemory,omitempty"`
-	FunctionKernelID  *int32            `json:"functionKernelID"`
-	FunctionChannelID *int32            `json:"functionChannelID"`
-	PtuKernelID       *int32            `json:"ptuKernelID"`
-	FrameworkKernelID *int32            `json:"frameworkKernelID"`
-	Rx                RxTxSpec          `json:"rx"`
-	Tx                RxTxSpec          `json:"tx"`
+	DataFlowRef       WBNamespacedName            `json:"dataFlowRef"`
+	FunctionName      string                      `json:"functionName"`
+	NodeName          string                      `json:"nodeName"`
+	DeviceType        string                      `json:"deviceType"`
+	AcceleratorIDs    []AccIDInfo                 `json:"acceleratorIDs"`
+	RegionName        string                      `json:"regionName"`
+	FunctionIndex     *int32                      `json:"functionIndex,omitempty"`
+	Envs              []EnvsInfo                  `json:"envs,omitempty"`
+	ConfigName        string                      `json:"configName"`
+	SharedMemory      *SharedMemorySpec           `json:"sharedMemory,omitempty"`
+	FunctionKernelID  *int32                      `json:"functionKernelID,omitempty"`
+	FunctionChannelID *int32                      `json:"functionChannelID,omitempty"`
+	PtuKernelID       *int32                      `json:"ptuKernelID,omitempty"`
+	FrameworkKernelID *int32                      `json:"frameworkKernelID,omitempty"`
+	Rx                *RxTxData                   `json:"rx,omitempty"`
+	Tx                *RxTxData                   `json:"tx,omitempty"`
+	PreviousFunctions map[string]FromToWBFunction `json:"previousFunctions,omitempty"`
+	NextFunctions     map[string]FromToWBFunction `json:"nextFunctions,omitempty"`
 }
 
 type AccIDInfo struct {
-	PartitionName string `json:"partitionName"`
-	ID            string `json:"id"`
+	PartitionName *string `json:"partitionName,omitempty"`
+	ID            string  `json:"id"`
 }
 
 type EnvsInfo struct {
@@ -60,14 +62,14 @@ type EnvsData struct {
 	EnvValue string `json:"envValue"`
 }
 
-type RxTxSpec struct {
-	Protocol        string  `json:"protocol"`
-	IPAddress       *string `json:"ipAddress,omitempty"`
-	Port            *int32  `json:"port,omitempty"`
-	SubnetAddress   *string `json:"subnetAddress,omitempty"`
-	GatewayAddress  *string `json:"gatewayAddress,omitempty"`
-	DMAChannelID    *int32  `json:"dmaChannelID,omitempty"`
-	FDMAConnectorID *int32  `json:"fdmaConnectorID,omitempty"`
+type RxTxData struct {
+	Protocol         string  `json:"protocol"`
+	IPAddress        *string `json:"ipAddress,omitempty"`
+	Port             *int32  `json:"port,omitempty"`
+	SubnetAddress    *string `json:"subnetAddress,omitempty"`
+	GatewayAddress   *string `json:"gatewayAddress,omitempty"`
+	DMAChannelID     *int32  `json:"dmaChannelID,omitempty"`
+	LLDMAConnectorID *int32  `json:"lldmaConnectorID,omitempty"`
 }
 
 type SharedMemorySpec struct {
@@ -85,6 +87,7 @@ type FPGAFunctionStatus struct {
 	Status              string                `json:"status"`
 	DataFlowRef         WBNamespacedName      `json:"dataFlowRef"`
 	FunctionName        string                `json:"functionName"`
+	FunctionIndex       int32                 `json:"functionIndex"`
 	ParentBitstreamName string                `json:"parentBitstreamName"`
 	ChildBitstreamName  string                `json:"childBitstreamName"`
 	SharedMemory        *SharedMemorySpec     `json:"sharedMemory,omitempty"`
@@ -92,8 +95,8 @@ type FPGAFunctionStatus struct {
 	FunctionChannelID   int32                 `json:"functionChannelID"`
 	PtuKernelID         int32                 `json:"ptuKernelID"`
 	FrameworkKernelID   int32                 `json:"frameworkKernelID"`
-	Rx                  RxTxSpec              `json:"rx"`
-	Tx                  RxTxSpec              `json:"tx"`
+	Rx                  RxTxData              `json:"rx"`
+	Tx                  RxTxData              `json:"tx"`
 	AcceleratorStatuses []AccStatusesByDevice `json:"acceleratorStatuses,omitempty"`
 }
 

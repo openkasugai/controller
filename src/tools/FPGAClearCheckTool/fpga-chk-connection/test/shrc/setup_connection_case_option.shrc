@@ -1,0 +1,234 @@
+#! /bin/bash
+# Copyright 2025 NTT Corporation , FUJITSU LIMITED
+
+# ======================================================
+# Option
+# ======================================================
+test_option_short_k () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] -k/--connector_id"
+	request_create_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	OPT=""
+	OPT+=" -k RX-0 --"
+	OPT+=" --connector_id RX-0 --"
+	OPT+=" --connector-id RX-0 --"
+	OPT+=" --matching_key RX-0 --"
+	OPT+=" --matching-key RX-0 --"
+	exec_fcc $OPT
+	request_delete_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+}
+# ------------------------------------------------------
+test_option_short_d () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] -d/--device"
+	request_create_chain $INPUT_FPGA_NAME            0 0 LLDMA 0 INGR
+	request_create_chain /dev/xpcie_$INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+	OPT_COMMON=" -l 0 -f 0 --"
+	OPT=""
+	OPT+=" -d $INPUT_FPGA_NAME $OPT_COMMON"
+	OPT+=" -d /dev/xpcie_$INPUT_FPGA_NAME $OPT_COMMON"
+	OPT+=" --device $INPUT_FPGA_NAME $OPT_COMMON"
+	OPT+=" --device /dev/xpcie_$INPUT_FPGA_NAME $OPT_COMMON"
+	exec_fcc $OPT
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+}
+# ------------------------------------------------------
+test_option_short_l () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] -l/--lane"
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	OPT_COMMON=" -d $INPUT_FPGA_NAME -f 0 --dir Ingress --"
+	OPT=""
+	OPT+=" -l 0 $OPT_COMMON"
+	OPT+=" --lane 0 $OPT_COMMON"
+	exec_fcc $OPT
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+}
+# ------------------------------------------------------
+test_option_short_f () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] -f/--fchid"
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	OPT_COMMON=" -d $INPUT_FPGA_NAME -l 0 --dir Ingress --"
+	OPT=""
+	OPT+=" -f 0 $OPT_COMMON"
+	OPT+=" --fchid 0 $OPT_COMMON"
+	OPT+=" --function_channel_id 0 $OPT_COMMON"
+	OPT+=" --function-channel-id 0 $OPT_COMMON"
+	exec_fcc $OPT
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+}
+# ------------------------------------------------------
+test_option_short_e () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] -e/--extif_id"
+	request_create_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	request_create_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	OPT_COMMON=" -d $INPUT_FPGA_NAME -l 0 -c 0 --"
+	OPT=""
+	OPT+=" -e 0 $OPT_COMMON"
+	OPT+=" --extif_id 0 $OPT_COMMON"
+	OPT+=" --extif-id 0 $OPT_COMMON"
+	exec_fcc $OPT
+	request_delete_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	request_delete_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+
+	request_create_ptu_server $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 INGR
+	CID=`tail -n 1 cid-${INPUT_FPGA_NAME}-0-20000.log`
+	OPT_COMMON=" -d $INPUT_FPGA_NAME -l 0 -c $CID --"
+	OPT=""
+	OPT+=" -e 1 $OPT_COMMON"
+	OPT+=" --extif_id 1 $OPT_COMMON"
+	OPT+=" --extif-id 1 $OPT_COMMON"
+	exec_fcc $OPT
+	request_delete_ptu $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 INGR
+}
+# ------------------------------------------------------
+test_option_short_c () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] -c/--cid"
+	request_create_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	request_create_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	OPT_COMMON=" -d $INPUT_FPGA_NAME -l 0 -e 0 --"
+	OPT=""
+	OPT+=" -c 0 $OPT_COMMON"
+	OPT+=" --connection_id 0 $OPT_COMMON"
+	OPT+=" --connection-id 0 $OPT_COMMON"
+	exec_fcc $OPT
+	request_delete_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	request_delete_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+
+	request_create_ptu_server $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 INGR
+	CID=`tail -n 1 cid-${INPUT_FPGA_NAME}-0-20000.log`
+	OPT_COMMON=" -d $INPUT_FPGA_NAME -l 0 -e 1 --"
+	OPT=""
+	OPT+=" -c $CID $OPT_COMMON"
+	OPT+=" --connection_id $CID $OPT_COMMON"
+	OPT+=" --connection-id $CID $OPT_COMMON"
+	exec_fcc $OPT
+	request_delete_ptu $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 INGR
+}
+# ------------------------------------------------------
+test_option_long_dir () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] --dir"
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+	OPT_COMMON=" -d $INPUT_FPGA_NAME -l 0 -f 0 --"
+	OPT=""
+	OPT+=" --dir ingress $OPT_COMMON"
+	OPT+=" --dir Ingress $OPT_COMMON"
+	OPT+=" --dir INGRESS $OPT_COMMON"
+	OPT+=" --dir ingr $OPT_COMMON"
+	OPT+=" --dir Ingr $OPT_COMMON"
+	OPT+=" --dir INGR $OPT_COMMON"
+	OPT+=" --dir egress $OPT_COMMON"
+	OPT+=" --dir Egress $OPT_COMMON"
+	OPT+=" --dir EGRESS $OPT_COMMON"
+	OPT+=" --dir egr $OPT_COMMON"
+	OPT+=" --dir Egr $OPT_COMMON"
+	OPT+=" --dir EGR $OPT_COMMON"
+	OPT+=" --dir both $OPT_COMMON"
+	OPT+=" --dir Both $OPT_COMMON"
+	OPT+=" --dir BOTH $OPT_COMMON"
+	OPT+=" --direction ingress $OPT_COMMON"
+	OPT+=" --direction Ingress $OPT_COMMON"
+	OPT+=" --direction INGRESS $OPT_COMMON"
+	OPT+=" --direction ingr $OPT_COMMON"
+	OPT+=" --direction Ingr $OPT_COMMON"
+	OPT+=" --direction INGR $OPT_COMMON"
+	OPT+=" --direction egress $OPT_COMMON"
+	OPT+=" --direction Egress $OPT_COMMON"
+	OPT+=" --direction EGRESS $OPT_COMMON"
+	OPT+=" --direction egr $OPT_COMMON"
+	OPT+=" --direction Egr $OPT_COMMON"
+	OPT+=" --direction EGR $OPT_COMMON"
+	OPT+=" --direction both $OPT_COMMON"
+	OPT+=" --direction Both $OPT_COMMON"
+	OPT+=" --direction BOTH $OPT_COMMON"
+	exec_fcc $OPT
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+}
+# ------------------------------------------------------
+test_option_short_j () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] -j/--json_params"
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+	exec_fcc -d $INPUT_FPGA_NAME -l 0 -f 0
+	exec_fcc_json -j "`cat df-found.json`"
+	exec_fcc_json --json_params "`cat df-found.json`"
+	exec_fcc_json --json-params "`cat df-found.json`"
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+}
+# ------------------------------------------------------
+test_option_short_i () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] -i/--input_json_file"
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+	exec_fcc -d $INPUT_FPGA_NAME -l 0 -f 0
+	exec_fcc -i df-found.json
+	exec_fcc --input_json_file df-found.json
+	exec_fcc --input-json-file df-found.json
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+}
+# ------------------------------------------------------
+test_option_short_o () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] -o/--output_json_file"
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+	OPT_COMMON=" -d $INPUT_FPGA_NAME -l 0 -f 0 --"
+	exec_fcc $OPT_COMMON -o df-found-o.json
+	exec_fcc $OPT_COMMON --output_json_file df-found-output_.json
+	exec_fcc $OPT_COMMON --output-json-file df-found-output-.json
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+}
+# ------------------------------------------------------
+test_option_long_dump () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] --dump"
+	request_create_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	request_create_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	exec_fcc --dump
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_create_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+	exec_fcc --dump
+	request_create_ptu_server $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 INGR
+	exec_fcc --dump
+	request_delete_ptu $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 INGR
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 INGR
+	request_delete_chain $INPUT_FPGA_NAME 0 0 LLDMA 0 EGR
+	request_delete_lldma $INPUT_FPGA_NAME RX-0 0 INGR
+	request_delete_lldma $INPUT_FPGA_NAME TX-0 0 EGR
+	exec_fcc --dump
+}
+# ------------------------------------------------------
+test_option_long_help () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [OPTION] --help"
+	exec_fcc --help
+}
+# ------------------------------------------------------
+test_option () {
+	echo "## [OPTION]"
+	test_option_short_k
+	test_option_short_d
+	test_option_short_l
+	test_option_short_f
+	test_option_short_e
+	test_option_short_c
+	test_option_long_dir
+	test_option_short_j
+	test_option_short_i
+	test_option_short_o
+	test_option_long_dump
+	test_option_long_help
+}
+# ======================================================

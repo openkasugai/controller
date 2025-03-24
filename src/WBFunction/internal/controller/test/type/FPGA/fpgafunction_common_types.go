@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 */
 
 package v1
@@ -52,11 +52,12 @@ const (
 )
 
 const (
-	CMServicerMgmtInfo   = "servicer-mgmt-info"
-	CMDeployInfo         = "deployinfo"
-	CMRegionUniqueInfo   = "region-unique-info"
-	CMFunctionUniqueInfo = "function-unique-info"
-	CMFilterResizeInfo   = "filter-resize-ch"
+	CMServicerMgmtInfo        = "servicer-mgmt-info"
+	CMDeployInfo              = "deployinfo"
+	CMRegionUniqueInfo        = "region-unique-info"
+	CMFunctionUniqueInfo      = "function-unique-info"
+	CMPreDeterminedRegionInfo = "predetermined-region-info"
+	CMFilterResizeInfo        = "filter-resize-ch"
 )
 
 const (
@@ -64,13 +65,15 @@ const (
 )
 
 type FPGAFuncConfig struct {
-	ParentBitstream BitstreamData     `json:"parentBitstream,omitempty"`
-	ChildBitstream  BitstreamData     `json:"childBitstream,omitempty"`
-	SharedMemoryGiB int32             `json:"sharedMemoryGiB,omitempty"`
-	Envs            map[string]string `json:"envs,omitempty"`
-	Commands        []string          `json:"commands,omitempty"`
-	Args            []string          `json:"args,omitempty"`
-	Parameters      AnyData           `json:"parameters,omitempty"`
+	ParentBitstream       BitstreamData     `json:"parentBitstream,omitempty"`
+	ChildBitstream        BitstreamData     `json:"childBitstream,omitempty"`
+	SharedMemoryMiB       int32             `json:"sharedMemoryMiB,omitempty"`
+	Envs                  map[string]string `json:"envs,omitempty"`
+	Commands              []string          `json:"commands,omitempty"`
+	Args                  []string          `json:"args,omitempty"`
+	Parameters            AnyData           `json:"parameters,omitempty"`
+	FunctionDedicatedInfo string            `json:"functionDedicatedInfo,omitempty"`
+	FunctionName          string            `json:"functionName,omitempty"`
 }
 
 type BitstreamData struct {
@@ -112,13 +115,13 @@ type FunctionData struct {
 }
 
 type RxTxSpecFunc struct {
-	Protocol        string  `json:"protocol"`
-	IPAddress       *string `json:"iPAddress,omitempty"`
-	Port            *int32  `json:"port,omitempty"`
-	SubnetAddress   *string `json:"subnetAddress,omitempty"`
-	GatewayAddress  *string `json:"gatewayAddress,omitempty"`
-	DMAChannelID    *int32  `json:"dmaChannelID,omitempty"`
-	FDMAConnectorID *int32  `json:"fdmaConnectorID,omitempty"`
+	Protocol         string  `json:"protocol"`
+	IPAddress        *string `json:"iPAddress,omitempty"`
+	Port             *int32  `json:"port,omitempty"`
+	SubnetAddress    *string `json:"subnetAddress,omitempty"`
+	GatewayAddress   *string `json:"gatewayAddress,omitempty"`
+	DMAChannelID     *int32  `json:"dmaChannelID,omitempty"`
+	LLDMAConnectorID *int32  `json:"lldmaConnectorID,omitempty"`
 }
 
 // Structure for ServicerMgmtInfo information acquisition
@@ -178,6 +181,11 @@ type FPGACatalog struct {
 
 // Detailed information about each function
 type FunctionDetail struct {
+	PartitionName      string                   `json:"partitionName"`
+	FunctionChannelIDs []FPGAFunctionChannelIDs `json:"functionChannelIDs"`
+}
+
+type FPGAFunctionChannelIDs struct {
 	FunctionChannelID int32              `json:"functionChannelID"`
 	Rx                FPGACatalogmapRxTx `json:"rx"`
 	Tx                FPGACatalogmapRxTx `json:"tx"`
@@ -188,10 +196,16 @@ type FPGACatalogmapRxTx struct {
 	Protocol *map[string]Details `json:"protocol"`
 }
 
-/*
+// PreDeterminedRegionInfos
+type PreDeterminedRegionInfo struct {
+	NodeName         string `json:"nodeName"`
+	DeviceUUID       string `json:"deviceUUID"`
+	SubDeviceSpecRef string `json:"subDeviceSpecRef"`
+	RegionType       string `json:"regionType"`
+}
+
 type Details struct {
 	Port             *int32 `json:"port,omitempty"`
 	DMAChannelID     *int32 `json:"dmaChannelID,omitempty"`
 	LLDMAConnectorID *int32 `json:"lldmaConnectorID,omitempty"`
 }
-*/

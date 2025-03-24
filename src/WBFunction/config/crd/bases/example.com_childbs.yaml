@@ -39,7 +39,9 @@ spec:
           spec:
             description: ChildBitstreamSpec defines the desired state of ChildBitstream
             properties:
-              childBitstreamID:
+              child-bitstream-file:
+                type: string
+              child-bitstream-id:
                 type: string
               regions:
                 items:
@@ -57,7 +59,7 @@ spec:
                             id:
                               format: int32
                               type: integer
-                            identifire:
+                            identifier:
                               type: string
                             type:
                               type: string
@@ -70,21 +72,23 @@ spec:
                               format: int32
                               type: integer
                             module:
-                              properties:
-                                identifire:
-                                  type: string
-                                type:
-                                  type: string
-                                version:
-                                  type: string
-                              type: object
+                              items:
+                                properties:
+                                  identifier:
+                                    type: string
+                                  type:
+                                    type: string
+                                  version:
+                                    type: string
+                                type: object
+                              type: array
                           type: object
                         directtrans:
                           properties:
                             id:
                               format: int32
                               type: integer
-                            identifire:
+                            identifier:
                               type: string
                             type:
                               type: string
@@ -103,6 +107,8 @@ spec:
                                     format: int32
                                     type: integer
                                 type: object
+                              functionname:
+                                type: string
                               id:
                                 format: int32
                                 type: integer
@@ -156,16 +162,18 @@ spec:
                                   type: object
                                 type: object
                               module:
-                                properties:
-                                  functionChannelIDs:
-                                    type: string
-                                  identifier:
-                                    type: string
-                                  type:
-                                    type: string
-                                  version:
-                                    type: string
-                                type: object
+                                items:
+                                  properties:
+                                    function-channel-ids:
+                                      type: string
+                                    identifier:
+                                      type: string
+                                    type:
+                                      type: string
+                                    version:
+                                      type: string
+                                  type: object
+                                type: array
                               parameters:
                                 additionalProperties:
                                   anyOf:
@@ -211,7 +219,9 @@ spec:
           status:
             description: ChildBitstreamStatus defines the observed state of ChildBitstream
             properties:
-              childBitstreamID:
+              child-bitstream-file:
+                type: string
+              child-bitstream-id:
                 type: string
               regions:
                 items:
@@ -229,7 +239,7 @@ spec:
                             id:
                               format: int32
                               type: integer
-                            identifire:
+                            identifier:
                               type: string
                             type:
                               type: string
@@ -242,21 +252,23 @@ spec:
                               format: int32
                               type: integer
                             module:
-                              properties:
-                                identifire:
-                                  type: string
-                                type:
-                                  type: string
-                                version:
-                                  type: string
-                              type: object
+                              items:
+                                properties:
+                                  identifier:
+                                    type: string
+                                  type:
+                                    type: string
+                                  version:
+                                    type: string
+                                type: object
+                              type: array
                           type: object
                         directtrans:
                           properties:
                             id:
                               format: int32
                               type: integer
-                            identifire:
+                            identifier:
                               type: string
                             type:
                               type: string
@@ -275,6 +287,8 @@ spec:
                                     format: int32
                                     type: integer
                                 type: object
+                              functionname:
+                                type: string
                               id:
                                 format: int32
                                 type: integer
@@ -328,16 +342,18 @@ spec:
                                   type: object
                                 type: object
                               module:
-                                properties:
-                                  functionChannelIDs:
-                                    type: string
-                                  identifier:
-                                    type: string
-                                  type:
-                                    type: string
-                                  version:
-                                    type: string
-                                type: object
+                                items:
+                                  properties:
+                                    function-channel-ids:
+                                      type: string
+                                    identifier:
+                                      type: string
+                                    type:
+                                      type: string
+                                    version:
+                                      type: string
+                                  type: object
+                                type: array
                               parameters:
                                 additionalProperties:
                                   anyOf:

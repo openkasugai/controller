@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ import (
 	// #include <liblldma.h>
 	// #include <libfpgactl.h>
 	// #include <libchain.h>
+	// #include <libchain_stat.h>
 	// #include <libdmacommon.h>
 	// #include <liblogging.h>
 	// #include <libshmem.h>
@@ -73,9 +74,12 @@ const (
 
 // Status type
 const (
-	STATUS_OK   = "OK"
-	STATUS_INIT = "INIT"
-	STATUS_NG   = "NG"
+	STATUS_OK          = "OK"
+	STATUS_INIT        = "INIT"
+	STATUS_NG          = "NG"
+	STATUS_PODDELETING = "PODDELETING"
+	STATUS_PODDELETED  = "PODDELETED"
+	STATUS_STOPPED     = "STOPPED"
 )
 
 // FunctionType type
@@ -86,10 +90,24 @@ const (
 	FUNCTYPE_CPU  = "CPUFunction"
 )
 
+// Pod type
+const (
+	PODKIND    = "Pod"
+	PODVERSION = "v1"
+)
+
+// Check type
+const (
+	FALSE = iota
+	TRUE
+)
+
 // Overall Status type
 const (
-	PENDING = "Pending"
-	RUNNING = "Running"
+	PENDING     = "Pending"
+	RUNNING     = "Running"
+	TERMINATING = "Terminating"
+	RELEASED    = "Released"
 )
 
 var FpgaDevList = []string{}
@@ -150,9 +168,13 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		return ctrl.Result{}, err
 	}
 
+	// Collect information about your own node
+	myNodeName := os.Getenv("K8S_NODENAME")
+
 	// Get Event type
 	eventKind = r.GetEventKind(&crData)
-	if eventKind == CREATE {
+
+	if eventKind == CREATE || eventKind == DELETE {
 		// FunctionData acquisition (Src side)
 		err = r.GetFunctionData(ctx, crData.Spec.From.WBFunctionRef, &srcFunctionData, &srcFunctionKind)
 		if err != nil {
@@ -175,9 +197,6 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 			return ctrl.Result{Requeue: true}, nil
 		}
 
-		// Collect information about your own node
-		myNodeName := os.Getenv("K8S_NODENAME")
-
 		if (myNodeName == srcFunctionData.Spec.NodeName) ||
 			(myNodeName == dstFunctionData.Spec.NodeName) {
 			// do nothing
@@ -186,14 +205,11 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 			return ctrl.Result{}, nil
 		}
 
-		// For creation
-		r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
-			"Create", "Create Start")
-
 		// Setting process
 		var srcAccID string
 		if FUNCTYPE_FPGA == srcFunctionKind {
 			if nil == srcFunctionData.Status.FunctionKernelID {
+				logger.Info("Requeue because source FPGA FunctionKernelID is not determined.")
 				return ctrl.Result{Requeue: true}, nil
 			}
 			for count := 0; count < len(srcFunctionData.Spec.AcceleratorIDs); count++ {
@@ -213,6 +229,7 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		var dstAccID string
 		if FUNCTYPE_FPGA == dstFunctionKind {
 			if nil == dstFunctionData.Status.FunctionKernelID {
+				logger.Info("Requeue because destination FPGA FunctionKernelID is not determined.")
 				return ctrl.Result{Requeue: true}, nil
 			}
 			for count := 0; count < len(dstFunctionData.Spec.AcceleratorIDs); count++ {
@@ -227,6 +244,20 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 			}
 			dstDeviceID = PCIeConnectionAccIDToDeviceID(dstAccID)
 		}
+	}
+
+	if DELETE == eventKind && TERMINATING != crData.Status.Status {
+		r.UpdCustomResource(ctx, r, &crData, TERMINATING)
+		logger.Info("Update PCIeConnection to Terminating.")
+		return ctrl.Result{}, nil
+	}
+
+	if eventKind == CREATE {
+		// For creation
+		r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
+			"Create", "Create Start")
+		saveFromStatus := crData.Status.From.Status
+		saveToStatus := crData.Status.To.Status
 
 		if myNodeName == srcFunctionData.Spec.NodeName {
 			if srcFunctionData.Status.Status == RUNNING &&
@@ -234,6 +265,7 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 				switch srcFunctionKind {
 				case FUNCTYPE_FPGA:
 					if FUNCTYPE_FPGA == dstFunctionKind {
+						/* D2D is not supported
 						// Call D2D processing function
 						ret := PCIeConnectionD2D(ctx, &crData,
 							srcDeviceID, &srcFunctionData.Status,
@@ -245,6 +277,10 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 							crData.Status.From.Status = STATUS_NG
 							crData.Status.To.Status = STATUS_NG
 						}
+						*/
+						// D2D Interim processing
+						crData.Status.From.Status = STATUS_OK
+						crData.Status.To.Status = STATUS_OK
 					} else {
 						if done, exist := ShmemEnable[dstFunctionData.Spec.SharedMemory.FilePrefix]; !exist || (exist && !done) {
 							// Call the prefix enable function
@@ -361,15 +397,16 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 			crData.Status.To.Status == STATUS_OK {
 			crStatus = RUNNING
 		}
-		r.UpdCustomResource(ctx, r, &crData, crStatus)
-
-		r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
-			"Create", "Create End")
-
-		if crStatus != RUNNING {
-			// Requeue
-			logger.Error(nil, "CR Status is not Running")
+		if saveFromStatus == crData.Status.From.Status &&
+			saveToStatus == crData.Status.To.Status {
+			logger.Info("CR Status is not Changed")
 			return ctrl.Result{Requeue: true}, nil
+		} else {
+			r.UpdCustomResource(ctx, r, &crData, crStatus)
+			if RUNNING == crStatus {
+				r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
+					"Create", "Create End")
+			}
 		}
 
 	} else if eventKind == UPDATE {
@@ -382,17 +419,129 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		// In case of deletion
 		r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
 			"Delete", "Delete Start")
+		saveFromStatus := crData.Status.From.Status
+		saveToStatus := crData.Status.To.Status
 
-		// Delete the Finalizer statement.
-		err = r.DelCustomResource(ctx, r, &crData)
-		if err != nil {
-			return ctrl.Result{}, client.IgnoreNotFound(err)
+		if myNodeName == srcFunctionData.Spec.NodeName {
+			if srcFunctionData.Status.Status == RUNNING &&
+				dstFunctionData.Status.Status == RUNNING {
+				switch srcFunctionKind {
+				case FUNCTYPE_FPGA:
+					if FUNCTYPE_FPGA == dstFunctionKind {
+						// D2D is not supported
+						logger.Info("nothing to do")
+						crData.Status.From.Status = STATUS_STOPPED
+						crData.Status.To.Status = STATUS_STOPPED
+					} else if STATUS_STOPPED == crData.Status.To.Status {
+						crData.Status.From.Status =
+							PCIeDisconnectionSrcFPGA(ctx,
+								srcDeviceID, &srcFunctionData.Status,
+								&dstFunctionData.Status)
+					}
+				case FUNCTYPE_CPU, FUNCTYPE_GPU:
+					if STATUS_OK == crData.Status.From.Status ||
+						STATUS_PODDELETING == crData.Status.From.Status {
+						crData.Status.From.Status =
+							r.CheckDeletePod(ctx,
+								crData.Status.From.WBFunctionRef.Namespace,
+								*srcFunctionData.Status.PodName,
+								crData.Status.From.Status)
+					}
+
+					if STATUS_PODDELETED == crData.Status.From.Status {
+						if FUNCTYPE_FPGA == dstFunctionKind {
+							logger.Info("nothing to do")
+							crData.Status.From.Status = STATUS_STOPPED
+						} else if FUNCTYPE_CPU == dstFunctionKind || FUNCTYPE_GPU == dstFunctionKind {
+							if STATUS_STOPPED == crData.Status.To.Status {
+								if _, exist := ShmemEnable[srcFunctionData.Spec.SharedMemory.FilePrefix]; exist {
+									filePrefix := srcFunctionData.Spec.SharedMemory.FilePrefix
+									// Call the prefix disable function
+									ret := C.fpga_shmem_disable_with_check(C.CString(filePrefix))
+									if 0 == ret {
+										logger.Info("fpga_shmem_disable_with_check() OK ret = " +
+											strconv.Itoa(int(ret)))
+										if _, exist := ShmemEnable[filePrefix]; exist {
+											delete(ShmemEnable, filePrefix)
+										}
+										crData.Status.From.Status = STATUS_STOPPED
+									} else {
+										logger.Info("fpga_shmem_disable_with_check() NG ret = " +
+											strconv.Itoa(int(ret)))
+									}
+								}
+							}
+						} else {
+							logger.Info("nothing to do")
+						}
+					}
+				default:
+					logger.Info("nothing to do")
+					crData.Status.From.Status = STATUS_STOPPED
+				}
+			}
 		}
 
-		r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
-			"Delete", "Delete End")
-	}
+		if myNodeName == dstFunctionData.Spec.NodeName {
+			if srcFunctionData.Status.Status == RUNNING &&
+				dstFunctionData.Status.Status == RUNNING {
+				switch dstFunctionKind {
+				case FUNCTYPE_FPGA:
+					if FUNCTYPE_FPGA != srcFunctionKind {
+						if STATUS_OK == crData.Status.To.Status &&
+							STATUS_STOPPED == crData.Status.From.Status {
+							crData.Status.To.Status =
+								PCIeDisconnectionDstFPGA(ctx,
+									dstDeviceID, &srcFunctionData.Status,
+									&dstFunctionData.Status)
+						}
+					}
+				case FUNCTYPE_CPU, FUNCTYPE_GPU:
+					if STATUS_OK == crData.Status.To.Status ||
+						STATUS_PODDELETING == crData.Status.To.Status {
+						crData.Status.To.Status =
+							r.CheckDeletePod(ctx,
+								crData.Status.To.WBFunctionRef.Namespace,
+								*dstFunctionData.Status.PodName,
+								crData.Status.To.Status)
+						if STATUS_PODDELETED == crData.Status.To.Status {
+							crData.Status.To.Status = STATUS_STOPPED
+						}
+					} else {
+						logger.Info("nothing to do")
+					}
+				default:
+					logger.Info("nothing to do")
+					crData.Status.To.Status = STATUS_STOPPED
+				}
+			}
+		}
 
+		if TERMINATING == crData.Status.Status &&
+			crData.Status.From.Status == STATUS_STOPPED &&
+			crData.Status.To.Status == STATUS_STOPPED {
+			crData.Status.Status = RELEASED
+
+			// Delete the Finalizer statement.
+			err = r.DelCustomResource(ctx, r, &crData)
+			if err != nil {
+				return ctrl.Result{}, client.IgnoreNotFound(err)
+			} else {
+				logger.Info("Update PCIeConnection to Released.")
+			}
+
+			r.Recorder.Eventf(&crData, corev1.EventTypeNormal,
+				"Delete", "Delete End")
+		} else {
+			if saveFromStatus == crData.Status.From.Status &&
+				saveToStatus == crData.Status.To.Status {
+				return ctrl.Result{Requeue: true}, nil
+			} else {
+				r.UpdCustomResource(ctx, r, &crData, TERMINATING)
+				logger.Info("CR Status is not Released")
+			}
+		}
+	}
 	return ctrl.Result{}, nil
 }
 
@@ -534,6 +683,8 @@ func PCIeConnectionD2D(ctx context.Context,
 		bufferConnection.buf_addr = bufaddr
 		bufferConnection.connector_id = C.CString(
 			pFunctionSrcData.SharedMemory.CommandQueueID)
+		defer C.free(unsafe.Pointer(bufferConnection.connector_id))
+
 		ret = C.fpga_lldma_buf_connect(&bufferConnection) //nolint:gocritic // suspicious indentical LHS and RHS for next line "!=". QUESTION: why?
 		if ret != 0 {
 			logger.Info("fpga_buf_connect() NG ret = " +
@@ -584,6 +735,7 @@ func PCIeConnectionSrcFPGA(ctx context.Context,
 
 			// Call FDMA setting function
 			connectionID := C.CString(pFunctionDstData.SharedMemory.CommandQueueID)
+			defer C.free(unsafe.Pointer(connectionID))
 			var dmaInfo C.dma_info_t
 			ret = C.fpga_lldma_init(C.uint(deviceID),
 				C.dma_dir_t(C.DMA_DEV_TO_HOST),
@@ -591,7 +743,7 @@ func PCIeConnectionSrcFPGA(ctx context.Context,
 				connectionID,
 				&dmaInfo) //nolint:gocritic // suspicious indentical LHS and RHS for next block "==". QUESTION: why?
 			// Execution result of FDMA setting function
-			if ret == 0 {
+			if 0 == ret {
 				status = STATUS_OK
 				logger.Info("fpga_lldma_init() OK ret = " +
 					strconv.Itoa(int(ret)))
@@ -644,6 +796,7 @@ func PCIeConnectionDstFPGA(ctx context.Context,
 
 			// Call FDMA setting function
 			connectionID := C.CString(pFunctionSrcData.SharedMemory.CommandQueueID)
+			defer C.free(unsafe.Pointer(connectionID))
 			var dmaInfo C.dma_info_t
 			ret = C.fpga_lldma_init(C.uint(deviceID),
 				C.dma_dir_t(C.DMA_HOST_TO_DEV),
@@ -651,7 +804,7 @@ func PCIeConnectionDstFPGA(ctx context.Context,
 				connectionID,
 				&dmaInfo) //nolint:gocritic // suspicious indentical LHS and RHS for next block "==". QUESTION: why?
 			// Execution result of FDMA setting function
-			if ret == 0 {
+			if 0 == ret {
 				status = STATUS_OK
 				logger.Info("fpga_lldma_init() OK ret = " +
 					strconv.Itoa(int(ret)))
@@ -707,6 +860,8 @@ func (r *PCIeConnectionReconciler) UpdCustomResource(ctx context.Context, pClien
 		pCRData.Status.DataFlowRef = pCRData.Spec.DataFlowRef
 		pCRData.Status.From.WBFunctionRef = pCRData.Spec.From.WBFunctionRef
 		pCRData.Status.To.WBFunctionRef = pCRData.Spec.To.WBFunctionRef
+		pCRData.Status.Status = status
+	} else if status == TERMINATING {
 		pCRData.Status.Status = status
 	}
 	err = pClient.Update(ctx, pCRData)
@@ -893,4 +1048,290 @@ func GetFPGACR(ctx context.Context,
 		fpgaList = append(fpgaList, fpgaCRData.Items[i].Status.DeviceFilePath)
 	}
 	return fpgaList
+}
+
+func PCIeDisconnectionSrcFPGA(ctx context.Context,
+	srcDeviceID int32,
+	pFunctionSrcData *examplecomv1.FunctionStatusData,
+	pFunctionDstData *examplecomv1.FunctionStatusData) string {
+
+	logger := log.FromContext(ctx)
+	var status string
+	var isSuccess C.uint32_t
+	var timeout C.struct_timeval
+	var interval C.struct_timeval
+
+	status = STATUS_OK
+
+	for i := 0; i < 1; i++ { //nolint:staticcheck // SA4008: This loop is intentionally only a one-time loop
+		ret := C.fpga_chain_wait_disconnection_ingress(C.uint32_t(srcDeviceID),
+			C.uint32_t(*pFunctionSrcData.FrameworkKernelID),
+			C.uint32_t(*pFunctionSrcData.FunctionChannelID),
+			&timeout, &interval, &isSuccess)
+		if 0 == ret && TRUE == isSuccess {
+			logger.Info("fpga_chain_wait_disconnection_ingress() OK is_success = " +
+				strconv.Itoa(int(isSuccess)))
+		} else if 0 == ret && FALSE == isSuccess {
+			logger.Info("fpga_chain_wait_disconnection_ingress() NG is_success = " +
+				strconv.Itoa(int(isSuccess)))
+			break
+		} else {
+			logger.Info("fpga_chain_wait_disconnection_ingress() NG ret = " +
+				strconv.Itoa(int(ret)))
+			break
+		}
+
+		ret = C.fpga_chain_wait_stat_egr_free(C.uint32_t(srcDeviceID),
+			C.uint32_t(*pFunctionSrcData.FrameworkKernelID),
+			C.uint32_t(*pFunctionSrcData.FunctionChannelID),
+			&timeout, &interval, &isSuccess)
+		if 0 == ret && TRUE == isSuccess {
+			logger.Info("fpga_chain_wait_stat_egr_free() OK is_success = " +
+				strconv.Itoa(int(isSuccess)))
+		} else if 0 == ret && FALSE == isSuccess {
+			logger.Info("fpga_chain_wait_stat_egr_free() NG is_success = " +
+				strconv.Itoa(int(isSuccess)))
+			break
+		} else {
+			logger.Info("fpga_chain_wait_stat_egr_free() NG ret = " +
+				strconv.Itoa(int(ret)))
+			break
+		}
+
+		ret = C.fpga_chain_disconnect_egress(C.uint32_t(srcDeviceID),
+			C.uint32_t(*pFunctionSrcData.FrameworkKernelID),
+			C.uint32_t(*pFunctionSrcData.FunctionChannelID))
+		if 0 == ret {
+			logger.Info("fpga_chain_disconnect_egress() OK ret = " +
+				strconv.Itoa(int(ret)))
+		} else if -(C.FUNC_CHAIN_ID_MISMATCH) == ret {
+			logger.Info("fpga_chain_disconnect_egress() NG ret = " +
+				strconv.Itoa(int(ret)) + " but temporary OK")
+		} else {
+			logger.Info("fpga_chain_disconnect_egress() NG ret = " +
+				strconv.Itoa(int(ret)))
+			break
+		}
+
+		dmaInfo := C.dma_info_t{}
+		dmaInfo.dev_id = C.uint32_t(srcDeviceID)
+		dmaInfo.dir = C.dma_dir_t(C.DMA_DEV_TO_HOST)
+		dmaInfo.chid = C.uint16_t(*pFunctionSrcData.Tx.DMAChannelID)
+		dmaInfo.queue_addr = nil
+		dmaInfo.queue_size = 0
+		dmaInfo.connector_id = C.CString(
+			pFunctionDstData.SharedMemory.CommandQueueID)
+		defer C.free(unsafe.Pointer(dmaInfo.connector_id))
+		ret = C.fpga_lldma_finish(&dmaInfo) //nolint:gocritic // suspicious indentical LHS and RHS for next block "==". QUESTION: why?
+		if 0 == ret {
+			logger.Info("fpga_lldma_finish() OK ret = " +
+				strconv.Itoa(int(ret)))
+		} else if -(C.INVALID_ARGUMENT) == ret {
+			logger.Info("fpga_lldma_finish() NG ret = " +
+				strconv.Itoa(int(ret)) + " but temporary OK")
+		} else {
+			logger.Info("fpga_lldma_finish() NG ret = " +
+				strconv.Itoa(int(ret)))
+			break
+		}
+
+		filePrefix := pFunctionDstData.SharedMemory.FilePrefix
+		ret = C.fpga_shmem_disable_with_check(C.CString(filePrefix))
+		if 0 == ret {
+			logger.Info("fpga_shmem_disable_with_check() OK ret = " +
+				strconv.Itoa(int(ret)))
+			if _, exist := ShmemEnable[filePrefix]; exist {
+				delete(ShmemEnable, filePrefix)
+			}
+		} else {
+			logger.Info("fpga_shmem_disable_with_check() NG ret = " +
+				strconv.Itoa(int(ret)))
+			break
+		}
+
+		status = STATUS_STOPPED
+		break //nolint:staticcheck // SA4004: Intentional break
+	}
+	return status
+}
+
+func PCIeDisconnectionDstFPGA(ctx context.Context,
+	dstDeviceID int32,
+	pFunctionSrcData *examplecomv1.FunctionStatusData,
+	pFunctionDstData *examplecomv1.FunctionStatusData) string {
+
+	logger := log.FromContext(ctx)
+	var status string
+	var isSuccess C.uint32_t
+	var timeout C.struct_timeval
+	var interval C.struct_timeval
+
+	status = STATUS_OK
+
+	for i := 0; i < 1; i++ { //nolint:staticcheck // SA4008: This loop is intentionally only a one-time loop
+		ret := C.fpga_chain_disconnect_ingress(C.uint32_t(dstDeviceID),
+			C.uint32_t(*pFunctionDstData.FrameworkKernelID),
+			C.uint32_t(*pFunctionDstData.FunctionChannelID))
+		if 0 == ret {
+			logger.Info("fpga_chain_disconnect_ingress() OK ret = " +
+				strconv.Itoa(int(ret)))
+		} else if -(C.FUNC_CHAIN_ID_MISMATCH) == ret {
+			logger.Info("fpga_chain_disconnect_ingress() NG ret = " +
+				strconv.Itoa(int(ret)) + " but temporary OK")
+		} else {
+			logger.Info("fpga_chain_disconnect_ingress() NG ret = " +
+				strconv.Itoa(int(ret)))
+			break
+		}
+
+		ret = C.fpga_chain_wait_stat_egr_free(C.uint32_t(dstDeviceID),
+			C.uint32_t(*pFunctionDstData.FrameworkKernelID),
+			C.uint32_t(*pFunctionDstData.FunctionChannelID),
+			&timeout, &interval, &isSuccess)
+		if 0 == ret && TRUE == isSuccess {
+			logger.Info("fpga_chain_wait_stat_egr_free() OK is_success = " +
+				strconv.Itoa(int(isSuccess)))
+		} else if 0 == ret && FALSE == isSuccess {
+			logger.Info("fpga_chain_wait_stat_egr_free() NG is_success = " +
+				strconv.Itoa(int(isSuccess)))
+			break
+		} else {
+			logger.Info("fpga_chain_wait_stat_egr_free() NG ret = " +
+				strconv.Itoa(int(ret)))
+			break
+		}
+
+		dmaInfo := C.dma_info_t{}
+		dmaInfo.dev_id = C.uint32_t(dstDeviceID)
+		dmaInfo.dir = C.dma_dir_t(C.DMA_HOST_TO_DEV)
+		dmaInfo.chid = C.uint16_t(*pFunctionDstData.Rx.DMAChannelID)
+		dmaInfo.queue_addr = nil
+		dmaInfo.queue_size = 0
+		dmaInfo.connector_id = C.CString(
+			pFunctionSrcData.SharedMemory.CommandQueueID)
+		defer C.free(unsafe.Pointer(dmaInfo.connector_id))
+		ret = C.fpga_lldma_finish(&dmaInfo) //nolint:gocritic // suspicious indentical LHS and RHS for next block "==". QUESTION: why?
+		if 0 == ret {
+			logger.Info("fpga_lldma_finish() OK ret = " +
+				strconv.Itoa(int(ret)))
+		} else if -(C.INVALID_ARGUMENT) == ret {
+			logger.Info("fpga_lldma_finish() NG ret = " +
+				strconv.Itoa(int(ret)) + " but temporary OK")
+		} else {
+			logger.Info("fpga_lldma_finish() NG ret = " +
+				strconv.Itoa(int(ret)))
+			break
+		}
+
+		filePrefix := pFunctionSrcData.SharedMemory.FilePrefix
+		ret = C.fpga_shmem_disable_with_check(C.CString(filePrefix))
+		if 0 == ret {
+			logger.Info("fpga_shmem_disable_with_check() OK ret = " +
+				strconv.Itoa(int(ret)))
+			if _, exist := ShmemEnable[filePrefix]; exist {
+				delete(ShmemEnable, filePrefix)
+			}
+		} else {
+			logger.Info("fpga_shmem_disable_with_check() NG ret = " +
+				strconv.Itoa(int(ret)))
+			break
+		}
+
+		status = STATUS_STOPPED
+		break //nolint:staticcheck // SA4004: Intentional break
+	}
+	return status
+}
+
+func (r *PCIeConnectionReconciler) GetPodMetadata(
+	ctx context.Context,
+	namespace string,
+	podCRName string,
+	pPodMetadata *metav1.ObjectMeta) error {
+	logger := log.FromContext(ctx)
+
+	var err error
+	var podDataStringMap map[string]interface{}
+
+	podData := &unstructured.Unstructured{}
+	podData.SetGroupVersionKind(schema.GroupVersionKind{
+		Version: PODVERSION,
+		Kind:    PODKIND,
+	})
+
+	for doWhile := 0; doWhile < 1; doWhile++ { //nolint:staticcheck // SA4008: This loop is intentionally only a one-time loop
+
+		err = r.Get(ctx, client.ObjectKey{
+			Namespace: namespace,
+			Name:      podCRName}, podData)
+		if errors.IsNotFound(err) {
+			logger.Info("PodCR does not exist")
+			break
+		} else if err != nil {
+			logger.Info("unable to fetch PodCR")
+			break
+		}
+
+		// Store metadata information
+		podDataStringMap, _, _ = unstructured.NestedMap(podData.Object, "metadata")
+
+		// Convert the obtained mapdata to byte type
+		metadatabytes, err := json.Marshal(podDataStringMap)
+		if err != nil {
+			logger.Error(err, "unable to json.marshal.")
+			break
+		}
+		// Replace with a struct
+		err = json.Unmarshal(metadatabytes, pPodMetadata)
+		if err != nil {
+			logger.Error(err, "unable to json.unmarshal.")
+			break
+		}
+	}
+
+	return err
+}
+
+func (r *PCIeConnectionReconciler) CheckDeletePod(
+	ctx context.Context,
+	namespace string,
+	podCRName string,
+	status string) string {
+	logger := log.FromContext(ctx)
+
+	var err error
+	var podMetadata metav1.ObjectMeta
+
+	podData := &unstructured.Unstructured{}
+	podData.SetName(podCRName)
+	podData.SetNamespace(namespace)
+	podData.SetGroupVersionKind(schema.GroupVersionKind{
+		Version: PODVERSION,
+		Kind:    PODKIND,
+	})
+
+	err = r.GetPodMetadata(ctx, namespace, podCRName, &podMetadata)
+	if nil == err && STATUS_OK == status {
+		if !podMetadata.DeletionTimestamp.IsZero() {
+			status = STATUS_PODDELETING
+		} else {
+			err = r.Delete(ctx, podData)
+			if err != nil {
+				logger.Error(err, "Failed to delete PodCR.")
+			} else {
+				logger.Info("PodCR Deletion Start.")
+				status = STATUS_PODDELETING
+			}
+		}
+	} else if nil == err && STATUS_PODDELETING == status {
+		logger.Info("Deleting PodCR.")
+	} else if errors.IsNotFound(err) && STATUS_PODDELETING == status {
+		logger.Info("Success to delete PodCR.")
+		status = STATUS_PODDELETED
+	} else if errors.IsNotFound(err) && STATUS_OK == status {
+		logger.Info("Pod was already deleted.")
+		status = STATUS_PODDELETED
+	}
+
+	return status
 }

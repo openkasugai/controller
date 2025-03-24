@@ -1,0 +1,173 @@
+#! /bin/bash
+# Copyright 2025 NTT Corporation , FUJITSU LIMITED
+
+# ======================================================
+# PTU
+# ------------------------------------------------------
+test_ptu_dump_server_single () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [PTU:0]Server check creation"
+	request_create_ptu_server $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 INGR
+	fcc_dump
+	echo "## [PTU:0]Server check deletion"
+	request_delete_ptu        $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 INGR
+	fcc_dump
+
+	echo "## [PTU:1]Server check creation"
+	request_create_ptu_server $INPUT_FPGA_NAME 1 $INPUT_FPGA_ADDR_LANE1 20000 $INPUT_HOST_ADDR_LANE1 20000 INGR
+	fcc_dump
+	echo "## [PTU:1]Server check deletion"
+	request_delete_ptu        $INPUT_FPGA_NAME 1 $INPUT_FPGA_ADDR_LANE1 20000 $INPUT_HOST_ADDR_LANE1 20000 INGR
+	fcc_dump
+}
+# ------------------------------------------------------
+test_ptu_dump_client_single () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [PTU:0]Client check creation"
+	request_create_ptu_client $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 EGR
+	fcc_dump
+	echo "## [PTU:0]Client check deletion"
+	request_delete_ptu        $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 EGR
+	fcc_dump
+
+	echo "## [PTU:1]Client check creation"
+	request_create_ptu_client $INPUT_FPGA_NAME 1 $INPUT_FPGA_ADDR_LANE1 20000 $INPUT_HOST_ADDR_LANE1 20000 EGR
+	fcc_dump
+	echo "## [PTU:1]Client check deletion"
+	request_delete_ptu        $INPUT_FPGA_NAME 1 $INPUT_FPGA_ADDR_LANE1 20000 $INPUT_HOST_ADDR_LANE1 20000 EGR
+	fcc_dump
+}
+# ------------------------------------------------------
+test_ptu_dump_both_single () {
+	echo "# ${FUNCNAME[0]}"
+	echo "## [PTU:0]Server/Client check creation"
+	request_create_ptu_server $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 INGR
+	request_create_ptu_client $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20001 $INPUT_HOST_ADDR_LANE0 20001 EGR
+	fcc_dump
+	echo "## [PTU:0]Serve/Clientr check deletion"
+	request_delete_ptu        $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20000 $INPUT_HOST_ADDR_LANE0 20000 INGR
+	request_delete_ptu        $INPUT_FPGA_NAME 0 $INPUT_FPGA_ADDR_LANE0 20001 $INPUT_HOST_ADDR_LANE0 20001 EGR
+	fcc_dump
+
+	echo "## [PTU:1]Server/Client check creation"
+	request_create_ptu_server $INPUT_FPGA_NAME 1 $INPUT_FPGA_ADDR_LANE1 20000 $INPUT_HOST_ADDR_LANE1 20000 INGR
+	request_create_ptu_client $INPUT_FPGA_NAME 1 $INPUT_FPGA_ADDR_LANE1 20001 $INPUT_HOST_ADDR_LANE1 20001 EGR
+	fcc_dump
+	echo "## [PTU:1]Server/Client check deletion"
+	request_delete_ptu        $INPUT_FPGA_NAME 1 $INPUT_FPGA_ADDR_LANE1 20000 $INPUT_HOST_ADDR_LANE1 20000 INGR
+	request_delete_ptu        $INPUT_FPGA_NAME 1 $INPUT_FPGA_ADDR_LANE1 20001 $INPUT_HOST_ADDR_LANE1 20001 EGR
+	fcc_dump
+}
+# ------------------------------------------------------
+test_ptu_dump_server_multi () {
+	echo "# ${FUNCNAME[0]}"
+	BASE_LANE0=20000
+	BASE_LANE1=20100
+	echo "## [PTU:0,1]Servers check creation"
+	for i in {0..63}
+	do
+		request_create_ptu_server $INPUT_FPGA_NAME 0 \
+			$INPUT_FPGA_ADDR_LANE0 $((BASE_LANE0+i)) \
+			$INPUT_HOST_ADDR_LANE0 $((BASE_LANE0+i)) INGR
+		request_create_ptu_server $INPUT_FPGA_NAME 1 \
+			$INPUT_FPGA_ADDR_LANE1 $((BASE_LANE1+i)) \
+			$INPUT_HOST_ADDR_LANE1 $((BASE_LANE1+i)) INGR
+	done
+	fcc_dump
+	echo "## [PTU:0,1]Servers check deletion"
+	for i in {0..63}
+	do
+		request_delete_ptu        $INPUT_FPGA_NAME 0 \
+			$INPUT_FPGA_ADDR_LANE0 $((BASE_LANE0+i)) \
+			$INPUT_HOST_ADDR_LANE0 $((BASE_LANE0+i)) INGR
+		request_delete_ptu        $INPUT_FPGA_NAME 1 \
+			$INPUT_FPGA_ADDR_LANE1 $((BASE_LANE1+i)) \
+			$INPUT_HOST_ADDR_LANE1 $((BASE_LANE1+i)) INGR
+	done
+	fcc_dump
+}
+# ------------------------------------------------------
+test_ptu_dump_client_multi () {
+	echo "# ${FUNCNAME[0]}"
+	BASE_LANE0=20000
+	BASE_LANE1=20100
+	echo "## [PTU:0,1]Clients check creation"
+	for i in {0..63}
+	do
+		request_create_ptu_client $INPUT_FPGA_NAME 0 \
+			$INPUT_FPGA_ADDR_LANE0 $((BASE_LANE0+i)) \
+			$INPUT_HOST_ADDR_LANE0 $((BASE_LANE0+i)) EGR
+		request_create_ptu_client $INPUT_FPGA_NAME 1 \
+			$INPUT_FPGA_ADDR_LANE1 $((BASE_LANE1+i)) \
+			$INPUT_HOST_ADDR_LANE1 $((BASE_LANE1+i)) EGR
+	done
+	fcc_dump
+	echo "## [PTU:0,1]Clients check deletion"
+	for i in {0..63}
+	do
+		request_delete_ptu        $INPUT_FPGA_NAME 0 \
+			$INPUT_FPGA_ADDR_LANE0 $((BASE_LANE0+i)) \
+			$INPUT_HOST_ADDR_LANE0 $((BASE_LANE0+i)) EGR
+		request_delete_ptu        $INPUT_FPGA_NAME 1 \
+			$INPUT_FPGA_ADDR_LANE1 $((BASE_LANE1+i)) \
+			$INPUT_HOST_ADDR_LANE1 $((BASE_LANE1+i)) EGR
+	done
+	fcc_dump
+}
+# ------------------------------------------------------
+test_ptu_dump_both_multi () {
+	echo "# ${FUNCNAME[0]}"
+	BASE_LANE0_SERVER=20000
+	BASE_LANE0_CLIENT=20050
+	BASE_LANE1_SERVER=20100
+	BASE_LANE1_CLIENT=20150
+	echo "## [PTU:0,1]Servers/Clients check creation"
+	for i in {0..32}
+	do
+		request_create_ptu_server $INPUT_FPGA_NAME 0 \
+			$INPUT_FPGA_ADDR_LANE0 $((BASE_LANE0_SERVER+i)) \
+			$INPUT_HOST_ADDR_LANE0 $((BASE_LANE0_SERVER+i)) INGR
+		request_create_ptu_server $INPUT_FPGA_NAME 1 \
+			$INPUT_FPGA_ADDR_LANE1 $((BASE_LANE1_SERVER+i)) \
+			$INPUT_HOST_ADDR_LANE1 $((BASE_LANE1_SERVER+i)) INGR
+		request_create_ptu_client $INPUT_FPGA_NAME 0 \
+			$INPUT_FPGA_ADDR_LANE0 $((BASE_LANE0_CLIENT+i)) \
+			$INPUT_HOST_ADDR_LANE0 $((BASE_LANE0_CLIENT+i)) EGR
+		request_create_ptu_client $INPUT_FPGA_NAME 1 \
+			$INPUT_FPGA_ADDR_LANE1 $((BASE_LANE1_CLIENT+i)) \
+			$INPUT_HOST_ADDR_LANE1 $((BASE_LANE1_CLIENT+i)) EGR
+	done
+	fcc_dump
+	echo "## [PTU:0,1]Servers/Clients check deletion"
+	for i in {0..32}
+	do
+		request_delete_ptu        $INPUT_FPGA_NAME 0 \
+			$INPUT_FPGA_ADDR_LANE0 $((BASE_LANE0_SERVER+i)) \
+			$INPUT_HOST_ADDR_LANE0 $((BASE_LANE0_SERVER+i)) INGR
+		request_delete_ptu        $INPUT_FPGA_NAME 1 \
+			$INPUT_FPGA_ADDR_LANE1 $((BASE_LANE1_SERVER+i)) \
+			$INPUT_HOST_ADDR_LANE1 $((BASE_LANE1_SERVER+i)) INGR
+		request_delete_ptu        $INPUT_FPGA_NAME 0 \
+			$INPUT_FPGA_ADDR_LANE0 $((BASE_LANE0_CLIENT+i)) \
+			$INPUT_HOST_ADDR_LANE0 $((BASE_LANE0_CLIENT+i)) EGR
+		request_delete_ptu        $INPUT_FPGA_NAME 1 \
+			$INPUT_FPGA_ADDR_LANE1 $((BASE_LANE1_CLIENT+i)) \
+			$INPUT_HOST_ADDR_LANE1 $((BASE_LANE1_CLIENT+i)) EGR
+	done
+	fcc_dump
+}
+# ------------------------------------------------------
+test_ptu_dump () {
+	test_ptu_dump_server_single
+	test_ptu_dump_client_single
+	test_ptu_dump_both_single
+	test_ptu_dump_server_multi
+	test_ptu_dump_client_multi
+	test_ptu_dump_both_multi
+}
+# ------------------------------------------------------
+test_ptu () {
+	echo "## [PTU]"
+	test_ptu_dump
+}
+# ======================================================

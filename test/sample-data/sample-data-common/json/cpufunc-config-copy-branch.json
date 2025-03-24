@@ -4,7 +4,7 @@
   "additionalNetwork": true,
   "virtualNetworkDeviceDriverType": "sriov",
   "copyMemorySize": "1024",
-  "imageURI": "localhost/cpu_copy_branch:1.0.0",
+  "imageURI": "localhost/cpu_copy_branch:1.1.0",
   "template":{
     "apiVersion": "v1",
     "kind": "Pod",
@@ -20,7 +20,11 @@
            "%MEMSIZE%"],
         "securityContext":{
           "privileged": true
-        }
+        },
+        "lifecycle":{
+          "preStop":{
+            "exec":{
+              "command": ["sh","-c", "kill -TERM $(pidof copy_branch)"]}}}
       }],
       "hostNetwork": false,
       "hostIPC": true,

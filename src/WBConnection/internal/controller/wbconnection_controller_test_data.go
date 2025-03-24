@@ -1,5 +1,5 @@
 /*
-Copyright 2024 NTT Corporation , FUJITSU LIMITED
+Copyright 2025 NTT Corporation , FUJITSU LIMITED
 */
 
 package controller
@@ -36,10 +36,6 @@ var connectionkindmap = corev1.ConfigMap{
 	},
 }
 var wbconnection1Start = examplecomv1.WBConnection{
-	// TypeMeta: metav1.Typemeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "WBConnection",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "wbconntest1-wbconnection-wb-start-of-chain-decode-main",
 		Namespace: "default",
@@ -90,10 +86,6 @@ var wbconnection1Start = examplecomv1.WBConnection{
 }
 
 var wbconnection2Ether = examplecomv1.WBConnection{
-	// TypeMeta: metav1.Typemeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "WBConnection",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "wbconntest2-wbconnection-decode-main-filter-resize-high-infer-main",
 		Namespace: "default",
@@ -144,10 +136,6 @@ var wbconnection2Ether = examplecomv1.WBConnection{
 }
 
 var wbconnection3PCIe = examplecomv1.WBConnection{
-	// TypeMeta: metav1.Typemeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "WBConnection",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "wbconntest3-wbconnection-decode-main-filter-resize-low-infer-main",
 		Namespace: "default",
@@ -198,12 +186,8 @@ var wbconnection3PCIe = examplecomv1.WBConnection{
 }
 
 var wbconnection4End = examplecomv1.WBConnection{
-	// TypeMeta: metav1.Typemeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "WBConnection",
-	// },
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "wbconntest4-wbconnection-low-infer-main-wb-end-of-chain",
+		Name:      "wbconntest4-wbconnection-high-infer-main-wb-end-of-chain",
 		Namespace: "default",
 	},
 	Spec: examplecomv1.WBConnectionSpec{
@@ -215,7 +199,7 @@ var wbconnection4End = examplecomv1.WBConnection{
 		From: examplecomv1.FromToWBFunction{
 			Port: 0,
 			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntest4-wbfuncction-low-infer-main",
+				Name:      "wbconntest4-wbfuncction-high-infer-main",
 				Namespace: "default",
 			},
 		},
@@ -250,65 +234,265 @@ var wbconnection4End = examplecomv1.WBConnection{
 		},
 	},
 }
-var t = metav1.Time{
-	Time: time.Now(),
-}
-var testTime = metav1.Time{
-	Time: t.Time.AddDate(0, 0, -1),
-}
-var wbconnectionUpdate2Ether = examplecomv1.WBConnection{
-	// TypeMeta: metav1.Typemeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "WBConnection",
-	// },
+
+var wbconnection5PCIe = examplecomv1.WBConnection{
 	ObjectMeta: metav1.ObjectMeta{
-		Name:      "wbconntest2upd-wbconnection-decode-main-filter-resize-high-infer-main",
+		Name:      "wbconntest5-wbconnection-decode-main-filter-resize-low-infer-main",
 		Namespace: "default",
-		Finalizers: []string{
-			"WBConnection.finalizers.example.com.v1",
-		},
 	},
 	Spec: examplecomv1.WBConnectionSpec{
-		ConnectionMethod: "host-100gether",
+		ConnectionMethod: "host-mem",
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "wbconntest2upd",
+			Name:      "wbconntest5",
 			Namespace: "default",
 		},
 		From: examplecomv1.FromToWBFunction{
 			Port: 0,
 			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntest2upd-wbfunction-decode-main",
+				Name:      "wbconntest5-wbfunction-decode-main",
 				Namespace: "default",
 			},
 		},
 		To: examplecomv1.FromToWBFunction{
 			Port: 0,
 			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntest2upd-wbfunction-filter-resize-high-infer-main",
+				Name:      "wbconntest5-wbfunction-filter-resize-low-infer-main",
 				Namespace: "default",
 			},
 		},
 	},
 	Status: examplecomv1.WBConnectionStatus{
+		ConnectionMethod: "",
 		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "wbconntest2upd",
+			Name:      "",
+			Namespace: "",
+		},
+		From: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "",
+				Namespace: "",
+			},
+		},
+		Status: "",
+		To: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "",
+				Namespace: "",
+			},
+		},
+	},
+}
+
+var wbconnection6PCIe = examplecomv1.WBConnection{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "wbconntest6-wbconnection-decode-main-filter-resize-low-infer-main",
+		Namespace: "default",
+	},
+	Spec: examplecomv1.WBConnectionSpec{
+		ConnectionMethod: "host-mem",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "wbconntest6",
 			Namespace: "default",
 		},
-		Status: "Waiting",
 		From: examplecomv1.FromToWBFunction{
+			Port: 0,
 			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntest2upd-wbfunction-decode-main",
+				Name:      "wbconntest6-wbfunction-decode-main",
 				Namespace: "default",
 			},
 		},
 		To: examplecomv1.FromToWBFunction{
+			Port: 0,
 			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntest2upd-wbfunction-filter-resize-high-infer-main",
+				Name:      "wbconntest6-wbfunction-filter-resize-low-infer-main",
 				Namespace: "default",
 			},
 		},
-		ConnectionMethod: "host-100gether",
 	},
+	Status: examplecomv1.WBConnectionStatus{
+		ConnectionMethod: "",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "",
+			Namespace: "",
+		},
+		From: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "",
+				Namespace: "",
+			},
+		},
+		Status: "",
+		To: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "",
+				Namespace: "",
+			},
+		},
+	},
+}
+
+var wbconnection7PCIe = examplecomv1.WBConnection{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "wbconntest7-wbconnection-decode-main-filter-resize-low-infer-main",
+		Namespace: "default",
+	},
+
+	Spec: examplecomv1.WBConnectionSpec{
+		ConnectionMethod: "host-mem",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "wbconntest7",
+			Namespace: "default",
+		},
+		From: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "wbconntest7-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "wbconntest7-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: examplecomv1.WBConnectionStatus{
+		ConnectionMethod: "",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "",
+			Namespace: "",
+		},
+		From: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "",
+				Namespace: "",
+			},
+		},
+		Status: "",
+		To: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "",
+				Namespace: "",
+			},
+		},
+	},
+}
+
+var wbconnection8PCIe = examplecomv1.WBConnection{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "wbconntest8-wbconnection-decode-main-filter-resize-low-infer-main",
+		Namespace: "default",
+	},
+
+	Spec: examplecomv1.WBConnectionSpec{
+		ConnectionMethod: "host-mem",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "wbconntest8",
+			Namespace: "default",
+		},
+		From: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "wbconntest8-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "wbconntest8-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: examplecomv1.WBConnectionStatus{
+		ConnectionMethod: "",
+		DataFlowRef: examplecomv1.WBNamespacedName{
+			Name:      "",
+			Namespace: "",
+		},
+		Status: "Deployed",
+		From: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "",
+				Namespace: "",
+			},
+		},
+		To: examplecomv1.FromToWBFunction{
+			Port: 0,
+			WBFunctionRef: examplecomv1.WBNamespacedName{
+				Name:      "",
+				Namespace: "",
+			},
+		},
+	},
+}
+
+var pcieconnection = controllertestpcie.PCIeConnection{
+	TypeMeta: metav1.TypeMeta{
+		APIVersion: "example.com/v1",
+		Kind:       "PCIeConnection",
+	},
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "wbconntest7-wbconnection-decode-main-filter-resize-low-infer-main",
+		Namespace: "default",
+	},
+	Spec: controllertestpcie.PCIeConnectionSpec{
+		DataFlowRef: controllertestpcie.WBNamespacedName{
+			Name:      "wbconntest7",
+			Namespace: "default",
+		},
+
+		From: controllertestpcie.PCIeFunctionSpec{
+			WBFunctionRef: controllertestpcie.WBNamespacedName{
+				Name:      "wbconntest7-wbfunction-decode-main",
+				Namespace: "default",
+			},
+		},
+		To: controllertestpcie.PCIeFunctionSpec{
+			WBFunctionRef: controllertestpcie.WBNamespacedName{
+				Name:      "wbconntest7-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+		},
+	},
+	Status: controllertestpcie.PCIeConnectionStatus{
+		StartTime: testTime,
+		DataFlowRef: controllertestpcie.WBNamespacedName{
+			Name:      "wbconntest7",
+			Namespace: "default",
+		},
+		Status: "Deployed",
+		From: controllertestpcie.PCIeFunctionStatus{
+			WBFunctionRef: controllertestpcie.WBNamespacedName{
+				Name:      "pcieconnectiontest1-wbfunction-decode-main",
+				Namespace: "default",
+			},
+			Status: "Deployed",
+		},
+		To: controllertestpcie.PCIeFunctionStatus{
+			WBFunctionRef: controllertestpcie.WBNamespacedName{
+				Name:      "pcieconnectiontest1-wbfunction-filter-resize-low-infer-main",
+				Namespace: "default",
+			},
+			Status: "Deployed",
+		},
+	},
+}
+var t = metav1.Time{
+	Time: time.Now(),
+}
+var testTime = metav1.Time{
+	Time: t.Time.AddDate(0, 0, -1),
 }
 
 var EthernetConnectionUpdate = controllertestethernet.EthernetConnection{
@@ -362,61 +546,6 @@ var EthernetConnectionUpdate = controllertestethernet.EthernetConnection{
 	},
 }
 
-var wbconnectionUpdate3PCIe = examplecomv1.WBConnection{
-	// TypeMeta: metav1.Typemeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "WBConnection",
-	// },
-	ObjectMeta: metav1.ObjectMeta{
-		Name:      "wbconntest3upd-wbconnection-decode-main-filter-resize-low-infer-main",
-		Namespace: "default",
-		Finalizers: []string{
-			"WBConnection.finalizers.example.com.v1",
-		},
-	},
-	Spec: examplecomv1.WBConnectionSpec{
-		ConnectionMethod: "host-mem",
-		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "wbconntest3upd",
-			Namespace: "default",
-		},
-		From: examplecomv1.FromToWBFunction{
-			Port: 0,
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntest3upd-wbfunction-decode-main",
-				Namespace: "default",
-			},
-		},
-		To: examplecomv1.FromToWBFunction{
-			Port: 0,
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntest3upd-wbfunction-filter-resize-low-infer-main",
-				Namespace: "default",
-			},
-		},
-	},
-	Status: examplecomv1.WBConnectionStatus{
-		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "wbconntest3upd",
-			Namespace: "default",
-		},
-		Status: "Waiting",
-		From: examplecomv1.FromToWBFunction{
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntest3upd-wbfunction-decode-main",
-				Namespace: "default",
-			},
-		},
-		To: examplecomv1.FromToWBFunction{
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntest3upd-wbfunction-filter-resize-low-infer-main",
-				Namespace: "default",
-			},
-		},
-		ConnectionMethod: "host-mem",
-	},
-}
-
 var PCIeConnectionUpdate = controllertestpcie.PCIeConnection{
 	TypeMeta: metav1.TypeMeta{
 		Kind:       "",
@@ -466,60 +595,5 @@ var PCIeConnectionUpdate = controllertestpcie.PCIeConnection{
 			},
 			Status: "OK",
 		},
-	},
-}
-
-var wbconnectionDELETE = examplecomv1.WBConnection{
-	// TypeMeta: metav1.Typemeta{
-	// 	APIVersion: "example.com/v1",
-	// 	Kind:       "WBConnection",
-	// },
-	ObjectMeta: metav1.ObjectMeta{
-		Name:      "wbconntestdel-wbconnection-decode-main-filter-resize-low-infer-main",
-		Namespace: "default",
-		Finalizers: []string{
-			"WBConnection.finalizers.example.com.v1",
-		},
-	},
-	Spec: examplecomv1.WBConnectionSpec{
-		ConnectionMethod: "host-mem",
-		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "wbconntestdel",
-			Namespace: "default",
-		},
-		From: examplecomv1.FromToWBFunction{
-			Port: 0,
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntestdel-wbfunction-decode-main",
-				Namespace: "default",
-			},
-		},
-		To: examplecomv1.FromToWBFunction{
-			Port: 0,
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntestdel-wbfunction-filter-resize-low-infer-main",
-				Namespace: "default",
-			},
-		},
-	},
-	Status: examplecomv1.WBConnectionStatus{
-		DataFlowRef: examplecomv1.WBNamespacedName{
-			Name:      "wbconntestdel",
-			Namespace: "default",
-		},
-		Status: "Deployed",
-		From: examplecomv1.FromToWBFunction{
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntestdel-wbfunction-decode-main",
-				Namespace: "default",
-			},
-		},
-		To: examplecomv1.FromToWBFunction{
-			WBFunctionRef: examplecomv1.WBNamespacedName{
-				Name:      "wbconntestdel-wbfunction-filter-resize-low-infer-main",
-				Namespace: "default",
-			},
-		},
-		ConnectionMethod: "host-mem",
 	},
 }

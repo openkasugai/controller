@@ -2,7 +2,7 @@
   "rxProtocol":"DMA",
   "txProtocol":"TCP",
   "sharedMemoryMiB": 256,
-  "imageURI": "localhost/cpu_glue_dma_tcp:1.0.0",
+  "imageURI": "localhost/cpu_glue_dma_tcp:1.1.0",
   "additionalNetwork": true,
   "virtualNetworkDeviceDriverType": "sriov",
   "template":{
@@ -20,6 +20,10 @@
         "securityContext":{
           "privileged": true
         },
+        "lifecycle":{
+          "preStop":{
+            "exec":{
+              "command": ["sh","-c", "kill -TERM $(pidof ./build/glue)"]}}},
         "volumeMounts":[{
           "name": "hugepage-1gi",
           "mountPath": "/dev/hugepages"

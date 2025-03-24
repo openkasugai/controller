@@ -1,0 +1,23 @@
+apiVersion: example.com/v1
+kind: DataFlow
+metadata:
+  name: "df-test-3-14"
+  namespace: "test01"
+spec:
+  functionChainRef:
+    name: "cpu-decode-filter-resize-high-infer-chain"
+    namespace: "chain-imgproc"
+  requirements:
+    all:
+      capacity: 15
+  functionUserParameter:
+  - functionKey: decode-main
+    userParams:
+      ipAddress: 192.174.90.102/24
+      inputPort: 5004
+  - functionKey: high-infer-main
+    userParams:
+      ipAddress: 192.174.90.108/24
+      outputIPAddress: 192.174.90.11
+      outputPort: 2002
+
