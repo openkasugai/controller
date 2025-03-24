@@ -1,0 +1,5 @@
+# Set default line termination to LF
+*       text=auto eol=lf
+*.jpg   -text
+*.png   -text
+*.pdf   -text

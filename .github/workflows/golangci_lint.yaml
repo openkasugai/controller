@@ -94,6 +94,14 @@ jobs:
         if: steps.setup-env.conclusion == 'success' && always()
         run: |
           golangci-lint run ./whitebox-k8s-flowctrl/...
+      - name: golangci-lint-tools-fpgareconfigurationtool
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./tools/FPGAReconfigurationTool/...
+      - name: golangci-lint-tools-fpgaclearchecktool-fpgacheckperdf
+        if: steps.setup-env.conclusion == 'success' && always()
+        run: |
+          golangci-lint run ./tools/FPGAClearCheckTool/FPGACheckPerDF/...
       - name: golangci-lint-tools-gpu-info
         if: steps.setup-env.conclusion == 'success' && always()
         run: |
