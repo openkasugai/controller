@@ -1,9 +1,9 @@
 #!/bin/bash -x
-# Copyright 2024 NTT Corporation , FUJITSU LIMITED
+# Copyright 2025 NTT Corporation , FUJITSU LIMITED
 
 K8S_SOFT_DIR=$HOME/controller
 YAML_DIR=$HOME/controller/test/sample-data/sample-data-common/yaml
-TAG=1.0.0
+TAG=1.1.0
 
 cd $K8S_SOFT_DIR/src/whitebox-k8s-flowctrl
 make deploy IMG=localhost/whitebox-k8s-flowctrl:$TAG

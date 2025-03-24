@@ -10,11 +10,12 @@
   "parameters": {
     "functions": {
       "i_width": 3840,
-      "i_height": 2140,
+      "i_height": 2160,
       "o_width": 416,
       "o_height": 416
     }
   },
   "sharedMemoryMiB": 256,
-  "functionDedicatedInfo": "filter-resize-ch"
+  "functionDedicatedInfo": "filter-resize-ch",
+  "functionName": "filter-resize-low-infer"
 }

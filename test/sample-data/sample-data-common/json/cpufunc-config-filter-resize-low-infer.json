@@ -3,7 +3,7 @@
   "txProtocol":"TCP",
   "additionalNetwork": true,
   "virtualNetworkDeviceDriverType": "sriov",
-  "imageURI": "localhost/cpu_filter_resize:1.0.0",
+  "imageURI": "localhost/cpu_filter_resize:1.1.0",
   "envs":{
     "FRENV_APPLOG_LEVEL": "DEBUG",
     "FRENV_INPUT_WIDTH": "3840",
@@ -29,11 +29,16 @@
            "--loglevel=$(FRENV_APPLOG_LEVEL)"],
         "securityContext":{
           "privileged": true
-        }
+        },
+        "lifecycle":{
+          "preStop":{
+            "exec":{
+              "command": ["sh","-c", "kill -TERM $(pidof python)"]}}}
       }],
       "hostNetwork": false,
       "hostIPC": true,
-      "restartPolicy": "Always"
+      "restartPolicy": "Always",
+      "shareProcessNamespace": true
     }
   }
 }]

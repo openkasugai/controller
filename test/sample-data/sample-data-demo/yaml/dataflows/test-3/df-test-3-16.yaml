@@ -1,7 +1,7 @@
 apiVersion: example.com/v1
 kind: DataFlow
 metadata:
-  name: "df-test-1-1"
+  name: "df-test-3-16"
   namespace: "test01"
 spec:
   functionChainRef:
@@ -13,10 +13,11 @@ spec:
   functionUserParameter:
   - functionKey: decode-main
     userParams:
-      ipAddress: 192.174.90.101/24
+      ipAddress: 192.174.90.102/24
       inputPort: 5004
   - functionKey: high-infer-main
     userParams:
-      ipAddress: 192.174.90.107/24
+      ipAddress: 192.174.90.108/24
       outputIPAddress: 192.174.90.11
-      outputPort: 2001
+      outputPort: 2002
+

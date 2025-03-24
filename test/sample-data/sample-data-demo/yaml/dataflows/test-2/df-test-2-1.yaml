@@ -1,11 +1,11 @@
 apiVersion: example.com/v1
 kind: DataFlow
 metadata:
-  name: "df-ext-2-1"
+  name: "df-test-2-1"
   namespace: "test01"
 spec:
   functionChainRef:
-    name: "cpu-decode-filter-resize-glue-high-infer-chain"
+    name: "cpu-decode-filter-resize-high-infer-chain"
     namespace: "chain-imgproc"
   requirements:
     all:
@@ -15,15 +15,8 @@ spec:
     userParams:
       ipAddress: 192.174.90.101/24
       inputPort: 5004
-  - functionKey: glue-fdma-to-tcp-main
-    userParams:
-      ipAddress: 192.174.90.131/24
-      glueOutputIPAddress: 192.174.90.141
-      glueOutputPort: 16000
   - functionKey: high-infer-main
     userParams:
-      ipAddress: 192.174.90.141/24
-      inputIPAddress: 192.174.90.141
-      inputPort: 16000
+      ipAddress: 192.174.90.107/24
       outputIPAddress: 192.174.90.11
       outputPort: 2001
