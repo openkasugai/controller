@@ -458,6 +458,7 @@ func lldmaInit(ctx context.Context,
 		(pFunctionData.Tx.Protocol == "TCP" || pFunctionData.Tx.Protocol == "RTP") {
 		// Call FDMA setting function
 		connectionID := C.CString(pFunctionData.SharedMemory.CommandQueueID)
+		defer C.free(unsafe.Pointer(connectionID))
 		var dmaInfo C.dma_info_t
 		ret := C.fpga_lldma_init(C.uint(deviceID),
 			C.dma_dir_t(C.DMA_NW_TO_DEV),
@@ -474,6 +475,7 @@ func lldmaInit(ctx context.Context,
 		(pFunctionData.Rx.Protocol == "TCP" || pFunctionData.Rx.Protocol == "RTP") {
 		// Call FDMA setting function
 		connectionID := C.CString(pFunctionData.SharedMemory.CommandQueueID)
+		defer C.free(unsafe.Pointer(connectionID))
 		var dmaInfo C.dma_info_t
 		ret := C.fpga_lldma_init(C.uint(deviceID),
 			C.dma_dir_t(C.DMA_DEV_TO_NW),
@@ -722,7 +724,9 @@ func strconvInetAddressToUint32Swap(ipAddress string) C.uint32_t {
 	var inetAddress C.in_addr_t
 
 	// Store in inetAddress_t type in network byte order.
-	inetAddress = C.inet_addr(C.CString(ipAddress))
+	ipAddressCString := C.CString(ipAddress)
+	defer C.free(unsafe.Pointer(ipAddressCString))
+	inetAddress = C.inet_addr(ipAddressCString)
 
 	// Due to FPGA specifications, the network byte order is reversed.
 	return (((inetAddress & 0xff000000) >> 24) |
@@ -1070,9 +1074,13 @@ func CRCStartPtuInitSet(mng ctrl.Manager) {
 		// FPGAPhase3 initial setting
 		var argv []*C.char
 		// Phase 3 FPGA initialization variables
-		argv = []*C.char{C.CString("proc"),
-			C.CString("-d"),
-			C.CString(strings.Join(fpgaList, ","))}
+		argv0 := C.CString("proc")
+		argv1 := C.CString("-d")
+		argv2 := C.CString(strings.Join(fpgaList, ","))
+		defer C.free(unsafe.Pointer(argv0))
+		defer C.free(unsafe.Pointer(argv1))
+		defer C.free(unsafe.Pointer(argv2))
+		argv = []*C.char{argv0, argv1, argv2}
 		argc := C.int(len(argv))
 		/*#if 1 * IT ph-2 temporary solution (fpga log level change/standard output) ***/
 		C.libfpga_log_set_output_stdout()

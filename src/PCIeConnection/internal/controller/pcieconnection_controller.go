@@ -286,8 +286,9 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 							// Call the prefix enable function
 							var size []C.uint
 							size = append(size, C.uint(dstFunctionData.Spec.SharedMemory.SharedMemoryMiB)) //nolint:staticcheck // 'size' is never used. FIXME: remove variable
-							ret := C.fpga_shmem_enable(
-								C.CString(dstFunctionData.Spec.SharedMemory.FilePrefix), nil)
+							filePrefixDstEnable := C.CString(dstFunctionData.Spec.SharedMemory.FilePrefix)
+							defer C.free(unsafe.Pointer(filePrefixDstEnable))
+							ret := C.fpga_shmem_enable(filePrefixDstEnable, nil)
 							logger.Info("debug prefix = " +
 								dstFunctionData.Spec.SharedMemory.FilePrefix)
 							if ret == 0 {
@@ -316,8 +317,9 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 					} else if FUNCTYPE_CPU == dstFunctionKind || FUNCTYPE_GPU == dstFunctionKind {
 						if done, exist := ShmemEnable[srcFunctionData.Spec.SharedMemory.FilePrefix]; !exist || (exist && !done) {
 							// Call the prefix enable function
-							ret := C.fpga_shmem_enable(
-								C.CString(srcFunctionData.Spec.SharedMemory.FilePrefix), nil)
+							filePrefixSrcEnable1 := C.CString(srcFunctionData.Spec.SharedMemory.FilePrefix)
+							defer C.free(unsafe.Pointer(filePrefixSrcEnable1))
+							ret := C.fpga_shmem_enable(filePrefixSrcEnable1, nil)
 							logger.Info("debug prefix = " +
 								srcFunctionData.Spec.SharedMemory.FilePrefix)
 							if ret == 0 {
@@ -352,8 +354,9 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 							// Call the prefix enable function
 							var size []C.uint
 							size = append(size, C.uint(srcFunctionData.Spec.SharedMemory.SharedMemoryMiB)) //nolint:staticcheck // 'size' is never used. FIXME: remove variable
-							ret := C.fpga_shmem_enable(
-								C.CString(srcFunctionData.Spec.SharedMemory.FilePrefix), nil)
+							filePrefixSrcEnable2 := C.CString(srcFunctionData.Spec.SharedMemory.FilePrefix)
+							defer C.free(unsafe.Pointer(filePrefixSrcEnable2))
+							ret := C.fpga_shmem_enable(filePrefixSrcEnable2, nil)
 							logger.Info("debug prefix = " +
 								srcFunctionData.Spec.SharedMemory.FilePrefix)
 							if ret == 0 {
@@ -455,14 +458,15 @@ func (r *PCIeConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 						} else if FUNCTYPE_CPU == dstFunctionKind || FUNCTYPE_GPU == dstFunctionKind {
 							if STATUS_STOPPED == crData.Status.To.Status {
 								if _, exist := ShmemEnable[srcFunctionData.Spec.SharedMemory.FilePrefix]; exist {
-									filePrefix := srcFunctionData.Spec.SharedMemory.FilePrefix
+									filePrefix := C.CString(srcFunctionData.Spec.SharedMemory.FilePrefix)
+									defer C.free(unsafe.Pointer(filePrefix))
 									// Call the prefix disable function
-									ret := C.fpga_shmem_disable_with_check(C.CString(filePrefix))
+									ret := C.fpga_shmem_disable_with_check(filePrefix)
 									if 0 == ret {
 										logger.Info("fpga_shmem_disable_with_check() OK ret = " +
 											strconv.Itoa(int(ret)))
-										if _, exist := ShmemEnable[filePrefix]; exist {
-											delete(ShmemEnable, filePrefix)
+										if _, exist := ShmemEnable[srcFunctionData.Spec.SharedMemory.FilePrefix]; exist {
+											delete(ShmemEnable, srcFunctionData.Spec.SharedMemory.FilePrefix)
 										}
 										crData.Status.From.Status = STATUS_STOPPED
 									} else {
@@ -586,8 +590,9 @@ func PCIeConnectionD2D(ctx context.Context,
 			// Call the prefix enable function
 			var size []C.uint
 			size = append(size, C.uint(pFunctionSrcData.SharedMemory.SharedMemoryMiB)) //nolint:staticcheck // 'size' is never used. FIXME: remove variable
-			ret := C.fpga_shmem_enable(
-				C.CString(pFunctionSrcData.SharedMemory.FilePrefix), nil)
+			filePrefixEnable := C.CString(pFunctionSrcData.SharedMemory.FilePrefix)
+			defer C.free(unsafe.Pointer(filePrefixEnable))
+			ret := C.fpga_shmem_enable(filePrefixEnable, nil)
 			if ret != 0 {
 				ShmemEnable[pFunctionSrcData.SharedMemory.FilePrefix] = false
 				logger.Info("fpga_shmem_enable() NG ret = " +
@@ -602,9 +607,9 @@ func PCIeConnectionD2D(ctx context.Context,
 		if done, exist := ShmemInit[pFunctionSrcData.SharedMemory.FilePrefix]; !exist || (exist && !done) {
 			// Call the initialization function for shared memory
 			dpdkLogFlag, _ := strconv.Atoi(os.Getenv("K8S_DPDK_LOG_FLAG"))
-			ret := C.fpga_shmem_init(
-				C.CString(pFunctionSrcData.SharedMemory.FilePrefix), nil,
-				C.int(dpdkLogFlag))
+			filePrefixInit := C.CString(pFunctionSrcData.SharedMemory.FilePrefix)
+			defer C.free(unsafe.Pointer(filePrefixInit))
+			ret := C.fpga_shmem_init(filePrefixInit, nil, C.int(dpdkLogFlag))
 			if ret < 0 {
 				ShmemInit[pFunctionSrcData.SharedMemory.FilePrefix] = false
 				logger.Info("fpga_shmem_init() NG ret = " +
@@ -995,9 +1000,13 @@ func PCIeConnectionFPGAInit(mng ctrl.Manager) {
 		// FPGAPhase3 initial setting
 		var argv []*C.char
 		// Phase 3 FPGA initialization variables
-		argv = []*C.char{C.CString("proc"),
-			C.CString("-d"),
-			C.CString(strings.Join(fpgaList, ","))}
+		argv0 := C.CString("proc")
+		argv1 := C.CString("-d")
+		argv2 := C.CString(strings.Join(fpgaList, ","))
+		defer C.free(unsafe.Pointer(argv0))
+		defer C.free(unsafe.Pointer(argv1))
+		defer C.free(unsafe.Pointer(argv2))
+		argv = []*C.char{argv0, argv1, argv2}
 		argc := C.int(len(argv))
 		/*#if 1 * IT ph-2 temporary solution (fpga log level change/standard output) ***/
 		C.libfpga_log_set_output_stdout()
@@ -1013,10 +1022,10 @@ func PCIeConnectionFPGAInit(mng ctrl.Manager) {
 		}
 	}
 	// Start the shared memory controller
-	port := 60000
-	addr := "localhost"
-	ret := C.fpga_shmem_controller_init(C.ushort(port),
-		C.CString(addr))
+	port := C.ushort(60000)
+	addr := C.CString("localhost")
+	defer C.free(unsafe.Pointer(addr))
+	ret := C.fpga_shmem_controller_init(port, addr)
 	logger.Info("fpga_shmem_controller_init() ret = " +
 		strconv.Itoa(int(ret)))
 	/* Since the process stops when the controller is stopped, do not call exit for each init.
@@ -1121,7 +1130,6 @@ func PCIeDisconnectionSrcFPGA(ctx context.Context,
 		dmaInfo.queue_size = 0
 		dmaInfo.connector_id = C.CString(
 			pFunctionDstData.SharedMemory.CommandQueueID)
-		defer C.free(unsafe.Pointer(dmaInfo.connector_id))
 		ret = C.fpga_lldma_finish(&dmaInfo) //nolint:gocritic // suspicious indentical LHS and RHS for next block "==". QUESTION: why?
 		if 0 == ret {
 			logger.Info("fpga_lldma_finish() OK ret = " +
@@ -1135,13 +1143,14 @@ func PCIeDisconnectionSrcFPGA(ctx context.Context,
 			break
 		}
 
-		filePrefix := pFunctionDstData.SharedMemory.FilePrefix
-		ret = C.fpga_shmem_disable_with_check(C.CString(filePrefix))
+		filePrefix := C.CString(pFunctionDstData.SharedMemory.FilePrefix)
+		defer C.free(unsafe.Pointer(filePrefix))
+		ret = C.fpga_shmem_disable_with_check(filePrefix)
 		if 0 == ret {
 			logger.Info("fpga_shmem_disable_with_check() OK ret = " +
 				strconv.Itoa(int(ret)))
-			if _, exist := ShmemEnable[filePrefix]; exist {
-				delete(ShmemEnable, filePrefix)
+			if _, exist := ShmemEnable[pFunctionDstData.SharedMemory.FilePrefix]; exist {
+				delete(ShmemEnable, pFunctionDstData.SharedMemory.FilePrefix)
 			}
 		} else {
 			logger.Info("fpga_shmem_disable_with_check() NG ret = " +
@@ -1209,7 +1218,6 @@ func PCIeDisconnectionDstFPGA(ctx context.Context,
 		dmaInfo.queue_size = 0
 		dmaInfo.connector_id = C.CString(
 			pFunctionSrcData.SharedMemory.CommandQueueID)
-		defer C.free(unsafe.Pointer(dmaInfo.connector_id))
 		ret = C.fpga_lldma_finish(&dmaInfo) //nolint:gocritic // suspicious indentical LHS and RHS for next block "==". QUESTION: why?
 		if 0 == ret {
 			logger.Info("fpga_lldma_finish() OK ret = " +
@@ -1223,13 +1231,14 @@ func PCIeDisconnectionDstFPGA(ctx context.Context,
 			break
 		}
 
-		filePrefix := pFunctionSrcData.SharedMemory.FilePrefix
-		ret = C.fpga_shmem_disable_with_check(C.CString(filePrefix))
+		filePrefix := C.CString(pFunctionSrcData.SharedMemory.FilePrefix)
+		defer C.free(unsafe.Pointer(filePrefix))
+		ret = C.fpga_shmem_disable_with_check(filePrefix)
 		if 0 == ret {
 			logger.Info("fpga_shmem_disable_with_check() OK ret = " +
 				strconv.Itoa(int(ret)))
-			if _, exist := ShmemEnable[filePrefix]; exist {
-				delete(ShmemEnable, filePrefix)
+			if _, exist := ShmemEnable[pFunctionSrcData.SharedMemory.FilePrefix]; exist {
+				delete(ShmemEnable, pFunctionSrcData.SharedMemory.FilePrefix)
 			}
 		} else {
 			logger.Info("fpga_shmem_disable_with_check() NG ret = " +

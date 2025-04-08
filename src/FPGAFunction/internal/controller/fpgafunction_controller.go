@@ -1439,6 +1439,7 @@ func (r *FPGAFunctionReconciler) stopFpgaModule(ctx context.Context,
 		logger.Info("Start to stop FPGA Module.")
 
 		fpgaDeviceUUIDCString := C.CString(deviceUUID)
+		defer C.free(unsafe.Pointer(fpgaDeviceUUIDCString))
 		retCInt = C.fpga_get_dev_id(fpgaDeviceUUIDCString, &deviceID)
 		if 0 > retCInt {
 			logger.Info("fpga_get_dev_id() err = " +
@@ -1507,6 +1508,7 @@ func (r *FPGAFunctionReconciler) WriteFpgaBitstream(ctx context.Context,
 		logger.Info("Start to write Child-Bitstream.")
 
 		fpgaDeviceUUIDCString := C.CString(deviceUUID)
+		defer C.free(unsafe.Pointer(fpgaDeviceUUIDCString))
 		retCInt = C.fpga_get_dev_id(fpgaDeviceUUIDCString, deviceID)
 		if 0 > retCInt {
 			logger.Info("fpga_get_dev_id() err = " +
@@ -1529,7 +1531,9 @@ func (r *FPGAFunctionReconciler) WriteFpgaBitstream(ctx context.Context,
 		}
 
 		if "" != childBsFile {
-			retCInt = C.fpga_write_bitstream(*deviceID, 0, C.CString(childBsFile))
+			childBsFileCString := C.CString(childBsFile)
+			defer C.free(unsafe.Pointer(childBsFileCString))
+			retCInt = C.fpga_write_bitstream(*deviceID, 0, childBsFileCString)
 			if 0 > retCInt {
 				logger.Info("fpga_write_bitstream() err = " +
 					strconv.Itoa(int(retCInt)))
@@ -1628,6 +1632,7 @@ func (r *FPGAFunctionReconciler) SetFpgaInfo(ctx context.Context,
 
 				for funcmodIndex := 0; funcmodIndex < len(*FunctionsData.Module); funcmodIndex++ {
 					funcNameCString := C.CString(*(*FunctionsData.Module)[funcmodIndex].Type)
+					defer C.free(unsafe.Pointer(funcNameCString))
 
 					retCInt = C.fpga_chain_start(deviceID, C.uint(*FunctionsData.ID))
 					if 0 > retCInt {
@@ -1674,6 +1679,7 @@ func (r *FPGAFunctionReconciler) SetFpgaInfo(ctx context.Context,
 
 					if 0 != len(string(frameSizeBytes)) {
 						frameSizeCString := C.CString(string(frameSizeBytes))
+						defer C.free(unsafe.Pointer(frameSizeCString))
 
 						retCInt = C.fpga_function_set(deviceID, C.uint(*FunctionsData.ID), frameSizeCString)
 						if 0 > retCInt {
@@ -1931,9 +1937,13 @@ func StartupProccessing(mng ctrl.Manager) error {
 			// FPGAPhase3 initial setting
 			var argv []*C.char
 			// Phase 3 FPGA initialization variables
-			argv = []*C.char{C.CString("proc"),
-				C.CString("-d"),
-				C.CString(strings.Join(fpgaList, ","))}
+			argv0 := C.CString("proc")
+			argv1 := C.CString("-d")
+			argv2 := C.CString(strings.Join(fpgaList, ","))
+			defer C.free(unsafe.Pointer(argv0))
+			defer C.free(unsafe.Pointer(argv1))
+			defer C.free(unsafe.Pointer(argv2))
+			argv = []*C.char{argv0, argv1, argv2}
 			argc := C.int(len(argv))
 			C.libfpga_log_set_output_stdout()
 			C.libfpga_log_set_level(C.LIBFPGA_LOG_ALL)
@@ -2022,7 +2032,9 @@ func (r *FPGAFunctionReconciler) getChildBsConfig(ctx context.Context,
 
 	for doWhile := 0; doWhile < 1; doWhile++ { //nolint:staticcheck // SA4008: This loop is intentionally only a one-time loop
 		parentBitstreamCString := C.CString(parentBitstreamID)
+		defer C.free(unsafe.Pointer(parentBitstreamCString))
 		childBitstreamCString := C.CString(childBitstreamID)
+		defer C.free(unsafe.Pointer(childBitstreamCString))
 		retCInt = C.fpga_db_get_device_config_by_bitstream_id(parentBitstreamCString,
 			childBitstreamCString,
 			(**C.char)(unsafe.Pointer(&bitstreamIDConfigCChar))) //nolint:gocritic // suspicious identical LHS and RHS for `==` operator
